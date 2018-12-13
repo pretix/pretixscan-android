@@ -1,0 +1,196 @@
+package eu.pretix.pretixscan.droid
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
+
+import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.pretixscan.utils.KeystoreHelper
+
+
+class AppConfig(ctx: Context) : ConfigStore {
+
+    private val prefs: SharedPreferences
+    private val default_prefs: SharedPreferences
+
+    init {
+        prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        default_prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
+    }
+
+    override fun isDebug(): Boolean {
+        return BuildConfig.DEBUG
+    }
+
+    override fun isConfigured(): Boolean {
+        return prefs.contains(PREFS_KEY_API_URL)
+    }
+
+    fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
+        prefs.edit()
+                .putString(PREFS_KEY_API_URL, url)
+                .putString(PREFS_KEY_API_KEY, KeystoreHelper.secureValue(key, true))
+                .putString(PREFS_KEY_ORGANIZER_SLUG, orga_slug)
+                .putLong(PREFS_KEY_DEVICE_ID, device_id)
+                .putString(PREFS_KEY_DEVICE_SERIAL, serial)
+                .putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, sent_version)
+                .remove(PREFS_KEY_LAST_DOWNLOAD)
+                .remove(PREFS_KEY_LAST_SYNC)
+                .remove(PREFS_KEY_LAST_FAILED_SYNC)
+                .remove(PREFS_KEY_LAST_STATUS_DATA)
+                .apply()
+    }
+
+    fun resetDeviceConfig() {
+        prefs.edit()
+                .remove(PREFS_KEY_API_URL)
+                .remove(PREFS_KEY_API_KEY)
+                .remove(PREFS_KEY_EVENT_SLUG)
+                .remove(PREFS_KEY_ORGANIZER_SLUG)
+                .remove(PREFS_KEY_DEVICE_ID)
+                .remove(PREFS_KEY_DEVICE_SERIAL)
+                .remove(PREFS_KEY_DEVICE_KNOWN_VERSION)
+                .remove(PREFS_KEY_LAST_DOWNLOAD)
+                .remove(PREFS_KEY_LAST_SYNC)
+                .remove(PREFS_KEY_LAST_FAILED_SYNC)
+                .remove(PREFS_KEY_LAST_STATUS_DATA)
+                .apply()
+    }
+
+    override fun getApiVersion(): Int {
+        return prefs.getInt(PREFS_KEY_API_VERSION, PretixApi.SUPPORTED_API_VERSION)
+    }
+
+    override fun getEventSlug(): String? = prefs.getString(PREFS_KEY_EVENT_SLUG, null)
+    fun setEventSlug(value: String?) = prefs.edit().putString(PREFS_KEY_EVENT_SLUG, value).apply()
+
+    var subeventId: Long?
+        get() = if (prefs.contains(PREFS_KEY_SUBEVENT_ID)) {
+            prefs.getLong(PREFS_KEY_SUBEVENT_ID, -1)
+        } else null
+        set(value) = if (value != null) {
+            prefs.edit().putLong(PREFS_KEY_SUBEVENT_ID, value).apply()
+        } else {
+            prefs.edit().remove(PREFS_KEY_SUBEVENT_ID).apply()
+        }
+
+    override fun getSubEventId(): Long? {
+        return subeventId
+    }
+
+    var eventName: String?
+        get() = prefs.getString(PREFS_KEY_EVENT_NAME, null)
+        set(value) = prefs.edit().putString(PREFS_KEY_EVENT_NAME, value).apply()
+
+    override fun getOrganizerSlug(): String {
+        return prefs.getString(PREFS_KEY_ORGANIZER_SLUG, "")
+    }
+
+    override fun getApiUrl(): String {
+        return prefs.getString(PREFS_KEY_API_URL, "")
+    }
+
+    override fun getApiKey(): String {
+        return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, ""), false)!!
+    }
+
+    override fun getShowInfo(): Boolean {
+        return prefs.getBoolean(PREFS_KEY_SHOW_INFO, true)
+    }
+
+    override fun getAllowSearch(): Boolean {
+        return prefs.getBoolean(PREFS_KEY_ALLOW_SEARCH, true)
+    }
+
+    override fun getLastStatusData(): String? {
+        return prefs.getString(PREFS_KEY_LAST_STATUS_DATA, null)
+    }
+
+    override fun setLastStatusData(`val`: String) {
+        prefs.edit().putString(PREFS_KEY_LAST_STATUS_DATA, `val`).apply()
+    }
+
+    override fun getLastDownload(): Long {
+        return prefs.getLong(PREFS_KEY_LAST_DOWNLOAD, 0)
+    }
+
+    override fun setLastDownload(`val`: Long) {
+        prefs.edit().putLong(PREFS_KEY_LAST_DOWNLOAD, `val`).apply()
+    }
+
+    override fun getLastSync(): Long {
+        return prefs.getLong(PREFS_KEY_LAST_SYNC, 0)
+    }
+
+    override fun setLastSync(`val`: Long) {
+        prefs.edit().putLong(PREFS_KEY_LAST_SYNC, `val`).apply()
+    }
+
+    override fun getLastFailedSync(): Long {
+        return prefs.getLong(PREFS_KEY_LAST_FAILED_SYNC, 0)
+    }
+
+    override fun setLastFailedSync(`val`: Long) {
+        prefs.edit().putLong(PREFS_KEY_LAST_FAILED_SYNC, `val`).apply()
+    }
+
+    override fun getLastFailedSyncMsg(): String {
+        return prefs.getString(PREFS_KEY_LAST_FAILED_SYNC_MSG, "")
+    }
+
+    override fun setLastFailedSyncMsg(`val`: String) {
+        prefs.edit().putString(PREFS_KEY_LAST_FAILED_SYNC_MSG, `val`).apply()
+    }
+
+    var devicePosId: Long
+        get() = prefs.getLong(PREFS_KEY_DEVICE_ID, 0L)
+        set(value) = prefs.edit().putLong(PREFS_KEY_DEVICE_ID, value).apply()
+
+    override fun getPosId(): Long {
+        return devicePosId
+    }
+
+    var devicePosSerial: String
+        get() = prefs.getString(PREFS_KEY_DEVICE_SERIAL, "")
+        set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_SERIAL, value).apply()
+
+    var deviceKnownVersion: String
+        get() = prefs.getString(PREFS_KEY_DEVICE_KNOWN_VERSION, "")
+        set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
+
+    var currency: String
+        get() = prefs.getString(PREFS_KEY_DEVICE_CURRENCY, "EUR")
+        set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_CURRENCY, value).apply()
+
+    var deviceRegistered: Boolean = false
+        get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
+
+    var sumUpEnabled: Boolean = false
+        get() = default_prefs.getBoolean("pref_sumup_enable", false)
+
+    var ticketPrintEnabled: Boolean = false
+        get() = default_prefs.getBoolean("pref_ticketprint_enable", false)
+
+    companion object {
+        val PREFS_NAME = "pretixdroid"
+        val PREFS_KEY_API_URL = "pretix_api_url"
+        val PREFS_KEY_API_KEY = "pretix_api_key"
+        val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+        val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
+        val PREFS_KEY_EVENT_NAME = "event_name"
+        val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
+        val PREFS_KEY_SHOW_INFO = "show_info"
+        val PREFS_KEY_ALLOW_SEARCH = "allow_search"
+        val PREFS_KEY_API_VERSION = "pretix_api_version"
+        val PREFS_KEY_LAST_SYNC = "last_sync"
+        val PREFS_KEY_LAST_FAILED_SYNC = "last_failed_sync"
+        val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
+        val PREFS_KEY_LAST_DOWNLOAD = "last_download"
+        val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
+        val PREFS_KEY_DEVICE_ID = "device_pos_id"
+        val PREFS_KEY_DEVICE_SERIAL = "device_pos_serial"
+        val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
+        val PREFS_KEY_DEVICE_CURRENCY = "device_currency"
+    }
+}

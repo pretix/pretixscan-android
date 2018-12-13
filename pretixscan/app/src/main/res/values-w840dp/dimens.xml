@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="dialog_minwidth">420dp</dimen>
+    <dimen name="event_name_length">400dp</dimen>
+</resources>

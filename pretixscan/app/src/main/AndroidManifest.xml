@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="eu.pretix.pretixscan.droid">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <application
+        android:name="eu.pretix.pretixscan.droid.PretixScan"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:logo="@drawable/ic_logo"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.WelcomeActivity"
+            android:noHistory="true"
+            android:label="@string/headline_setup">
+        </activity>
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.SetupActivity"
+            android:noHistory="true"
+            android:label="@string/headline_setup">
+        </activity>
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.SettingsActivity"
+            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"
+            android:label="@string/action_label_settings">
+        </activity>
+        <activity android:name="eu.pretix.pretixscan.droid.ui.EventSelectActivity"
+            android:theme="@style/AppTheme.Dialog.Animated"
+            android:label="@string/operation_select_event"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="eu.pretix.pretixscan.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+    </application>
+
+</manifest>

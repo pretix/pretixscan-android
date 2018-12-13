@@ -1,0 +1,21 @@
+<resources>
+    <color name="pretix_brand_dark">#281333</color>
+    <color name="pretix_brand_light">#3B1C4A</color>
+    <color name="pretix_brand_green">#5CB85C</color>
+    <color name="pretix_brand_red">#D36060</color>
+    <color name="pretix_brand_orange">#FFB419</color>
+    <color name="pretix_brand_blue">#5F9CD4</color>
+    <color name="pretix_brand_lightgrey">#cccccc</color>
+    <color name="text_color">#8a000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="scan_result_unknown">#bbcccccc</color>
+    <color name="scan_result_ok">#dd5cb85c</color>
+    <color name="scan_result_warn">#ddF0AD4E</color>
+    <color name="scan_result_err">#ddD9534F</color>
+    <color name="scan_result_attention">#dd3B1C4A</color>
+    <color name="scan_result_attention_alternate">#ddffee58</color>
+    <color name="viewfinder_mask">#00000000</color>
+    <color name="viewfinder_border">#00000000</color>
+    <color name="dialog_background_scrim">#99323232</color>
+    <color name="transparent">#00000000</color>
+</resources>

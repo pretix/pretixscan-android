@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">pretixSCAN</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">Welcome to pretixSCAN!</string>
+    <string name="button_label_sync">SYNC NOW</string>
+    <string name="progress_syncing">Synchronizing with server…</string>
+    <string name="progress_processing">Processing…</string>
+    <string name="progress_registering">Registering device with server…</string>
+    <string name="error_unknown_exception">An unknown error has occurred</string>
+    <string name="error_not_synchronized">Your device has not been properly synchronized with the server</string>
+    <string name="action_label_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_manual">Manual setup</string>
+    <string name="operation_select_event">Select Event</string>
+    <string name="settings_label_auto_sync">Automatical Synchronization</string>
+    <plurals name="sync_status_time_minutes">
+        <item quantity="one">synchronized %d minute ago</item>
+        <item quantity="other">synchronized %d minutes ago</item>
+    </plurals>
+    <plurals name="sync_status_time_hours">
+        <item quantity="one">synchronized %d hour ago</item>
+        <item quantity="other">synchronized %d hours ago</item>
+    </plurals>
+    <plurals name="sync_status_time_days">
+        <item quantity="one">synchronized %d day ago</item>
+        <item quantity="other">synchronized %d days ago</item>
+    </plurals>
+    <string name="sync_status">Synchronization status</string>
+    <string name="sync_status_last">Last successful synchronization:</string>
+    <string name="sync_status_last_failed">Last failed synchronization:</string>
+    <string name="sync_status_never">not yet synchronized</string>
+    <string name="sync_status_now">synchronized just now</string>
+    <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
+    <string name="sync_status_local">Checkins queued to upload:</string>
+    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
+    <string name="ok">OK</string>
+    <string name="tutorial_setup">To get started, create a new device in the "Devices" section of your organizer account in the pretix backend. You will be then presented with a configuration QR code to scan.</string>
+    <string name="setup_error_legacy_qr_code">The QR code you scanned is for an old predecessor of this app. Please go to the "Devices" section in your pretix organizer account and create a new device there.</string>
+    <string name="setup_error_invalid_qr_code">The QR code you scanned is not a valid configuration code. Please make sure you created the code in the "Devices" section of a pretix organizer account.</string>
+    <string name="setup_error_version_too_high">The QR code you scanned is from a newer version of pretix than this app has been built for. Please check if you can get an update for this app!</string>
+    <string name="setup_progress">Initializing device…</string>
+    <string name="setup_error_io">Connection error while trying to reach the server.</string>
+    <string name="setup_error_ssl">Security error while trying to reach the server.</string>
+    <string name="setup_error_server">Server error while trying to register the device.</string>
+    <string name="setup_error_response">The server returned an invalid response.</string>
+    <string name="setup_error_failed">The initial connection test failed.</string>
+    <string name="setup_error_permissions">pretixSCAN does not work properly without granting those permissions. Please restart the app.</string>
+    <string name="welcome_text">pretixSCAN is a event entry app that you can use to validate tickets that you sold through pretix.</string>
+    <string name="welcome_disclaimer1">I understand that personal data of attendees of my connected events will be stored on this device and I will secure the device properly.</string>
+    <string name="cont">CONTINUE</string>
+    <string name="hint_url">URL</string>
+    <string name="hint_token">Token</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="settings_label_about">About this app</string>
+    <string name="settings_label_licenses">Author and licenses</string>
+</resources>

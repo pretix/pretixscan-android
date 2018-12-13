@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_sync_auto"
+        android:title="@string/settings_label_auto_sync" />
+    <PreferenceCategory android:title="@string/settings_label_about">
+        <Preference
+            android:key="licenses"
+            android:title="@string/settings_label_licenses"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>
