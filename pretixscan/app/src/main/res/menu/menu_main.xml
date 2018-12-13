@@ -3,6 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".droid.ui.MainActivity">
     <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/action_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item
+        android:id="@+id/action_sync"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="@string/action_sync"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_label_settings"
         app:showAsAction="never" />

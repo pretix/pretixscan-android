@@ -159,22 +159,20 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getString(PREFS_KEY_DEVICE_SERIAL, "")
         set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_SERIAL, value).apply()
 
+    var scanFlash: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_SCAN_FLASH, false)
+        set(value) = prefs.edit().putBoolean(PREFS_KEY_SCAN_FLASH, value).apply()
+
+    var scanFocus: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_SCAN_AUTOFOCUS, true)
+        set(value) = prefs.edit().putBoolean(PREFS_KEY_SCAN_AUTOFOCUS, value).apply()
+
     var deviceKnownVersion: String
         get() = prefs.getString(PREFS_KEY_DEVICE_KNOWN_VERSION, "")
         set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
 
-    var currency: String
-        get() = prefs.getString(PREFS_KEY_DEVICE_CURRENCY, "EUR")
-        set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_CURRENCY, value).apply()
-
     var deviceRegistered: Boolean = false
         get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
-
-    var sumUpEnabled: Boolean = false
-        get() = default_prefs.getBoolean("pref_sumup_enable", false)
-
-    var ticketPrintEnabled: Boolean = false
-        get() = default_prefs.getBoolean("pref_ticketprint_enable", false)
 
     companion object {
         val PREFS_NAME = "pretixdroid"
@@ -196,6 +194,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_ID = "device_pos_id"
         val PREFS_KEY_DEVICE_SERIAL = "device_pos_serial"
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
-        val PREFS_KEY_DEVICE_CURRENCY = "device_currency"
+        val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
+        val PREFS_KEY_SCAN_FLASH = "scan_flash"
     }
 }

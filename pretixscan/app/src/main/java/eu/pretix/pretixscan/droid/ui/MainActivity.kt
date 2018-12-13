@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -13,6 +14,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.droid.R
@@ -24,6 +26,7 @@ import eu.pretix.pretixscan.droid.PretixScan
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
+import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import kotlin.apply
@@ -33,7 +36,7 @@ interface ReloadableActivity {
     fun reload()
 }
 
-class MainActivity : AppCompatActivity(), ReloadableActivity {
+class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler {
     private val REQ_EVENT = 1
     private val REQ_CHECKINLIST = 2
 
@@ -109,15 +112,20 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
         }
         setupApi()
 
-        event.apply {
-            setOnClickListener {
-                selectEvent()
-            }
+        event.setOnClickListener {
+            selectEvent()
         }
 
-        /*button.setOnClickListener {
-            syncNow()
-        }*/
+        fab_focus.setOnClickListener {
+            conf.scanFocus = !conf.scanFocus
+            reloadCameraState()
+        }
+
+        fab_flash.setOnClickListener {
+            conf.scanFlash = !conf.scanFlash
+            reloadCameraState()
+        }
+
         if (conf.eventName == null || conf.eventSlug == null) {
             selectEvent()
         } else if (conf.checkinListId == 0L) {
@@ -244,11 +252,34 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
     override fun onResume() {
         reload()
         super.onResume()
+
+        scanner_view.setResultHandler(this)
+        scanner_view.startCamera()
+        reloadCameraState()
+    }
+
+    fun reloadCameraState() {
+        scanner_view.flash = conf.scanFlash
+        if (conf.scanFlash) {
+            fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+        } else {
+            fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+        }
+        scanner_view.setAutoFocus(conf.scanFocus)
+        if (conf.scanFocus) {
+            fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+        } else {
+            fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+        }
     }
 
     override fun onPause() {
         handler.removeCallbacks(syncRunnable)
         super.onPause()
+        scanner_view.stopCamera()
+    }
+
+    override fun handleResult(rawResult: Result) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -281,6 +312,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
                 val intent = Intent(this@MainActivity, SettingsActivity::class.java)
                 startActivity(intent)
                 return true
+            }
+            R.id.action_sync -> {
+                syncNow()
             }
         }
         return super.onOptionsItemSelected(item)

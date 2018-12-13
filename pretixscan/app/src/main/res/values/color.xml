@@ -6,6 +6,7 @@
     <color name="pretix_brand_orange">#FFB419</color>
     <color name="pretix_brand_blue">#5F9CD4</color>
     <color name="pretix_brand_lightgrey">#cccccc</color>
+    <color name="fab_disable">#ff757575</color>
     <color name="text_color">#8a000000</color>
     <color name="white">#FFFFFF</color>
     <color name="scan_result_unknown">#bbcccccc</color>
