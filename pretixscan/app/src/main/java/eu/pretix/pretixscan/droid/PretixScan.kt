@@ -14,8 +14,7 @@ import io.sentry.android.AndroidSentryClientFactory
 import io.sentry.Sentry
 import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import eu.pretix.pretixscan.utils.KeystoreHelper
-
-
+import io.requery.android.sqlite.DatabaseSource
 
 
 val SYNC_SINGLETON = PretixScan()
@@ -27,24 +26,32 @@ class PretixScan : MultiDexApplication() {
     val data: BlockingEntityStore<Persistable>
         get() {
             if (dataStore == null) {
-                val dbPass = KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
+                if (BuildConfig.DEBUG) {
+                    // Do not encrypt on debug, because it breaks Stetho
+                    val source = DatabaseSource(this, Models.DEFAULT, Migrations.CURRENT_VERSION)
+                    source.setLoggingEnabled(BuildConfig.DEBUG)
+                    val configuration = source.configuration
+                    dataStore = EntityDataStore<Persistable>(configuration)
+                } else {
+                    val dbPass = KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
 
-                var source = SqlCipherDatabaseSource(this,
-                        Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
-
-                try {
-                    // check if database has been decrypted
-                    source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray()) //source.getReadableDatabase().getSyncedTables() ???
-                } catch (e: SQLiteException) {
-                    // if not, delete it
-                    this.deleteDatabase(Models.DEFAULT.getName())
-                    // and create a new one
-                    source = SqlCipherDatabaseSource(this,
+                    var source = SqlCipherDatabaseSource(this,
                             Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
-                }
 
-                val configuration = source.configuration
-                dataStore = EntityDataStore<Persistable>(configuration)
+                    try {
+                        // check if database has been decrypted
+                        source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray()) //source.getReadableDatabase().getSyncedTables() ???
+                    } catch (e: SQLiteException) {
+                        // if not, delete it
+                        this.deleteDatabase(Models.DEFAULT.getName())
+                        // and create a new one
+                        source = SqlCipherDatabaseSource(this,
+                                Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
+                    }
+
+                    val configuration = source.configuration
+                    dataStore = EntityDataStore<Persistable>(configuration)
+                }
             }
             return dataStore!!
         }
@@ -54,6 +61,7 @@ class PretixScan : MultiDexApplication() {
 
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this)
+
         }
         if (BuildConfig.SENTRY_DSN != null) {
             val sentryDsn = BuildConfig.SENTRY_DSN

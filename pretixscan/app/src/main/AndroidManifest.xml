@@ -47,6 +47,9 @@
         <activity android:name="eu.pretix.pretixscan.droid.ui.EventSelectActivity"
             android:theme="@style/AppTheme.Dialog.Animated"
             android:label="@string/operation_select_event"/>
+        <activity android:name="eu.pretix.pretixscan.droid.ui.CheckInListSelectActivity"
+            android:theme="@style/AppTheme.Dialog.Animated"
+            android:label="@string/operation_select_event"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

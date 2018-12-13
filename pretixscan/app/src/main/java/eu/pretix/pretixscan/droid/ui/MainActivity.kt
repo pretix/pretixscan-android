@@ -35,6 +35,7 @@ interface ReloadableActivity {
 
 class MainActivity : AppCompatActivity(), ReloadableActivity {
     private val REQ_EVENT = 1
+    private val REQ_CHECKINLIST = 2
 
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
@@ -117,12 +118,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
         /*button.setOnClickListener {
             syncNow()
         }*/
-        checkPermission(Manifest.permission.CAMERA)
         if (conf.eventName == null || conf.eventSlug == null) {
             selectEvent()
+        } else if (conf.checkinListId == 0L) {
+            selectCheckInList()
         } else if (conf.lastDownload < 1) {
             syncNow()
         }
+        scheduleSync()
+        checkPermission(Manifest.permission.CAMERA)
     }
 
     private fun setupApi() {
@@ -141,6 +145,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
                 60000L,
                 5 * 60000L
         )
+    }
+
+    private fun selectCheckInList() {
+        if (event != null && ViewCompat.isLaidOut(event)) {
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this@MainActivity, event, "morph_transition")
+            startActivityForResult(intentFor<CheckInListSelectActivity>(), REQ_CHECKINLIST, options.toBundle())
+        } else {
+            startActivityForResult(intentFor<CheckInListSelectActivity>(), REQ_CHECKINLIST)
+        }
     }
 
     private fun selectEvent() {
@@ -196,7 +210,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
         handler.postDelayed(syncRunnable, 1000)
     }
 
-    fun syncNow() {
+    fun syncNow(selectList: Boolean = false) {
         val dialog = indeterminateProgressDialog(message = R.string.progress_syncing)
         dialog.setCanceledOnTouchOutside(false)
         dialog.setCancelable(false)
@@ -205,6 +219,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
                 sm.sync(true)
                 runOnUiThread {
                     reload()
+                    if (selectList) {
+                        selectCheckInList()
+                    }
                     dialog.dismiss()
                     if (conf.lastFailedSync > 0) {
                         alert(Appcompat, conf.lastFailedSyncMsg).show()
@@ -227,7 +244,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
     override fun onResume() {
         reload()
         super.onResume()
-        scheduleSync()
     }
 
     override fun onPause() {
@@ -239,7 +255,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity {
         if (requestCode == REQ_EVENT) {
             if (resultCode == RESULT_OK) {
                 setupApi()
-                syncNow()
+                syncNow(true)
+                reload()
+            }
+        } else if (resultCode == REQ_CHECKINLIST) {
+            if (resultCode == RESULT_OK) {
                 reload()
             }
         } else {

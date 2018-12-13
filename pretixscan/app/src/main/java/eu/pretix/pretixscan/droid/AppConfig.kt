@@ -83,6 +83,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getString(PREFS_KEY_EVENT_NAME, null)
         set(value) = prefs.edit().putString(PREFS_KEY_EVENT_NAME, value).apply()
 
+    var checkinListId: Long
+        get() = prefs.getLong(PREFS_KEY_CHECKINLIST_ID, 0L)
+        set(value) = prefs.edit().putLong(PREFS_KEY_CHECKINLIST_ID, value).apply()
+
     override fun getOrganizerSlug(): String {
         return prefs.getString(PREFS_KEY_ORGANIZER_SLUG, "")
     }
@@ -179,6 +183,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
         val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
         val PREFS_KEY_EVENT_NAME = "event_name"
+        val PREFS_KEY_CHECKINLIST_ID = "checkin_list_id"
         val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
         val PREFS_KEY_SHOW_INFO = "show_info"
         val PREFS_KEY_ALLOW_SEARCH = "allow_search"

@@ -50,11 +50,10 @@ class EventSelectActivity : MorphingDialogActivity() {
             val selectedEvent = eventsAdapter.selectedEvent
             if (selectedEvent != null) {
 
-
                 conf.eventSlug = selectedEvent.slug
                 conf.subeventId = selectedEvent.subevent_id
                 conf.eventName = selectedEvent.name
-
+                conf.checkinListId = 0
 
                 setResult(Activity.RESULT_OK)
                 supportFinishAfterTransition()
@@ -62,5 +61,11 @@ class EventSelectActivity : MorphingDialogActivity() {
         }
 
         setupTransition(ActivityCompat.getColor(this, R.color.pretix_brand_light))
+    }
+
+    override fun onBackPressed() {
+        if (conf.eventSlug != null) {
+            super.onBackPressed()
+        }
     }
 }

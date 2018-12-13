@@ -34,8 +34,8 @@ object KeystoreHelper {
     private val ANDROID_KEY_STORE = "AndroidKeyStore"
 
     // Works since android M, for previous versions this will simply return the plain value unaltered
-    fun secureValue(value: String?, encrypt: Boolean): String? {
-        if (value != null && value!!.length > 0 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    fun secureValue(value: String, encrypt: Boolean): String {
+        if (value.length > 0 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 val keyStore = KeyStore.getInstance(ANDROID_KEY_STORE)
                 keyStore.load(null)

@@ -137,6 +137,14 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             try {
                 val init = setupm.initialize(url, token)
                 conf.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
+                runOnUiThread {
+                    pdialog.dismiss()
+
+                    val intent = Intent(this@SetupActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK.or(Intent.FLAG_ACTIVITY_TASK_ON_HOME)
+                    startActivity(intent)
+                    finish()
+                }
             } catch (e: SSLException) {
                 e.printStackTrace();
                 runOnUiThread {
@@ -152,7 +160,10 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
                 return@doAsync
             } catch (e: SetupServerErrorException) {
+                runOnUiThread {
+                    resume()
                     alert(Appcompat, R.string.setup_error_server).show()
+                }
             } catch (e: SetupBadRequestException) {
                 runOnUiThread {
                     resume()
@@ -177,7 +188,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_manual-> {
+            R.id.action_manual -> {
                 alert(Appcompat, "") {
                     val view = layoutInflater.inflate(R.layout.dialog_setup_manual, null)
                     val inputUri = view.findViewById<EditText>(R.id.input_uri)
