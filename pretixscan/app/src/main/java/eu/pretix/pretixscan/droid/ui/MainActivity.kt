@@ -1,14 +1,18 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.BounceInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
@@ -29,11 +33,17 @@ import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
-import kotlin.apply
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 interface ReloadableActivity {
     fun reload()
+}
+
+enum class ResultCardState {
+    HIDDEN,
+    SHOWN
 }
 
 class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler {
@@ -43,6 +53,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
     private val handler = Handler()
+    private var card_state = ResultCardState.HIDDEN
+
+    private var lastScanTime: Long = 0
+    private var lastScanCode: String = ""
+
 
     override fun reload() {
         reloadSyncStatus()
@@ -135,6 +150,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         scheduleSync()
         checkPermission(Manifest.permission.CAMERA)
+
+        card_result.visibility = View.GONE
     }
 
     private fun setupApi() {
@@ -256,6 +273,32 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scanner_view.setResultHandler(this)
         scanner_view.startCamera()
         reloadCameraState()
+
+    }
+
+    fun showLoadingCard() {
+        card_result.clearAnimation()
+        ivStatusIcon.visibility = View.GONE
+        pbResultProgress.visibility = View.VISIBLE
+        if (card_state == ResultCardState.HIDDEN) {
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            card_result.translationX = (displayMetrics.widthPixels + card_result.width) / 2f
+            card_result.alpha = 0f
+            card_result.visibility = View.VISIBLE
+            card_result.animate().translationX(0f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(1f).start()
+            card_state = ResultCardState.SHOWN
+        } else {
+            // bounce
+            card_result.alpha = 1f
+            card_result.translationX = 1f
+            ObjectAnimator.ofFloat(card_result, "translationX", 0f, 50f, -50f, 0f).apply {
+                duration = 250
+                interpolator = BounceInterpolator()
+                start()
+            }
+            card_result.animate().startDelay
+        }
     }
 
     fun reloadCameraState() {
@@ -279,7 +322,20 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scanner_view.stopCamera()
     }
 
+    fun handleScan(result: String) {
+        showLoadingCard()
+    }
+
     override fun handleResult(rawResult: Result) {
+        scanner_view.resumeCameraPreview(this@MainActivity)
+
+        val s = rawResult.text
+        if (s == lastScanCode && System.currentTimeMillis() - lastScanTime < 5000) {
+            return
+        }
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = s
+        handleScan(s)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

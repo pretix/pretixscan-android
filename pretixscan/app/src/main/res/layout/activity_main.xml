@@ -87,13 +87,14 @@
                             android:id="@+id/view"
                             android:layout_width="0dp"
                             android:layout_height="80dp"
-                            android:background="@color/pretix_brand_green"
+                            android:background="@color/pretix_brand_lightgrey"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <ImageView
-                            android:id="@+id/imageView"
+                            android:id="@+id/ivStatusIcon"
+                            android:visibility="gone"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_marginStart="8dp"
@@ -105,6 +106,20 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="@id/view"
                             app:srcCompat="@drawable/ic_check_circle_white_24dp" />
+
+                        <ProgressBar
+                            android:id="@+id/pbResultProgress"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
