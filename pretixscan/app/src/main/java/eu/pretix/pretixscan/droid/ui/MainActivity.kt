@@ -1,7 +1,9 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.Manifest
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -17,24 +19,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableField
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.sync.SyncManager
-import eu.pretix.pretixscan.droid.R
-import eu.pretix.pretixscan.droid.BuildConfig
-import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
-import eu.pretix.pretixscan.droid.AndroidSentryImplementation
-import eu.pretix.pretixscan.droid.AppConfig
-import eu.pretix.pretixscan.droid.PretixScan
+import eu.pretix.pretixscan.droid.*
+import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
-import java.util.*
-import kotlin.concurrent.schedule
 
 
 interface ReloadableActivity {
@@ -46,6 +44,27 @@ enum class ResultCardState {
     SHOWN
 }
 
+enum class ResultState {
+    LOADING,
+    ERROR,
+    WARNING,
+    SUCCESS
+}
+
+class ViewDataHolder(private val ctx: Context) {
+    val result_state = ObservableField<ResultState>()
+    val result_text = ObservableField<String>()
+
+    fun getColor(state: ResultState): Int {
+        return ctx.resources.getColor(when (state) {
+            ResultState.LOADING -> R.color.pretix_brand_lightgrey
+            ResultState.ERROR -> R.color.pretix_brand_red
+            ResultState.WARNING -> R.color.pretix_brand_orange
+            ResultState.SUCCESS -> R.color.pretix_brand_green
+        })
+    }
+}
+
 class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler {
     private val REQ_EVENT = 1
     private val REQ_CHECKINLIST = 2
@@ -54,6 +73,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private lateinit var conf: AppConfig
     private val handler = Handler()
     private var card_state = ResultCardState.HIDDEN
+    private var view_data = ViewDataHolder(this)
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
@@ -114,7 +134,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        view_data.result_state.set(ResultState.LOADING)
+        binding.data = view_data
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
@@ -152,6 +174,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         checkPermission(Manifest.permission.CAMERA)
 
         card_result.visibility = View.GONE
+        card_result.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun setupApi() {
@@ -278,8 +301,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun showLoadingCard() {
         card_result.clearAnimation()
-        ivStatusIcon.visibility = View.GONE
-        pbResultProgress.visibility = View.VISIBLE
+        view_data.result_state.set(ResultState.LOADING)
+        view_data.result_text.set(null)
         if (card_state == ResultCardState.HIDDEN) {
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -324,6 +347,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun handleScan(result: String) {
         showLoadingCard()
+        doAsync {
+            Thread.sleep(2000)
+            runOnUiThread {
+                view_data.result_text.set("Foo")
+                view_data.result_state.set(ResultState.SUCCESS)
+            }
+        }
     }
 
     override fun handleResult(rawResult: Result) {
