@@ -3,7 +3,10 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -24,6 +27,8 @@ import androidx.databinding.ObservableField
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.libpretixsync.check.OnlineCheckProvider
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
@@ -47,6 +52,7 @@ enum class ResultCardState {
 enum class ResultState {
     LOADING,
     ERROR,
+    DIALOG,
     WARNING,
     SUCCESS
 }
@@ -57,7 +63,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            ResultState.LOADING -> R.color.pretix_brand_lightgrey
+            ResultState.DIALOG, ResultState.LOADING -> R.color.pretix_brand_lightgrey
             ResultState.ERROR -> R.color.pretix_brand_red
             ResultState.WARNING -> R.color.pretix_brand_orange
             ResultState.SUCCESS -> R.color.pretix_brand_green
@@ -77,6 +83,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
+    private var dialog: Dialog? = null
 
 
     override fun reload() {
@@ -135,7 +142,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        view_data.result_state.set(ResultState.LOADING)
+        view_data.result_state.set(ResultState.ERROR)
         binding.data = view_data
 
         setSupportActionBar(toolbar)
@@ -173,7 +180,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scheduleSync()
         checkPermission(Manifest.permission.CAMERA)
 
-        card_result.visibility = View.GONE
+        hideCard()
         card_result.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
@@ -259,9 +266,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun syncNow(selectList: Boolean = false) {
-        val dialog = indeterminateProgressDialog(message = R.string.progress_syncing)
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.setCancelable(false)
+        dialog = indeterminateProgressDialog(message = R.string.progress_syncing)
+        (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
+        (dialog as ProgressDialog).setCancelable(false)
         doAsync {
             try {
                 sm.sync(true)
@@ -270,7 +277,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (selectList) {
                         selectCheckInList()
                     }
-                    dialog.dismiss()
+                    (dialog as ProgressDialog).dismiss()
                     if (conf.lastFailedSync > 0) {
                         alert(Appcompat, conf.lastFailedSyncMsg).show()
                     }
@@ -281,7 +288,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
                     }
-                    dialog.dismiss()
+                    (dialog as ProgressDialog).dismiss()
                     alert(Appcompat, e.message
                             ?: getString(R.string.error_unknown_exception)).show()
                 }
@@ -297,6 +304,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scanner_view.startCamera()
         reloadCameraState()
 
+    }
+
+    fun hideCard() {
+        card_result.clearAnimation()
+        card_result.visibility = View.GONE
+        view_data.result_state.set(ResultState.ERROR)
+        view_data.result_text.set(null)
+        card_state = ResultCardState.HIDDEN
     }
 
     fun showLoadingCard() {
@@ -345,19 +360,80 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scanner_view.stopCamera()
     }
 
-    fun handleScan(result: String) {
+    fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         showLoadingCard()
         doAsync {
-            Thread.sleep(2000)
+            var checkResult: TicketCheckProvider.CheckResult? = null
+            if (Regex("[0-9A-Za-z]+").matches(result)) {
+                val provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), conf.checkinListId)
+                try {
+                    checkResult = provider.check(result, answers, ignore_unpaid)
+                } catch (e: Exception) {
+                    if (BuildConfig.SENTRY_DSN != null) {
+                        Sentry.capture(e)
+                    } else {
+                        e.printStackTrace()
+                    }
+                    checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_unknown_exception))
+                }
+            } else {
+                checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.scan_result_invalid))
+            }
             runOnUiThread {
-                view_data.result_text.set("Foo")
-                view_data.result_state.set(ResultState.SUCCESS)
+                displayScanResult(checkResult!!, answers, ignore_unpaid)
             }
         }
     }
 
+    fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+        if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+            view_data.result_state.set(ResultState.DIALOG)
+            dialog = showQuestionsDialog(this, result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
+                handleScan(secret, answers, ignore_unpaid)
+            }
+            dialog!!.setOnCancelListener {
+                hideCard()
+            }
+            return
+        }
+        if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
+            view_data.result_state.set(ResultState.DIALOG)
+            dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
+                handleScan(secret, answers, ignore_unpaid)
+            }
+            dialog!!.setOnCancelListener {
+                hideCard()
+            }
+            return
+        }
+        if (result.message == null) {
+            result.message = when(result.type) {
+                TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
+                TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
+                TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
+                TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
+                TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
+                else -> null
+            }
+        }
+        view_data.result_text.set(result.message)
+        view_data.result_state.set(when (result.type) {
+            TicketCheckProvider.CheckResult.Type.INVALID -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.VALID -> ResultState.SUCCESS
+            TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
+            TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.ERROR
+        })
+    }
+
     override fun handleResult(rawResult: Result) {
         scanner_view.resumeCameraPreview(this@MainActivity)
+
+        if ((dialog != null && dialog!!.isShowing) || view_data.result_state.get() == ResultState.LOADING) {
+            return
+        }
 
         val s = rawResult.text
         if (s == lastScanCode && System.currentTimeMillis() - lastScanTime < 5000) {
@@ -365,7 +441,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
-        handleScan(s)
+        handleScan(s, null, false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
