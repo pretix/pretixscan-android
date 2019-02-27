@@ -1,7 +1,10 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +14,7 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.setup.SetupBadRequestException
@@ -41,12 +45,41 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     val client = AndroidHttpClientFactory().buildClient()
     var lastScanTime = 0L
     var lastScanValue = ""
+    private val dataWedgeHelper = DataWedgeHelper(this)
+
+    private val scanReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.hasExtra("com.symbol.datawedge.data_string")) {
+                // Zebra DataWedge
+                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"))
+            } else if (intent.hasExtra("barocode")) {
+                // Intent receiver for LECOM-manufactured hardware scanners
+                val barcode = intent?.getByteArrayExtra("barocode") // sic!
+                val barocodelen = intent?.getIntExtra("length", 0)
+                val barcodeStr = String(barcode, 0, barocodelen)
+                handleScan(barcodeStr)
+            }
+        }
+    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
 
         checkPermission(Manifest.permission.CAMERA)
+        if (dataWedgeHelper.isInstalled) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        1338);
+            } else {
+                try {
+                    dataWedgeHelper.install()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -55,6 +88,10 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             scanner_view.setResultHandler(this)
             scanner_view.startCamera()
         }
+        val filter = IntentFilter()
+        filter.addAction("scan.rcv.message")
+        filter.addAction("eu.pretix.SCAN")
+        registerReceiver(scanReceiver, filter)
     }
 
     override fun onPause() {
@@ -62,6 +99,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             scanner_view.stopCamera()
         }
+        unregisterReceiver(scanReceiver)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -77,6 +115,15 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
                 return
             }
+            1338 -> {
+                try {
+                    if (dataWedgeHelper.isInstalled) {
+                        dataWedgeHelper.install()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
             else -> {
             }
         }
@@ -88,8 +135,12 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         }
         lastScanValue = rawResult.text
         lastScanTime = System.currentTimeMillis()
+        handleScan(rawResult.text)
+    }
+
+    fun handleScan(res: String) {
         try {
-            val jd = JSONObject(rawResult.text)
+            val jd = JSONObject(res)
             if (jd.has("version")) {
                 alert(Appcompat, R.string.setup_error_legacy_qr_code).show()
                 scanner_view.resumeCameraPreview(this)

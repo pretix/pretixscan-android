@@ -54,6 +54,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="settings_label_about">About this app</string>
     <string name="settings_label_licenses">Author and licenses</string>
+    <string name="settings_label_device_camera">Use device camera</string>
     <string name="question_validation_error">Some of your input could not be validated.</string>
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>

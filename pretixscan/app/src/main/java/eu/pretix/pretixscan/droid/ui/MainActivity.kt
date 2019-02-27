@@ -5,9 +5,10 @@ import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.app.Dialog
 import android.app.ProgressDialog
+import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -38,6 +40,7 @@ import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
+import java.io.IOException
 
 
 interface ReloadableActivity {
@@ -88,7 +91,26 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
     private var dialog: Dialog? = null
+    private val dataWedgeHelper = DataWedgeHelper(this)
 
+    companion object {
+        const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
+    }
+
+    private val scanReceiver = object: BroadcastReceiver () {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.hasExtra("com.symbol.datawedge.data_string")) {
+                // Zebra DataWedge
+                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"), null, false)
+            } else if (intent.hasExtra("barocode")) {
+                // Intent receiver for LECOM-manufactured hardware scanners
+                val barcode = intent?.getByteArrayExtra("barocode") // sic!
+                val barocodelen = intent?.getIntExtra("length", 0)
+                val barcodeStr = String(barcode, 0, barocodelen)
+                handleScan(barcodeStr, null, false)
+            }
+        }
+    }
 
     override fun reload() {
         reloadSyncStatus()
@@ -124,14 +146,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         when (requestCode) {
             1337 -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1338)
+                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
                     finish()
                 }
                 return
             }
-            1338 -> {
+            PERMISSIONS_REQUEST_WRITE_STORAGE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    try {
+                        if (dataWedgeHelper.isInstalled) {
+                            dataWedgeHelper.install()
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
                 } else {
                     finish()
                 }
@@ -186,6 +215,20 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         hideCard()
         card_result.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+
+        if (dataWedgeHelper.isInstalled) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        PERMISSIONS_REQUEST_WRITE_STORAGE);
+            } else {
+                try {
+                    dataWedgeHelper.install()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun setupApi() {
@@ -313,8 +356,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         reload()
         super.onResume()
 
-        scanner_view.setResultHandler(this)
-        scanner_view.startCamera()
+        val filter = IntentFilter()
+        filter.addAction("scan.rcv.message")
+        filter.addAction("eu.pretix.SCAN")
+        registerReceiver(scanReceiver, filter)
+
+        if (conf.useCamera) {
+            scanner_view.setResultHandler(this)
+            scanner_view.startCamera()
+        }
         reloadCameraState()
     }
 
@@ -368,12 +418,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
         }
+        if (conf.useCamera) {
+            fab_focus.visibility = View.VISIBLE
+            fab_flash.visibility = View.VISIBLE
+        } else {
+            fab_focus.visibility = View.GONE
+            fab_flash.visibility = View.GONE
+        }
     }
 
     override fun onPause() {
         handler.removeCallbacks(syncRunnable)
         super.onPause()
-        scanner_view.stopCamera()
+        if (conf.useCamera) {
+            scanner_view.stopCamera()
+        }
+        unregisterReceiver(scanReceiver);
     }
 
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {

@@ -174,6 +174,10 @@ class AppConfig(ctx: Context) : ConfigStore {
     var deviceRegistered: Boolean = false
         get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
 
+    var useCamera: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
+
     companion object {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
@@ -196,5 +200,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
         val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
+        val PREFS_KEY_USE_CAMERA = "pref_use_camera"
     }
 }
