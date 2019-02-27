@@ -182,6 +182,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SCAN_OFFLINE, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_OFFLINE, value).apply()
 
+    var autoPrintBadges: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_AUTOPRINTBADGES, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_AUTOPRINTBADGES, value).apply()
+
     companion object {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
@@ -206,5 +210,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
+        val PREFS_KEY_AUTOPRINTBADGES = "pref_print_padges"
     }
 }

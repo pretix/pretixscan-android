@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
+import android.os.ResultReceiver
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -420,11 +421,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
         }
         if (conf.useCamera) {
-            fab_focus.visibility = View.VISIBLE
-            fab_flash.visibility = View.VISIBLE
+            fab_focus.hide()
+            fab_flash.hide()
         } else {
-            fab_focus.visibility = View.GONE
-            fab_flash.visibility = View.GONE
+            fab_focus.show()
+            fab_flash.show()
         }
     }
 
@@ -528,6 +529,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.detail3.set(result.attendee_name)
         } else {
             view_data.detail3.set(null)
+        }
+        if (result?.position != null && conf.autoPrintBadges) {
+            // TODO check for successful scan ;)
+            printBadge(this@MainActivity, application as PretixScan, result.position, null) // TODO: Feedback
         }
     }
 

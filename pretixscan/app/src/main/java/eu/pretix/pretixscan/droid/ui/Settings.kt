@@ -1,6 +1,8 @@
 package eu.pretix.pretixscan.droid.ui
 
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceFragment
 import android.text.Html
@@ -13,6 +15,10 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
 import eu.pretix.pretixscan.droid.R
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -29,6 +35,25 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("licenses").setOnPreferenceClickListener {
             asset_dialog(R.raw.about, R.string.settings_label_licenses)
             return@setOnPreferenceClickListener true
+        }
+
+        findPreference("pref_print_badges")?.setOnPreferenceChangeListener { preference, any ->
+            if (any == true) {
+                if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager) && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)) {
+                    alert(Appcompat, R.string.preference_badgeprint_install_pretixprint) {
+                        yesButton {
+                            try {
+                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eu.pretix.pretixprint")))
+                            } catch (anfe: android.content.ActivityNotFoundException) {
+                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=eu.pretix.pretixprint")))
+                            }
+                        }
+                        noButton {}
+                    }.show()
+                    return@setOnPreferenceChangeListener false
+                }
+            }
+            return@setOnPreferenceChangeListener true
         }
     }
 
