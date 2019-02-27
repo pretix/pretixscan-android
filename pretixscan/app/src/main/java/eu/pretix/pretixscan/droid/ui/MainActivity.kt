@@ -60,6 +60,9 @@ enum class ResultState {
 class ViewDataHolder(private val ctx: Context) {
     val result_state = ObservableField<ResultState>()
     val result_text = ObservableField<String>()
+    val detail1 = ObservableField<String>()
+    val detail2 = ObservableField<String>()
+    val detail3 = ObservableField<String>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -78,6 +81,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
     private val handler = Handler()
+    private val hideHandler = Handler()
     private var card_state = ResultCardState.HIDDEN
     private var view_data = ViewDataHolder(this)
 
@@ -237,6 +241,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         finish()
     }
 
+    private val hideRunnable = Runnable {
+        runOnUiThread {
+            if (dialog != null && dialog!!.isShowing) {
+                return@runOnUiThread
+            }
+            hideCard()
+        }
+    }
+
     private val syncRunnable = Runnable {
         doAsync {
             try {
@@ -303,29 +316,32 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         scanner_view.setResultHandler(this)
         scanner_view.startCamera()
         reloadCameraState()
-
     }
 
     fun hideCard() {
+        card_state = ResultCardState.HIDDEN
         card_result.clearAnimation()
         card_result.visibility = View.GONE
         view_data.result_state.set(ResultState.ERROR)
         view_data.result_text.set(null)
-        card_state = ResultCardState.HIDDEN
     }
 
     fun showLoadingCard() {
+        hideHandler.removeCallbacks(hideRunnable)
         card_result.clearAnimation()
         view_data.result_state.set(ResultState.LOADING)
         view_data.result_text.set(null)
+        view_data.detail1.set(null)
+        view_data.detail2.set(null)
+        view_data.detail3.set(null)
         if (card_state == ResultCardState.HIDDEN) {
+            card_state = ResultCardState.SHOWN
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
             card_result.translationX = (displayMetrics.widthPixels + card_result.width) / 2f
             card_result.alpha = 0f
             card_result.visibility = View.VISIBLE
             card_result.animate().translationX(0f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(1f).start()
-            card_state = ResultCardState.SHOWN
         } else {
             // bounce
             card_result.alpha = 1f
@@ -365,7 +381,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z]+").matches(result)) {
-                val provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), conf.checkinListId)
+                val provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), (application as PretixScan).data, conf.checkinListId)
                 try {
                     checkResult = provider.check(result, answers, ignore_unpaid)
                 } catch (e: Exception) {
@@ -386,6 +402,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+        hideHandler.removeCallbacks(hideRunnable)
+        hideHandler.postDelayed(hideRunnable, 30000)
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.result_state.set(ResultState.DIALOG)
             dialog = showQuestionsDialog(this, result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
@@ -426,6 +444,25 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.ERROR
         })
+        if (result.ticket != null) {
+            if (result.variation != null) {
+                view_data.detail1.set(result.ticket + " – " + result.variation)
+            } else {
+                view_data.detail1.set(result.ticket)
+            }
+        } else {
+            view_data.detail1.set(null)
+        }
+        if (result.orderCode != null) {
+            view_data.detail2.set(result.orderCode)
+        } else {
+            view_data.detail2.set(null)
+        }
+        if (result.attendee_name != null) {
+            view_data.detail3.set(result.attendee_name)
+        } else {
+            view_data.detail3.set(null)
+        }
     }
 
     override fun handleResult(rawResult: Result) {
