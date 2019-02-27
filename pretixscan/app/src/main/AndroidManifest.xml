@@ -10,7 +10,7 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true" />
+        android:required="false" />
 
     <application
         android:name="eu.pretix.pretixscan.droid.PretixScan"
