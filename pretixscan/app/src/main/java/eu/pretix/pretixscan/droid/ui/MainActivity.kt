@@ -29,6 +29,7 @@ import androidx.databinding.ObservableField
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
@@ -441,7 +442,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z]+").matches(result)) {
-                val provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), (application as PretixScan).data, conf.checkinListId)
+                val provider: TicketCheckProvider
+                if (conf.offlineMode) {
+                    provider = AsyncCheckProvider(conf, (application as PretixScan).data, conf.checkinListId)
+                } else {
+                    provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), (application as PretixScan).data, conf.checkinListId)
+                }
                 try {
                     checkResult = provider.check(result, answers, ignore_unpaid)
                 } catch (e: Exception) {

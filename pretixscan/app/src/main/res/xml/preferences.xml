@@ -9,6 +9,11 @@
         android:defaultValue="true"
         android:key="pref_use_camera"
         android:title="@string/settings_label_device_camera" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_scan_offline"
+        android:summary="@string/settings_summary_scan_offline"
+        android:title="@string/settings_label_scan_offline" />
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
             android:key="licenses"
