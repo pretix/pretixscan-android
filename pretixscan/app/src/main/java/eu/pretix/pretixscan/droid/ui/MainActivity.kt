@@ -297,6 +297,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private val syncRunnable = Runnable {
         doAsync {
+            if (!(application as PretixScan).syncLock.tryLock()) {
+                return@doAsync
+            }
             try {
                 if (defaultSharedPreferences.getBoolean("pref_sync_auto", true)) {
                     val result = sm.sync(false)
@@ -315,6 +318,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 runOnUiThread {
                     reload()
                 }
+            } finally {
+                (application as PretixScan).syncLock.unlock()
             }
         }
     }
@@ -328,6 +333,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
         (dialog as ProgressDialog).setCancelable(false)
         doAsync {
+            if (!(application as PretixScan).syncLock.tryLock()) {
+                runOnUiThread {
+                    alert(Appcompat, getString(R.string.error_sync_in_background)).show()
+                }
+                return@doAsync
+            }
             try {
                 sm.sync(true)
                 runOnUiThread {
@@ -350,6 +361,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     alert(Appcompat, e.message
                             ?: getString(R.string.error_unknown_exception)).show()
                 }
+            } finally {
+                (application as PretixScan).syncLock.unlock()
             }
         }
     }

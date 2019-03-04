@@ -52,7 +52,16 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         doAsync {
             var listOfLists = getAllLists()
             if (listOfLists.isEmpty()) {
-                syncSync()
+
+                if ((application as PretixScan).syncLock.tryLock()) {
+                    syncSync()
+                } else {
+                    // A sync is already running – let's not sync, but instead just block until the
+                    // sync is done and then continue :)
+                    (application as PretixScan).syncLock.lock()
+                    (application as PretixScan).syncLock.unlock()
+                }
+
                 listOfLists = getAllLists()
             }
 

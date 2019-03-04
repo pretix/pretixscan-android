@@ -2,26 +2,24 @@ package eu.pretix.pretixscan.droid
 
 import android.database.sqlite.SQLiteException
 import androidx.multidex.MultiDexApplication
-
 import com.facebook.stetho.Stetho
 import eu.pretix.libpretixsync.db.Migrations
-
 import eu.pretix.libpretixsync.db.Models
+import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import io.requery.sql.EntityDataStore
-import io.sentry.android.AndroidSentryClientFactory
-import io.sentry.Sentry
 import io.requery.android.sqlcipher.SqlCipherDatabaseSource
-import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.android.sqlite.DatabaseSource
+import io.requery.sql.EntityDataStore
+import io.sentry.Sentry
+import io.sentry.android.AndroidSentryClientFactory
+import java.util.concurrent.locks.ReentrantLock
 
-
-val SYNC_SINGLETON = PretixScan()
 
 class PretixScan : MultiDexApplication() {
     private var dataStore: BlockingEntityStore<Persistable>? = null
-    public val fileStorage = AndroidFileStorage(this)
+    val fileStorage = AndroidFileStorage(this)
+    val syncLock = ReentrantLock()
 
     val data: BlockingEntityStore<Persistable>
         get() {

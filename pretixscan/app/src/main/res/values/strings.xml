@@ -68,6 +68,7 @@
     <string name="scan_result_invalid">Invalid ticket</string>
     <string name="scan_result_product">Invalid product</string>
     <string name="scan_result_unpaid">Ticket not paid</string>
+    <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>
     <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
     <string name="dialog_unpaid_retry">Check in anyways</string>
