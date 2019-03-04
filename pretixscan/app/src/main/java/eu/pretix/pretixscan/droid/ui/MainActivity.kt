@@ -450,7 +450,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), (application as PretixScan).data, conf.checkinListId)
                 }
                 try {
-                    checkResult = provider.check(result, answers, ignore_unpaid)
+                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges)
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
@@ -530,7 +530,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail3.set(null)
         }
-        if (result?.position != null && conf.autoPrintBadges) {
+        if (result?.position != null && conf.printBadges && conf.autoPrintBadges) {
             // TODO check for successful scan ;)
             printBadge(this@MainActivity, application as PretixScan, result.position, null) // TODO: Feedback
         }

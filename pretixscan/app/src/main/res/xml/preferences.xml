@@ -17,6 +17,11 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="pref_print_padges"
+        android:title="@string/preference_autobadgeprint_enable" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_auto_print_padges"
+        android:dependency="pref_print_badges"
         android:title="@string/preference_badgeprint_enable" />
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
