@@ -231,6 +231,28 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             }
         }
+
+        card_result.setOnTouchListener(object : OnSwipeTouchListener(this) {
+            override fun onSwipeLeft() {
+                hideHandler.removeCallbacks(hideRunnable)
+                card_state = ResultCardState.HIDDEN
+                card_result.clearAnimation()
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                card_result.animate().translationX(- (displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                hideHandler.postDelayed(hideRunnable, 250)
+            }
+
+            override fun onSwipeRight() {
+                hideHandler.removeCallbacks(hideRunnable)
+                card_state = ResultCardState.HIDDEN
+                card_result.clearAnimation()
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                card_result.animate().translationX((displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                hideHandler.postDelayed(hideRunnable, 250)
+            }
+        })
     }
 
     private fun setupApi() {
