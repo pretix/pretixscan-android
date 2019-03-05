@@ -480,11 +480,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
         }
         if (conf.useCamera) {
-            fab_focus.hide()
-            fab_flash.hide()
-        } else {
             fab_focus.show()
             fab_flash.show()
+        } else {
+            fab_focus.hide()
+            fab_flash.hide()
         }
     }
 
