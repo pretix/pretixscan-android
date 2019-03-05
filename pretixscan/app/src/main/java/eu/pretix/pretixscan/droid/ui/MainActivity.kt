@@ -345,13 +345,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         runOnUiThread {
                             reload()
                         }
-                    } else if (result.isDataUploaded) {
-                        runOnUiThread {
-                            reloadSyncStatus()
-                        }
                     }
                 }
                 runOnUiThread {
+                    reloadSyncStatus()
                     scheduleSync()
                 }
             } catch (e: Exception) {
@@ -360,6 +357,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             } finally {
                 (application as PretixScan).syncLock.unlock()
+                runOnUiThread {
+                    reloadSyncStatus()
+                }
             }
         }
     }
