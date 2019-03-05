@@ -36,6 +36,7 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
+import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
@@ -487,12 +488,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z]+").matches(result)) {
-                val provider: TicketCheckProvider
-                if (conf.offlineMode) {
-                    provider = AsyncCheckProvider(conf, (application as PretixScan).data, conf.checkinListId)
-                } else {
-                    provider = OnlineCheckProvider(conf, AndroidHttpClientFactory(), (application as PretixScan).data, conf.checkinListId)
-                }
+                val provider = (application as PretixScan).getCheckProvider(conf)
                 try {
                     checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges)
                 } catch (e: Exception) {
@@ -631,6 +627,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.action_stats -> {
+                val intent = Intent(this@MainActivity, EventinfoActivity::class.java)
                 startActivity(intent)
                 return true
             }

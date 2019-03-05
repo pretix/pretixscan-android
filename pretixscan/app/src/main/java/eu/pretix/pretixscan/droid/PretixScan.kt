@@ -3,6 +3,9 @@ package eu.pretix.pretixscan.droid
 import android.database.sqlite.SQLiteException
 import androidx.multidex.MultiDexApplication
 import com.facebook.stetho.Stetho
+import eu.pretix.libpretixsync.check.AsyncCheckProvider
+import eu.pretix.libpretixsync.check.OnlineCheckProvider
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.db.Models
 import eu.pretix.pretixscan.utils.KeystoreHelper
@@ -64,6 +67,14 @@ class PretixScan : MultiDexApplication() {
         if (BuildConfig.SENTRY_DSN != null) {
             val sentryDsn = BuildConfig.SENTRY_DSN
             Sentry.init(sentryDsn, AndroidSentryClientFactory(this))
+        }
+    }
+
+    fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
+        if (conf.offlineMode) {
+            return AsyncCheckProvider(conf, data, conf.checkinListId)
+        } else {
+            return OnlineCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
         }
     }
 

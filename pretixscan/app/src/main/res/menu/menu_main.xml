@@ -14,6 +14,10 @@
         android:title="@string/action_sync"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_stats"
+        android:title="@string/action_label_statistics"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_label_settings"
         app:showAsAction="never" />

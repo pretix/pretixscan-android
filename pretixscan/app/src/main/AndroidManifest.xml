@@ -40,6 +40,11 @@
             android:label="@string/headline_setup">
         </activity>
         <activity
+            android:name="eu.pretix.pretixscan.droid.ui.info.EventinfoActivity"
+            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"
+            android:label="@string/action_label_statistics">
+        </activity>
+        <activity
             android:name="eu.pretix.pretixscan.droid.ui.SettingsActivity"
             android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"
             android:label="@string/action_label_settings">
