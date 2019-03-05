@@ -104,12 +104,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.hasExtra("com.symbol.datawedge.data_string")) {
                 // Zebra DataWedge
+                lastScanTime = System.currentTimeMillis()
+                lastScanCode = intent.getStringExtra("com.symbol.datawedge.data_string")
                 handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"), null, false)
             } else if (intent.hasExtra("barocode")) {
                 // Intent receiver for LECOM-manufactured hardware scanners
                 val barcode = intent?.getByteArrayExtra("barocode") // sic!
                 val barocodelen = intent?.getIntExtra("length", 0)
                 val barcodeStr = String(barcode, 0, barocodelen)
+                lastScanTime = System.currentTimeMillis()
+                lastScanCode = barcodeStr
                 handleScan(barcodeStr, null, false)
             }
         }
