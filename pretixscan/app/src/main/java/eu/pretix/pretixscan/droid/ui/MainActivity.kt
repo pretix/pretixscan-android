@@ -13,7 +13,6 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
-import android.os.ResultReceiver
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -21,17 +20,17 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
-import eu.pretix.libpretixsync.check.AsyncCheckProvider
-import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.droid.*
@@ -65,6 +64,7 @@ enum class ResultState {
 
 class ViewDataHolder(private val ctx: Context) {
     val result_state = ObservableField<ResultState>()
+    val search_state = ObservableField<ResultState>()
     val result_text = ObservableField<String>()
     val show_print = ObservableField<Boolean>()
     val detail1 = ObservableField<String>()
@@ -82,6 +82,7 @@ class ViewDataHolder(private val ctx: Context) {
 }
 
 class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler {
+
     private val REQ_EVENT = 1
     private val REQ_CHECKINLIST = 2
 
@@ -97,11 +98,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var dialog: Dialog? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
+    private var searchAdapter: SearchListAdapter? = null
+    private var searchFilter = ""
+
     companion object {
         const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
     }
 
-    private val scanReceiver = object: BroadcastReceiver () {
+    private val scanReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.hasExtra("com.symbol.datawedge.data_string")) {
                 // Zebra DataWedge
@@ -122,6 +126,49 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     override fun reload() {
         reloadSyncStatus()
+    }
+
+    private fun setSearchFilter(f: String) {
+        card_search.visibility = View.VISIBLE
+        view_data.search_state.set(ResultState.LOADING)
+
+        searchFilter = f
+        doAsync {
+            val provider = (application as PretixScan).getCheckProvider(conf)
+            try {
+                val sr = provider.search(f, 1)
+                if (f != searchFilter) {
+                    // we lost a race! Abort this.
+                    return@doAsync
+                }
+                searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
+                    override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
+                        lastScanTime = System.currentTimeMillis()
+                        lastScanCode = res.secret
+                        hideSearchCard()
+                        handleScan(res.secret, null, false)
+                    }
+                })
+                runOnUiThread {
+                    recyclerView_search.adapter = searchAdapter
+                    if (sr.size == 0) {
+                        view_data.search_state.set(ResultState.WARNING)
+                    } else {
+                        view_data.search_state.set(ResultState.SUCCESS)
+                    }
+                }
+            } catch (e: Exception) {
+                if (BuildConfig.SENTRY_DSN != null) {
+                    Sentry.capture(e)
+                } else {
+                    e.printStackTrace()
+                }
+                runOnUiThread {
+                    hideSearchCard()
+                    toast(R.string.error_unknown_exception)
+                }
+            }
+        }
     }
 
     fun reloadSyncStatus() {
@@ -182,6 +229,44 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
     }
 
+    private fun setUpEventListeners() {
+        event.setOnClickListener {
+            selectEvent()
+        }
+
+        fab_focus.setOnClickListener {
+            conf.scanFocus = !conf.scanFocus
+            reloadCameraState()
+        }
+
+        fab_flash.setOnClickListener {
+            conf.scanFlash = !conf.scanFlash
+            reloadCameraState()
+        }
+
+        card_result.setOnTouchListener(object : OnSwipeTouchListener(this) {
+            override fun onSwipeLeft() {
+                hideHandler.removeCallbacks(hideRunnable)
+                card_state = ResultCardState.HIDDEN
+                card_result.clearAnimation()
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                card_result.animate().translationX(-(displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                hideHandler.postDelayed(hideRunnable, 250)
+            }
+
+            override fun onSwipeRight() {
+                hideHandler.removeCallbacks(hideRunnable)
+                card_state = ResultCardState.HIDDEN
+                card_result.clearAnimation()
+                val displayMetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displayMetrics)
+                card_result.animate().translationX((displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                hideHandler.postDelayed(hideRunnable, 250)
+            }
+        })
+    }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -198,20 +283,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         setupApi()
-
-        event.setOnClickListener {
-            selectEvent()
-        }
-
-        fab_focus.setOnClickListener {
-            conf.scanFocus = !conf.scanFocus
-            reloadCameraState()
-        }
-
-        fab_flash.setOnClickListener {
-            conf.scanFlash = !conf.scanFlash
-            reloadCameraState()
-        }
+        setUpEventListeners()
 
         if (conf.eventName == null || conf.eventSlug == null) {
             selectEvent()
@@ -224,6 +296,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         checkPermission(Manifest.permission.CAMERA)
 
         hideCard()
+        hideSearchCard()
         card_result.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
         if (dataWedgeHelper.isInstalled) {
@@ -240,27 +313,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
 
-        card_result.setOnTouchListener(object : OnSwipeTouchListener(this) {
-            override fun onSwipeLeft() {
-                hideHandler.removeCallbacks(hideRunnable)
-                card_state = ResultCardState.HIDDEN
-                card_result.clearAnimation()
-                val displayMetrics = DisplayMetrics()
-                windowManager.defaultDisplay.getMetrics(displayMetrics)
-                card_result.animate().translationX(- (displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
-                hideHandler.postDelayed(hideRunnable, 250)
-            }
-
-            override fun onSwipeRight() {
-                hideHandler.removeCallbacks(hideRunnable)
-                card_state = ResultCardState.HIDDEN
-                card_result.clearAnimation()
-                val displayMetrics = DisplayMetrics()
-                windowManager.defaultDisplay.getMetrics(displayMetrics)
-                card_result.animate().translationX((displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
-                hideHandler.postDelayed(hideRunnable, 250)
-            }
-        })
+        recyclerView_search.layoutManager = LinearLayoutManager(this)
+        recyclerView_search.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(recyclerView_search.context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
     }
 
     private fun setupApi() {
@@ -429,6 +483,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         reloadCameraState()
     }
 
+    fun hideSearchCard() {
+        card_search.visibility = View.GONE
+    }
+
     fun hideCard() {
         card_state = ResultCardState.HIDDEN
         card_result.clearAnimation()
@@ -546,7 +604,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         if (result.message == null) {
-            result.message = when(result.type) {
+            result.message = when (result.type) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
                 TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
                 TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
@@ -633,6 +691,34 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         // Inflate the menu to use in the action bar
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (query.isEmpty()) {
+                    hideSearchCard()
+                } else {
+                    setSearchFilter(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isEmpty()) {
+                    hideSearchCard()
+                } else {
+                    setSearchFilter(newText)
+                }
+                return true
+            }
+        })
+        searchView.setOnCloseListener {
+            hideSearchCard()
+            return@setOnCloseListener true
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -64,6 +64,10 @@
     <string name="question_input_invalid">This input is not valid.</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="status_redeemed">Redeemed</string>
+    <string name="status_unpaid">Unpaid</string>
+    <string name="status_valid">Valid</string>
+    <string name="status_empty">No search results have been found. Be sure to enter at least four characters.</string>
     <string name="scan_result_valid">Valid ticket</string>
     <string name="scan_result_used">Ticket already used</string>
     <string name="scan_result_questions">Information required</string>
