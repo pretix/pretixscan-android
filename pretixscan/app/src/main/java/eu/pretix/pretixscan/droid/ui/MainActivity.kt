@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun syncNow(selectList: Boolean = false) {
-        dialog = indeterminateProgressDialog(message = R.string.progress_syncing)
+        dialog = indeterminateProgressDialog(title = R.string.progress_syncing, message = R.string.progress_syncing)
         (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
         (dialog as ProgressDialog).setCancelable(false)
         doAsync {
@@ -340,7 +340,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 return@doAsync
             }
             try {
-                sm.sync(true)
+                sm.sync(true) { current_action ->
+                    runOnUiThread {
+                        (dialog as ProgressDialog).setMessage(current_action)
+                    }
+                }
                 runOnUiThread {
                     reload()
                     if (selectList) {

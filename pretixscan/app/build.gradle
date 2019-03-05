@@ -90,6 +90,13 @@ sentry {
     autoUpload true
 }
 
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'org.jetbrains.anko:anko:0.10.6'
@@ -117,6 +124,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
+    implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
 
     annotationProcessor 'io.requery:requery-processor:1.5.1'
     implementation(project(':libpretixsync')) {
