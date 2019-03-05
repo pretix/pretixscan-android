@@ -214,7 +214,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
-        val PREFS_KEY_PRINTBADGES = "pref_print_padges"
-        val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_padges"
+        val PREFS_KEY_PRINTBADGES = "pref_print_badges"
+        val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
     }
 }

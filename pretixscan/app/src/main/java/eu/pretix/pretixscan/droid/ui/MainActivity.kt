@@ -547,8 +547,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail3.set(null)
         }
-        if (result?.position != null && conf.printBadges && conf.autoPrintBadges) {
-            // TODO check for successful scan ;)
+        if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
             printBadge(this@MainActivity, application as PretixScan, result.position, null) // TODO: Feedback
         }
     }
