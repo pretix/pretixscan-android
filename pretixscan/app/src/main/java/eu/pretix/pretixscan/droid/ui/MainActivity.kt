@@ -132,7 +132,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         var text = ""
         val diff = System.currentTimeMillis() - conf.lastDownload
-        if (conf.lastDownload == 0L) {
+        if ((application as PretixScan).syncLock.isLocked) {
+            text = getString(R.string.sync_status_progress);
+        } else if (conf.lastDownload == 0L) {
             text = getString(R.string.sync_status_never);
         } else if (diff > 24 * 3600 * 1000) {
             val days = (diff / (24 * 3600 * 1000)).toInt()
@@ -326,17 +328,27 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private val syncRunnable = Runnable {
         doAsync {
             if (!(application as PretixScan).syncLock.tryLock()) {
+                runOnUiThread {
+                    reloadSyncStatus()
+                }
+                scheduleSync()
                 return@doAsync
             }
             try {
                 if (defaultSharedPreferences.getBoolean("pref_sync_auto", true)) {
-                    val result = sm.sync(false)
+                    val result = sm.sync(false) {
+                        runOnUiThread {
+                            reloadSyncStatus()
+                        }
+                    }
                     if (result.isDataDownloaded) {
                         runOnUiThread {
                             reload()
                         }
                     } else if (result.isDataUploaded) {
-                        reloadSyncStatus()
+                        runOnUiThread {
+                            reloadSyncStatus()
+                        }
                     }
                 }
                 runOnUiThread {
@@ -364,12 +376,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
                     alert(Appcompat, getString(R.string.error_sync_in_background)).show()
+                    (dialog as ProgressDialog).dismiss()
                 }
                 return@doAsync
             }
             try {
                 sm.sync(true) { current_action ->
                     runOnUiThread {
+                        reloadSyncStatus()
                         (dialog as ProgressDialog).setMessage(current_action)
                     }
                 }
