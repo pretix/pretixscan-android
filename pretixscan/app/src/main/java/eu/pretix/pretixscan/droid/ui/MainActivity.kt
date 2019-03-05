@@ -557,6 +557,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         showLoadingCard()
+        hideSearchCard()
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z]+").matches(result)) {
