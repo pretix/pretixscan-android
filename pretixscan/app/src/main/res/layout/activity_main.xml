@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:keepScreenOn="true"
@@ -101,6 +101,20 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@{data.getColor(data.result_state)}">
+
+                                <ImageButton
+                                    android:id="@+id/ibPrint"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="16dp"
+                                    android:layout_marginEnd="16dp"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="1.0"
+                                    app:layout_constraintStart_toEndOf="@+id/frameLayout"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    android:visibility="@{data.show_print ? View.VISIBLE : View.GONE}"
+                                    app:srcCompat="@drawable/ic_print_black_24dp" />
 
                                 <FrameLayout
                                     android:id="@+id/frameLayout"

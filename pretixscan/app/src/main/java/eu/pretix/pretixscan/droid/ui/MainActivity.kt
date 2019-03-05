@@ -65,6 +65,7 @@ enum class ResultState {
 class ViewDataHolder(private val ctx: Context) {
     val result_state = ObservableField<ResultState>()
     val result_text = ObservableField<String>()
+    val show_print = ObservableField<Boolean>()
     val detail1 = ObservableField<String>()
     val detail2 = ObservableField<String>()
     val detail3 = ObservableField<String>()
@@ -570,7 +571,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.detail3.set(null)
         }
         if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-            printBadge(this@MainActivity, application as PretixScan, result.position, null) // TODO: Feedback
+            printBadge(this@MainActivity, application as PretixScan, result.position, null)
+        }
+        if (result?.position != null && conf.printBadges) {
+            view_data.show_print.set(true)
+            ibPrint.setOnClickListener {
+                printBadge(this@MainActivity, application as PretixScan, result.position, null)
+            }
+        } else {
+            view_data.show_print.set(false)
         }
     }
 
