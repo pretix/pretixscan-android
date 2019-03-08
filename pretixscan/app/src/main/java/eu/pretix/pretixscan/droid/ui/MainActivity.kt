@@ -331,7 +331,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 (application as PretixScan).data,
                 (application as PretixScan).fileStorage,
                 60000L,
-                5 * 60000L
+                5 * 60000L,
+                false
         )
     }
 
@@ -647,7 +648,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             printBadge(this@MainActivity, application as PretixScan, result.position, null)
         }
         if (result?.position != null && conf.printBadges) {
-            view_data.show_print.set(true)
+            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position) != null)
             ibPrint.setOnClickListener {
                 printBadge(this@MainActivity, application as PretixScan, result.position, null)
             }

@@ -10,6 +10,7 @@ import android.os.Parcel
 import android.os.ResultReceiver
 import androidx.core.content.FileProvider
 import eu.pretix.libpretixsync.db.BadgeLayout
+import eu.pretix.libpretixsync.db.BadgeLayoutItem
 import eu.pretix.libpretixsync.db.Item
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -25,8 +26,21 @@ fun getDefaultBadgeLayout(): BadgeLayout {
     return tl
 }
 
-fun getBadgeLayout(application: PretixScan, position: JSONObject): BadgeLayout {
+fun getBadgeLayout(application: PretixScan, position: JSONObject): BadgeLayout? {
     val itemid = position.getLong("item")
+
+    val litem = application.data.select(BadgeLayoutItem::class.java)
+            .where(BadgeLayoutItem.ITEM_ID.eq(itemid))
+            .get().firstOrNull()
+    if (litem != null) {
+        if (litem.getLayout() == null) {
+            return null
+        } else {
+            return litem.getLayout()
+        }
+    }
+
+    /* Legacy mechanism: Keep around until pretix 2.5 is end of life */
     val item = application.data.select(Item::class.java)
             .where(Item.SERVER_ID.eq(itemid))
             .get().firstOrNull() ?: return getDefaultBadgeLayout()
@@ -74,15 +88,12 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     val dataFile = File(dir, "order.json")
     val backgroundFiles = ArrayList<File>()
 
-    for (i in 0..(positions.length() - 1)) {
-        val position = positions.getJSONObject(i)
-        val badgelayout = getBadgeLayout(application, position)
-        position.put("__layout", badgelayout.json.getJSONArray("layout"))
+    val badgelayout = getBadgeLayout(application, position) ?: return
+    position.put("__layout", badgelayout.json.getJSONArray("layout"))
 
-        if (badgelayout.getBackground_filename() != null) {
-            backgroundFiles.add(application.fileStorage.getFile(badgelayout.getBackground_filename()))
-            position.put("__file_index", backgroundFiles.size)
-        }
+    if (badgelayout.getBackground_filename() != null) {
+        backgroundFiles.add(application.fileStorage.getFile(badgelayout.getBackground_filename()))
+        position.put("__file_index", backgroundFiles.size)
     }
 
     dataFile.outputStream().use {
