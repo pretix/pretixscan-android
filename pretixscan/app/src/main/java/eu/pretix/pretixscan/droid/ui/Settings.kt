@@ -39,7 +39,9 @@ class SettingsFragment : PreferenceFragment() {
 
         findPreference("pref_print_badges")?.setOnPreferenceChangeListener { preference, any ->
             if (any == true) {
-                if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager) && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)) {
+                if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager)
+                        && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
+                        && !isPackageInstalled("de.silpion.bleterminal", activity.packageManager)) {
                     alert(Appcompat, R.string.preference_badgeprint_install_pretixprint) {
                         yesButton {
                             try {
