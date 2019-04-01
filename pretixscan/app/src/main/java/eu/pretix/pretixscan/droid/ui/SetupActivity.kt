@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -25,13 +24,8 @@ import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.R
-import eu.pretix.libpretixsync.utils.flatJsonError
 import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
-import okhttp3.MediaType
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.doAsync
@@ -42,12 +36,11 @@ import java.io.IOException
 import javax.net.ssl.SSLException
 
 class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
-    val client = AndroidHttpClientFactory().buildClient()
     var lastScanTime = 0L
     var lastScanValue = ""
     private val dataWedgeHelper = DataWedgeHelper(this)
 
-    private val scanReceiver = object: BroadcastReceiver() {
+    private val scanReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.hasExtra("com.symbol.datawedge.data_string")) {
                 // Zebra DataWedge
