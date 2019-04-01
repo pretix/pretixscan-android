@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.core.app.ActivityCompat
 import eu.pretix.libpretixsync.api.PretixApi
@@ -21,25 +22,13 @@ class EventSelectActivity : MorphingDialogActivity() {
     private lateinit var eventsLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var eventManager: EventManager
     private lateinit var conf: AppConfig
+    private lateinit var mHandler: Handler
+    private lateinit var mRunnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_select)
 
-        conf = AppConfig(this)
-        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
-        eventManager = EventManager((application as PretixScan).data, api, conf)
-        eventsAdapter = EventAdapter(null)
-        progressBar.visibility = View.VISIBLE
-        doAsync {
-            val events = eventManager.getAvailableEvents()
-            uiThread {
-                progressBar.visibility = View.GONE
-                eventsAdapter.selectedEvent = events.find { it.slug == conf.eventSlug && it.subevent_id == conf.subeventId }
-                eventsAdapter.submitList(events)
-                events_list.adapter = eventsAdapter
-            }
-        }
 
         eventsLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         events_list.apply {
@@ -60,7 +49,35 @@ class EventSelectActivity : MorphingDialogActivity() {
             }
         }
 
+        mHandler = Handler()
+        swipe_container.setOnRefreshListener {
+            mRunnable = Runnable {
+                refreshEvents()
+                swipe_container.isRefreshing = false
+            }
+
+            mHandler.post(mRunnable)
+        }
+
         setupTransition(ActivityCompat.getColor(this, R.color.pretix_brand_light))
+        refreshEvents()
+    }
+
+    fun refreshEvents() {
+        conf = AppConfig(this)
+        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
+        eventManager = EventManager((application as PretixScan).data, api, conf)
+        eventsAdapter = EventAdapter(null)
+        progressBar.visibility = View.VISIBLE
+        doAsync {
+            val events = eventManager.getAvailableEvents()
+            uiThread {
+                progressBar.visibility = View.GONE
+                eventsAdapter.selectedEvent = events.find { it.slug == conf.eventSlug && it.subevent_id == conf.subeventId }
+                eventsAdapter.submitList(events)
+                events_list.adapter = eventsAdapter
+            }
+        }
     }
 
     override fun onBackPressed() {

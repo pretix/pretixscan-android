@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.core.app.ActivityCompat
 import eu.pretix.libpretixsync.api.PretixApi
@@ -18,6 +19,8 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     private lateinit var checkInListAdapter: CheckInListAdapter
     private lateinit var listLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var conf: AppConfig
+    private lateinit var mHandler: Handler
+    private lateinit var mRunnable: Runnable
 
     fun syncSync() {
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
@@ -47,6 +50,36 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkinlist_select)
 
+        mHandler = Handler()
+        swipe_container.setOnRefreshListener {
+            mRunnable = Runnable {
+                refresh()
+                swipe_container.isRefreshing = false
+            }
+
+            mHandler.post(mRunnable)
+        }
+        refresh()
+
+        listLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        checkinlists_list.apply {
+            layoutManager = listLayoutManager
+        }
+
+        btnOk.setOnClickListener {
+            val selectedList = checkInListAdapter.selectedList
+            if (selectedList != null) {
+                conf.checkinListId = selectedList.getServer_id()
+
+                setResult(Activity.RESULT_OK)
+                supportFinishAfterTransition()
+            }
+        }
+
+        setupTransition(ActivityCompat.getColor(this, R.color.pretix_brand_light))
+    }
+
+    fun refresh() {
         conf = AppConfig(this)
         checkInListAdapter = CheckInListAdapter(null)
         progressBar.visibility = View.VISIBLE
@@ -76,23 +109,6 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 checkinlists_list.adapter = checkInListAdapter
             }
         }
-
-        listLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        checkinlists_list.apply {
-            layoutManager = listLayoutManager
-        }
-
-        btnOk.setOnClickListener {
-            val selectedList = checkInListAdapter.selectedList
-            if (selectedList != null) {
-                conf.checkinListId = selectedList.getServer_id()
-
-                setResult(Activity.RESULT_OK)
-                supportFinishAfterTransition()
-            }
-        }
-
-        setupTransition(ActivityCompat.getColor(this, R.color.pretix_brand_light))
     }
 
     override fun onBackPressed() {
