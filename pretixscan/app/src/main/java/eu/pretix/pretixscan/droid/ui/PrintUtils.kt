@@ -130,6 +130,8 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
         intent.component = ComponentName("eu.pretix.pretixprint", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
         intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
+    } else if (isPackageInstalled("de.silpion.bleterminal", context.packageManager)) {
+        intent.component = ComponentName("de.silpion.bleterminal", "de.silpion.bleterminal.print.PrintService")
     } else {
         throw Exception("error_print_no_app");
     }
