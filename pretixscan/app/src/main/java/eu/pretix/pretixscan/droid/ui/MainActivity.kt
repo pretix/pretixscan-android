@@ -536,24 +536,28 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun reloadCameraState() {
-        scanner_view.flash = conf.scanFlash
-        if (conf.scanFlash) {
-            fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
-        } else {
-            fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
-        }
-        scanner_view.setAutoFocus(conf.scanFocus)
-        if (conf.scanFocus) {
-            fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
-        } else {
-            fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
-        }
-        if (conf.useCamera) {
-            fab_focus.show()
-            fab_flash.show()
-        } else {
-            fab_focus.hide()
-            fab_flash.hide()
+        try {
+            scanner_view.flash = conf.scanFlash
+            if (conf.scanFlash) {
+                fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+            } else {
+                fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+            }
+            scanner_view.setAutoFocus(conf.scanFocus)
+            if (conf.scanFocus) {
+                fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+            } else {
+                fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+            }
+            if (conf.useCamera) {
+                fab_focus.show()
+                fab_flash.show()
+            } else {
+                fab_focus.hide()
+                fab_flash.hide()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
