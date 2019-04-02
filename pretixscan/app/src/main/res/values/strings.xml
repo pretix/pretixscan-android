@@ -83,4 +83,5 @@
     <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do you want to install it?</string>
     <string name="already_scanned">already scanned</string>
     <string name="total_tickets_sold">total tickets sold</string>
+    <string name="ticket_attention">Attention, special ticket!</string>
 </resources>

@@ -70,6 +70,7 @@ class ViewDataHolder(private val ctx: Context) {
     val detail1 = ObservableField<String>()
     val detail2 = ObservableField<String>()
     val detail3 = ObservableField<String>()
+    val attention = ObservableField<Boolean>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -514,6 +515,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.detail1.set(null)
         view_data.detail2.set(null)
         view_data.detail3.set(null)
+        view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
             val displayMetrics = DisplayMetrics()
@@ -531,7 +533,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 interpolator = BounceInterpolator()
                 start()
             }
-            card_result.animate().startDelay
+            card_result.animate().start()
         }
     }
 
@@ -658,6 +660,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail3.set(null)
         }
+        view_data.attention.set(result.isRequireAttention)
+
         if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
             printBadge(this@MainActivity, application as PretixScan, result.position, null)
         }
@@ -669,6 +673,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.show_print.set(false)
         }
+
+        card_result.clearAnimation()
+        if (result.isRequireAttention) {
+            card_result.rotation = 0f
+            ObjectAnimator.ofFloat(card_result, "rotationY", 0f, 25f, 0f, -25f, 0f, 25f, 0f, -25f, 0f).apply {
+                duration = 1500
+                start()
+            }
+        }
+
     }
 
     override fun handleResult(rawResult: Result) {
