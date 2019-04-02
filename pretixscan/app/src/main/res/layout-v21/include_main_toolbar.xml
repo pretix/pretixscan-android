@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
         android:layout_marginStart="32dp"
-        android:drawableEnd="@drawable/ic_arrow_drop_down_white_raster"
+        android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
         android:drawablePadding="8dp"
         android:gravity="left|center_vertical"
         android:maxWidth="@dimen/event_name_length"

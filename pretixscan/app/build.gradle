@@ -10,11 +10,12 @@ android {
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
-        minSdkVersion 21
+        minSdkVersion 17
         targetSdkVersion 28
         versionCode 5
         versionName "0.1.4"
         vectorDrawables.useSupportLibrary = true
+        vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
     }
 

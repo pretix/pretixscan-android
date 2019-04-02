@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.droid
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.preference.PreferenceManager
 
 import eu.pretix.libpretixsync.api.PretixApi
@@ -28,9 +29,12 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
+        val ckey = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            KeystoreHelper.secureValue(key, true)
+            else key
         prefs.edit()
                 .putString(PREFS_KEY_API_URL, url)
-                .putString(PREFS_KEY_API_KEY, KeystoreHelper.secureValue(key, true))
+                .putString(PREFS_KEY_API_KEY, ckey)
                 .putString(PREFS_KEY_ORGANIZER_SLUG, orga_slug)
                 .putLong(PREFS_KEY_DEVICE_ID, device_id)
                 .putString(PREFS_KEY_DEVICE_SERIAL, serial)
@@ -96,7 +100,11 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     override fun getApiKey(): String {
-        return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, ""), false)!!
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, ""), false)!!
+        } else {
+            return prefs.getString(PREFS_KEY_API_KEY, "")
+        }
     }
 
     override fun getShowInfo(): Boolean {

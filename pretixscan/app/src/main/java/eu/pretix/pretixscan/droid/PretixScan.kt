@@ -1,6 +1,8 @@
 package eu.pretix.pretixscan.droid
 
 import android.database.sqlite.SQLiteException
+import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.facebook.stetho.Stetho
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
@@ -34,7 +36,9 @@ class PretixScan : MultiDexApplication() {
                     val configuration = source.configuration
                     dataStore = EntityDataStore<Persistable>(configuration)
                 } else {
-                    val dbPass = KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
+                    val dbPass = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
+                            else KEYSTORE_PASSWORD
+
 
                     var source = SqlCipherDatabaseSource(this,
                             Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
@@ -68,6 +72,7 @@ class PretixScan : MultiDexApplication() {
             val sentryDsn = BuildConfig.SENTRY_DSN
             Sentry.init(sentryDsn, AndroidSentryClientFactory(this))
         }
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
