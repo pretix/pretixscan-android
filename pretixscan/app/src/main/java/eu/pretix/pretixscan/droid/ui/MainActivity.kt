@@ -43,6 +43,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import java.io.IOException
+import java.text.SimpleDateFormat
 
 
 interface ReloadableActivity {
@@ -70,6 +71,7 @@ class ViewDataHolder(private val ctx: Context) {
     val detail1 = ObservableField<String>()
     val detail2 = ObservableField<String>()
     val detail3 = ObservableField<String>()
+    val detail4 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
 
     fun getColor(state: ResultState): Int {
@@ -515,6 +517,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.detail1.set(null)
         view_data.detail2.set(null)
         view_data.detail3.set(null)
+        view_data.detail4.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
@@ -660,6 +663,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail3.set(null)
         }
+        if (result.firstScanned != null) {
+            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+            view_data.detail4.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+        } else {
+            view_data.detail4.set(null)
+        }
+
         view_data.attention.set(result.isRequireAttention)
 
         if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
