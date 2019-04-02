@@ -12,7 +12,7 @@
         <import type="android.view.View" />
     </data>
 
-    <RelativeLayout android:id="@+id/rlResult"
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/rlResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
@@ -22,79 +22,82 @@
 
         <TextView
             android:id="@+id/tvSecret"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:lines="1"
-            android:text="@{res.secret}" />
+            android:text="@{res.secret}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvSecret"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@{res.redeemed ? @string/status_redeemed : (!res.paid ? @string/status_unpaid : @string/status_valid)}"
+            android:textAlignment="textEnd"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@{res.redeemed ? @color/pretix_brand_orange : (!res.paid ? @color/pretix_brand_red : @color/pretix_brand_green)}" />
+            android:textColor="@{res.redeemed ? @color/pretix_brand_orange : (!res.paid ? @color/pretix_brand_red : @color/pretix_brand_green)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSecret" />
 
         <TextView
             android:id="@+id/tvTicketName"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvSecret"
-            android:layout_toEndOf="@id/ivWarning"
-            android:layout_toRightOf="@id/ivWarning"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@{res.ticket + (res.variation != null &amp;&amp; !&quot;null&quot;.equals(res.variation) ? &quot; - &quot; + res.variation : &quot;&quot;)}"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toStartOf="@+id/tvStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSecret" />
 
         <ImageView
             android:id="@+id/ivWarning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvSecret"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="8dp"
             android:contentDescription=""
             android:visibility="@{res.requireAttention ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvStatus"
             app:srcCompat="@drawable/ic_warning_red_24dp" />
 
         <TextView
             android:id="@+id/tvOrderCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvTicketName"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
+            android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@{res.orderCode}"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTicketName" />
 
         <TextView
             android:id="@+id/tvAttendeeName"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvTicketName"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toEndOf="@id/tvOrderCode"
-            android:layout_toRightOf="@id/tvOrderCode"
+            android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@{res.attendee_name != null &amp;&amp; !&quot;null&quot;.equals(res.attendee_name) ? res.attendee_name : &quot;&quot;}"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toStartOf="@+id/ivWarning"
+            app:layout_constraintStart_toEndOf="@+id/tvOrderCode"
+            app:layout_constraintTop_toBottomOf="@+id/tvTicketName" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
