@@ -33,6 +33,7 @@ import org.jetbrains.anko.indeterminateProgressDialog
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.lang.Exception
 import javax.net.ssl.SSLException
 
 class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
@@ -208,15 +209,17 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     resume()
                     alert(Appcompat, R.string.setup_error_server).show()
                 }
-            } catch (e: SetupBadRequestException) {
-                runOnUiThread {
-                    resume()
-                    alert(Appcompat, e.message ?: "Unknown error").show()
-                }
             } catch (e: SetupBadResponseException) {
+                e.printStackTrace()
                 runOnUiThread {
                     resume()
                     alert(Appcompat, R.string.setup_error_response).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                runOnUiThread {
+                    resume()
+                    alert(Appcompat, e.message ?: "Unknown error").show()
                 }
             }
         }
