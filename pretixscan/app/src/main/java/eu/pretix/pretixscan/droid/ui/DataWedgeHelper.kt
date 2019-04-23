@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Environment
 import android.util.Log
+import org.jetbrains.anko.defaultSharedPreferences
 import java.io.*
 
 
@@ -90,7 +91,7 @@ class DataWedgeHelper(private val ctx: Context) {
     @Throws(IOException::class)
     fun install() {
         val stgfile = File(stagingDirectory, "dwprofile_pretix.db")
-        if (stgfile.exists()) {
+        if (stgfile.exists() && ctx.defaultSharedPreferences.contains("__dwprofile_installed")) {
             return
         }
         val stgout = FileOutputStream(stgfile)
@@ -98,5 +99,6 @@ class DataWedgeHelper(private val ctx: Context) {
         val rawin = ctx.resources.openRawResource(eu.pretix.pretixscan.droid.R.raw.dwprofile)
         copyFile(rawin, stgout)
         copyAllStagedFiles()
+        ctx.defaultSharedPreferences.edit().putBoolean("__dwprofile_installed", true).apply()
     }
 }
