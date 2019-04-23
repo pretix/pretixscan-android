@@ -66,7 +66,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     fun refreshEvents() {
         conf = AppConfig(this)
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
-        eventManager = EventManager((application as PretixScan).data, api, conf)
+        eventManager = EventManager((application as PretixScan).data, api, conf, true)
         eventsAdapter = EventAdapter(null)
         progressBar.visibility = View.VISIBLE
         doAsync {
