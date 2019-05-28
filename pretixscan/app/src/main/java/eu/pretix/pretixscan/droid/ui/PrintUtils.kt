@@ -109,7 +109,7 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     intent.action = "eu.pretix.pretixpos.print.PRINT_BADGE"
     val dataUri = FileProvider.getUriForFile(
             context,
-            "eu.pretix.pretixscan.fileprovider",
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
             dataFile)
 
     context.grantUriPermission(intent.`package`, dataUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -118,7 +118,7 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     for (bgFile in backgroundFiles) {
         val bgUri = FileProvider.getUriForFile(
                 context,
-                "eu.pretix.pretixscan.fileprovider",
+                "${BuildConfig.APPLICATION_ID}.fileprovider",
                 bgFile)
         context.grantUriPermission(intent.`package`, bgUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.clipData.addItem(ClipData.Item(bgUri))

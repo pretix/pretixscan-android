@@ -4,6 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.sentry.android.gradle'
 
+def flavors = [:]
+try {
+    apply from: 'flavors.gradle'
+    flavors.putAll(addflavors)
+} catch(UncheckedIOException ignored) {
+    // Optional
+}
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -71,6 +79,19 @@ android {
             versionNameSuffix "-debug"
             buildConfigField "String", "SENTRY_DSN", "null"
             buildConfigField "String", "SUMUP_AFFILIATE_KEY", sumup_key
+        }
+    }
+
+    flavorDimensions "brand"
+    productFlavors {
+        pretix {
+            dimension "brand"
+        }
+        flavors.each { flavorName, flavorData ->
+            "$flavorName" {
+                dimension "${flavorData['dimension']}"
+                applicationId "${flavorData['appId']}"
+            }
         }
     }
 
