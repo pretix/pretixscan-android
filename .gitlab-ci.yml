@@ -1,7 +1,7 @@
 lint:
     script:
-        - cd pretixpos
-        - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew lint assembleDebug
+        - cd pretixscan
+        - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew lint assemblePretixDebug
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
