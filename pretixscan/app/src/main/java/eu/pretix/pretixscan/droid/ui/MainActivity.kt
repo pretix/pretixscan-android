@@ -11,6 +11,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
@@ -19,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.MediaController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
@@ -84,7 +87,7 @@ class ViewDataHolder(private val ctx: Context) {
     }
 }
 
-class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler {
+class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler, MediaPlayer.OnCompletionListener {
 
     private val REQ_EVENT = 1
     private val REQ_CHECKINLIST = 2
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private val hideHandler = Handler()
     private var card_state = ResultCardState.HIDDEN
     private var view_data = ViewDataHolder(this)
+    private var mediaPlayer: MediaPlayer? = null
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
@@ -276,6 +280,30 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         })
     }
 
+    override fun onCompletion(p0: MediaPlayer?) {
+        p0?.seekTo(0)
+    }
+
+    private fun buildMediaPlayer() {
+        mediaPlayer = MediaPlayer()
+        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer!!.setOnCompletionListener(this)
+        // mediaPlayer.setOnErrorListener(this)
+        try {
+            val file = resources.openRawResourceFd(R.raw.beep)
+            try {
+                mediaPlayer!!.setDataSource(file.fileDescriptor, file.startOffset, file.length)
+            } finally {
+                file.close();
+            }
+            mediaPlayer!!.setVolume(0.10f, 0.1f)
+            mediaPlayer!!.prepare()
+        } catch (ioe: IOException) {
+            mediaPlayer = null
+        }
+    }
+
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -285,6 +313,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        volumeControlStream = AudioManager.STREAM_MUSIC
+        buildMediaPlayer()
 
         conf = AppConfig(this)
         if (!conf.deviceRegistered) {
@@ -578,6 +609,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         showLoadingCard()
         hideSearchCard()
+        if (answers == null && !ignore_unpaid) {
+            mediaPlayer?.start()
+        }
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z]+").matches(result)) {
@@ -726,6 +760,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu to use in the action bar
