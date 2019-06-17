@@ -3,16 +3,15 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
+import android.annotation.TargetApi
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
@@ -306,6 +305,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         view_data.result_state.set(ResultState.ERROR)
         binding.data = view_data
@@ -515,6 +515,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun onResume() {
         reload()
         super.onResume()
+        getRestrictions(this)
 
         val filter = IntentFilter()
         filter.addAction("scan.rcv.message")
@@ -815,5 +816,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    fun getRestrictions(ctx: Context) {
+        val myRestrictionsMgr = ctx.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
+        val restrictions = myRestrictionsMgr.applicationRestrictions
+
+        for (key in restrictions.keySet()) {
+            defaultSharedPreferences.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
+        }
     }
 }

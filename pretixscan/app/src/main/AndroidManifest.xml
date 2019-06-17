@@ -18,6 +18,8 @@
         android:label="@string/app_name"
         android:logo="@drawable/ic_logo"
         android:theme="@style/AppTheme">
+        <meta-data android:name="android.content.APP_RESTRICTIONS" android:resource="@xml/app_restrictions" />
+
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.MainActivity"
             android:label="@string/title_activity_main"

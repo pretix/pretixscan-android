@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+    <restriction
+        android:defaultValue="true"
+        android:key="pref_sync_auto"
+        android:restrictionType="bool"
+        android:title="@string/settings_label_auto_sync" />
+    <restriction
+        android:defaultValue="true"
+        android:key="pref_use_camera"
+        android:restrictionType="bool"
+        android:title="@string/settings_label_device_camera" />
+    <restriction
+        android:defaultValue="false"
+        android:key="pref_scan_offline"
+        android:restrictionType="bool"
+        android:summary="@string/settings_summary_scan_offline"
+        android:title="@string/settings_label_scan_offline" />
+    <restriction
+        android:defaultValue="false"
+        android:key="pref_print_badges"
+        android:restrictionType="bool"
+        android:title="@string/preference_badgeprint_enable" />
+    <restriction
+        android:defaultValue="false"
+        android:key="pref_auto_print_badges"
+        android:dependency="pref_print_badges"
+        android:restrictionType="bool"
+        android:title="@string/preference_autobadgeprint_enable" />
+</restrictions>
