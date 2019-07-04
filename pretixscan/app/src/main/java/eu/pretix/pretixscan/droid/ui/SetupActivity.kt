@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,7 @@ import javax.net.ssl.SSLException
 class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     var lastScanTime = 0L
     var lastScanValue = ""
+    var conf: AppConfig? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
     private val scanReceiver = object : BroadcastReceiver() {
@@ -59,6 +61,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
+        conf = AppConfig(this)
 
         checkPermission(Manifest.permission.CAMERA)
         if (dataWedgeHelper.isInstalled) {
@@ -79,9 +82,12 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onResume() {
         super.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            scanner_view.setResultHandler(this)
-            scanner_view.startCamera()
+            if (conf!!.useCamera) {
+                scanner_view.setResultHandler(this)
+                scanner_view.startCamera()
+            }
         }
+        tvHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
         val filter = IntentFilter()
         filter.addAction("scan.rcv.message")
         filter.addAction("eu.pretix.SCAN")
@@ -91,7 +97,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onPause() {
         super.onPause()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            scanner_view.stopCamera()
+            if (conf!!.useCamera) {
+                scanner_view.stopCamera()
+            }
         }
         unregisterReceiver(scanReceiver)
     }
@@ -164,7 +172,6 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     }
 
     private fun initialize(url: String, token: String) {
-        val conf = AppConfig(this)
         val pdialog = indeterminateProgressDialog(R.string.setup_progress)
 
         fun resume() {
@@ -181,7 +188,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             )
             try {
                 val init = setupm.initialize(url, token)
-                conf.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
+                conf!!.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
                 runOnUiThread {
                     pdialog.dismiss()
 
