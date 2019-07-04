@@ -86,4 +86,11 @@
     <string name="already_scanned">bereits gescannt</string>
     <string name="total_tickets_sold">Tickets (gesamt)</string>
     <string name="ticket_attention">Vorsicht, besonderes Ticket!</string>
+<string name="hardware_scanner">Bitte benutze die Hardware-Scantasten deines Gerätes zum Scannen.</string>
+    <string name="force_full_resync">Komplett synchronisieren</string>
+    <string name="settings_label_version">Version</string>
+    <string name="settings_label_troubleshooting">Fehlersuche</string>
+    <string name="force_full_resync_help">Dies löscht keine lokalen Daten, aber die nächste Synchronisation jeder Veranstaltung wird alle Daten neu herunterladen, nicht nur kürzlich geänderte.</string>
+    <string name="full_delete">Lösche alle lokal gespeicherten Daten und setze Gerät zurück</string>
+    <string name="full_delete_confirm">Soll dieses Gerät wirklich zurückgesetzt werden\? Du musst es danach neu mit dem Online-System verbinden.</string>
 </resources>
