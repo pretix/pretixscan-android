@@ -526,6 +526,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             scanner_view.setResultHandler(this)
             scanner_view.startCamera()
         }
+        tvHardwareScan.visibility = if (conf.useCamera) View.GONE else View.VISIBLE
         reloadCameraState()
     }
 
