@@ -39,5 +39,9 @@
             android:title="@string/force_full_resync"
             android:summary="@string/force_full_resync_help"
             />
+        <Preference
+            android:key="full_delete"
+            android:title="@string/full_delete"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

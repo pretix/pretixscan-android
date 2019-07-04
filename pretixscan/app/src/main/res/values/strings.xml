@@ -91,4 +91,6 @@
     <string name="settings_label_version">Version</string>
     <string name="settings_label_troubleshooting">Troubleshooting</string>
     <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only changed data.</string>
+    <string name="full_delete">Delete all local data and reset device</string>
+    <string name="full_delete_confirm">Do you really want to reset the device? You will need to pair it with the online system again.</string>
 </resources>

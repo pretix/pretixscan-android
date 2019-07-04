@@ -1,5 +1,6 @@
 package eu.pretix.pretixscan.droid
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -46,20 +47,10 @@ class AppConfig(ctx: Context) : ConfigStore {
                 .apply()
     }
 
+    @SuppressLint("ApplySharedPref")
     fun resetDeviceConfig() {
-        prefs.edit()
-                .remove(PREFS_KEY_API_URL)
-                .remove(PREFS_KEY_API_KEY)
-                .remove(PREFS_KEY_EVENT_SLUG)
-                .remove(PREFS_KEY_ORGANIZER_SLUG)
-                .remove(PREFS_KEY_DEVICE_ID)
-                .remove(PREFS_KEY_DEVICE_SERIAL)
-                .remove(PREFS_KEY_DEVICE_KNOWN_VERSION)
-                .remove(PREFS_KEY_LAST_DOWNLOAD)
-                .remove(PREFS_KEY_LAST_SYNC)
-                .remove(PREFS_KEY_LAST_FAILED_SYNC)
-                .remove(PREFS_KEY_LAST_STATUS_DATA)
-                .apply()
+        prefs.edit().clear().commit()
+        default_prefs.edit().clear().commit()
     }
 
     override fun getApiVersion(): Int {
@@ -105,22 +96,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         } else {
             return prefs.getString(PREFS_KEY_API_KEY, "")
         }
-    }
-
-    override fun getShowInfo(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_SHOW_INFO, true)
-    }
-
-    override fun getAllowSearch(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_ALLOW_SEARCH, true)
-    }
-
-    override fun getLastStatusData(): String? {
-        return prefs.getString(PREFS_KEY_LAST_STATUS_DATA, null)
-    }
-
-    override fun setLastStatusData(`val`: String) {
-        prefs.edit().putString(PREFS_KEY_LAST_STATUS_DATA, `val`).apply()
     }
 
     override fun getLastDownload(): Long {
