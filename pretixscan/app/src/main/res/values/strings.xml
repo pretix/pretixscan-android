@@ -87,4 +87,8 @@
     <string name="total_tickets_sold">total tickets sold</string>
     <string name="ticket_attention">Attention, special ticket!</string>
     <string name="hardware_scanner">Please press the hardware scan buttons of your device to scan.</string>
+    <string name="force_full_resync">Force a full synchronization</string>
+    <string name="settings_label_version">Version</string>
+    <string name="settings_label_troubleshooting">Troubleshooting</string>
+    <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only changed data.</string>
 </resources>

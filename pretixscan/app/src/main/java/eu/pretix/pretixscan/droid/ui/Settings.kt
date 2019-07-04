@@ -14,10 +14,14 @@ import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
+import eu.pretix.libpretixsync.db.ResourceLastModified
+import eu.pretix.pretixscan.droid.BuildConfig
+import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
 import java.io.BufferedReader
 import java.io.IOException
@@ -34,6 +38,12 @@ class SettingsFragment : PreferenceFragment() {
 
         findPreference("licenses").setOnPreferenceClickListener {
             asset_dialog(R.raw.about, R.string.settings_label_licenses)
+            return@setOnPreferenceClickListener true
+        }
+        findPreference("version")?.summary = BuildConfig.VERSION_NAME
+        findPreference("full_resync")?.setOnPreferenceClickListener {
+            (activity!!.application as PretixScan).data.delete(ResourceLastModified::class.java).get().value();
+            toast("OK")
             return@setOnPreferenceClickListener true
         }
 
