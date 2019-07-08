@@ -246,7 +246,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 alert(Appcompat, "") {
                     val view = layoutInflater.inflate(R.layout.dialog_setup_manual, null)
                     val inputUri = view.findViewById<EditText>(R.id.input_uri)
-                    inputUri.setText("https://pretix.eu")
+                    if (BuildConfig.APPLICATION_ID.contains("eu.pretix")) {
+                        inputUri.setText("https://pretix.eu")
+                    }
                     val inputToken = view.findViewById<EditText>(R.id.input_token)
                     customView = view
                     positiveButton(R.string.ok) {
