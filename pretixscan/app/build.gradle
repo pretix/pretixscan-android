@@ -43,6 +43,14 @@ android {
             keyAlias "pretixdroid"
             keyPassword System.getenv("KSTOREPWD")
         }
+        flavors.each { flavorName, flavorData ->
+            "$flavorName" {
+                storeFile file("../../${flavorName}.keystore")
+                storePassword System.getenv("KSTOREPWD")
+                keyAlias "pretixdroid"
+                keyPassword System.getenv("KSTOREPWD")
+            }
+        }
     }
 
     buildTypes {
@@ -69,7 +77,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
             buildConfigField "String", "SENTRY_DSN", sentry_dsn
             buildConfigField "String", "SUMUP_AFFILIATE_KEY", sumup_key
         }
@@ -86,11 +93,13 @@ android {
     productFlavors {
         pretix {
             dimension "brand"
+            signingConfig signingConfigs.release
         }
         flavors.each { flavorName, flavorData ->
             "$flavorName" {
                 dimension "${flavorData['dimension']}"
                 applicationId "${flavorData['appId']}"
+                signingConfig signingConfigs."$flavorName"
             }
         }
     }
