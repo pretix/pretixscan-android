@@ -73,7 +73,7 @@ class SettingsFragment : PreferenceFragment() {
             if (any == true) {
                 if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager)
                         && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
-                        && !isPackageInstalled("de.silpion.bleterminal", activity.packageManager)) {
+                        && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)) {
                     alert(Appcompat, R.string.preference_badgeprint_install_pretixprint) {
                         yesButton {
                             try {
