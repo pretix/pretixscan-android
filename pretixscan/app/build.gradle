@@ -71,7 +71,7 @@ android {
 			} else {
                 sumup_key = "\"" + sumup_key + "\""
 			}
-		} catch (all) {
+		} catch (ignore) {
 		}
 
         release {
@@ -135,7 +135,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -146,7 +146,7 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'io.sentry:sentry-android:1.7.16'
+    implementation 'io.sentry:sentry-android:1.7.23'
     implementation 'org.slf4j:slf4j-nop:1.7.25'
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'io.requery:requery:1.5.1'
