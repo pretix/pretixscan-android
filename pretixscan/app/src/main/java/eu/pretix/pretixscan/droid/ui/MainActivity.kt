@@ -666,6 +666,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
                 TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
+                TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
                 else -> null
             }
@@ -677,6 +678,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.CANCELED -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.ERROR
         })

@@ -10,6 +10,7 @@
             type="eu.pretix.libpretixsync.check.TicketCheckProvider.SearchResult" />
 
         <import type="android.view.View" />
+        <import type="eu.pretix.libpretixsync.check.TicketCheckProvider.SearchResult.Status" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/rlResult"
@@ -41,10 +42,10 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:lines="1"
-            android:text="@{res.redeemed ? @string/status_redeemed : (!res.paid ? @string/status_unpaid : @string/status_valid)}"
+            android:text="@{res.redeemed ? @string/status_redeemed : (res.status == Status.PAID ? @string/status_valid : (res.status == Status.PENDING ? @string/status_unpaid : @string/status_canceled))}"
             android:textAlignment="textEnd"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@{res.redeemed ? @color/pretix_brand_orange : (!res.paid ? @color/pretix_brand_red : @color/pretix_brand_green)}"
+            android:textColor="@{res.redeemed ? @color/pretix_brand_orange : (res.status == Status.PAID ? @color/pretix_brand_green : @color/pretix_brand_red)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSecret" />
 

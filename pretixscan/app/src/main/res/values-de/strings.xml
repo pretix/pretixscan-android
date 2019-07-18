@@ -69,6 +69,7 @@
     <string name="status_redeemed">Eingelöst</string>
     <string name="status_unpaid">Unbezahlt</string>
     <string name="status_valid">Gültig</string>
+    <string name="status_canceled">Storniert</string>
     <string name="status_empty">Keine Suchergebnisse gefunden. Bitte geben Sie mindestens vier Zeichen ein.</string>
     <string name="scan_result_valid">Ticket gültig</string>
     <string name="scan_result_used">Ticket bereits eingelöst</string>
@@ -76,6 +77,7 @@
     <string name="scan_result_invalid">Ticket ungültig</string>
     <string name="scan_result_product">Ungültiges Produkt</string>
     <string name="scan_result_unpaid">Ticket nicht bezahlt</string>
+    <string name="scan_result_canceled">Ticket storniert</string>
     <string name="error_sync_in_background">Eine Synchronisation läuft bereits im Hintergrund.</string>
     <string name="dialog_unpaid_title">Unbezahlte Bestellung</string>
     <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken\? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
