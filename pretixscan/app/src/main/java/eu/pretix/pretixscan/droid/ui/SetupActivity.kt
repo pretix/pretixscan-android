@@ -189,6 +189,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             try {
                 val init = setupm.initialize(url, token)
                 conf!!.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
+                conf!!.proxyMode = token.startsWith("proxy=")
                 runOnUiThread {
                     pdialog.dismiss()
 

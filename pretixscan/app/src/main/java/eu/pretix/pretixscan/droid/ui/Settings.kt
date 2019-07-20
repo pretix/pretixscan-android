@@ -27,7 +27,7 @@ import java.io.InputStreamReader
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import eu.pretix.libpretixsync.db.Models
+import eu.pretix.libpretixsync.Models
 import org.jetbrains.anko.*
 
 
@@ -42,6 +42,8 @@ class SettingsFragment : PreferenceFragment() {
             asset_dialog(R.raw.about, R.string.settings_label_licenses)
             return@setOnPreferenceClickListener true
         }
+        val conf = AppConfig(activity)
+        findPreference("pref_scan_offline")?.isEnabled = !conf.proxyMode
         findPreference("version")?.summary = BuildConfig.VERSION_NAME
         findPreference("full_resync")?.setOnPreferenceClickListener {
             (activity!!.application as PretixScan).data.delete(ResourceLastModified::class.java).get().value();

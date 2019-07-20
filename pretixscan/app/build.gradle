@@ -149,15 +149,17 @@ dependencies {
     implementation 'io.sentry:sentry-android:1.7.23'
     implementation 'org.slf4j:slf4j-nop:1.7.25'
     implementation 'joda-time:joda-time:2.9.9'
-    implementation 'io.requery:requery:1.5.1'
-    implementation 'io.requery:requery-android:1.5.1'
-    implementation 'io.requery:requery-kotlin:1.5.1'
+    implementation 'io.requery:requery:1.6.0'
+    implementation 'io.requery:requery-android:1.6.0'
+    implementation 'io.requery:requery-kotlin:1.6.0'
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.9"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
 
-    annotationProcessor 'io.requery:requery-processor:1.5.1'
+    annotationProcessor 'io.requery:requery-processor:1.6.0'
     implementation(project(':libpretixsync')) {
         transitive = false
     }

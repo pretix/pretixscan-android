@@ -8,8 +8,9 @@ import com.facebook.stetho.Stetho
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
-import eu.pretix.libpretixsync.db.Models
+import eu.pretix.libpretixsync.Models
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
@@ -76,8 +77,10 @@ class PretixScan : MultiDexApplication() {
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
-        if (conf.offlineMode) {
-            return AsyncCheckProvider(conf, data, conf.checkinListId)
+        if (conf.proxyMode) {
+            return ProxyCheckProvider(conf, data, conf.checkinListId)
+        } else if (conf.offlineMode) {
+            return AsyncCheckProvider(conf.eventSlug, data, conf.checkinListId)
         } else {
             return OnlineCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
         }

@@ -185,6 +185,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green));
         }
+        textView_status.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
         var text = ""
         val diff = System.currentTimeMillis() - conf.lastDownload
         if ((application as PretixScan).syncLock.isLocked) {

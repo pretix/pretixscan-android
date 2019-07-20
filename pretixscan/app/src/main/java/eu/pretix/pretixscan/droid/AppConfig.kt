@@ -161,6 +161,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
 
+    var proxyMode: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_SCAN_PROXY, true)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_PROXY, value).apply()
+
     var offlineMode: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_SCAN_OFFLINE, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_OFFLINE, value).apply()
@@ -197,6 +201,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
+        val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"
         val PREFS_KEY_PRINTBADGES = "pref_print_badges"
         val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
     }
