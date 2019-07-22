@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.droid.*
@@ -164,6 +165,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     } else {
                         view_data.search_state.set(ResultState.SUCCESS)
                     }
+                }
+            } catch (e: CheckException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    hideSearchCard()
+                    toast(e.message ?: getString(R.string.error_unknown_exception))
                 }
             } catch (e: Exception) {
                 if (BuildConfig.SENTRY_DSN != null) {
