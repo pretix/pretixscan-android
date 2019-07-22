@@ -489,6 +489,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             try {
                 sm.sync(true) { current_action ->
                     runOnUiThread {
+                        if (isDestroyed) {
+                            return@runOnUiThread
+                        }
                         reloadSyncStatus()
                         syncMessage = current_action
                         (dialog as ProgressDialog).setMessage(current_action)

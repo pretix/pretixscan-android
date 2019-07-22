@@ -86,9 +86,9 @@ class EventinfoActivity : AppCompatActivity() {
          *
          * @param result the answer of the pretix status endpoint
          */
-        override fun onPostExecute(result: TicketCheckProvider.StatusResult) {
+        override fun onPostExecute(result: TicketCheckProvider.StatusResult?) {
             this@EventinfoActivity.mSwipeRefreshLayout.isRefreshing = false
-            if (this.e != null) {
+            if (this.e != null || result == null) {
                 Toast.makeText(this@EventinfoActivity, R.string.error_unknown_exception, Toast.LENGTH_LONG).show()
                 finish()
                 return
