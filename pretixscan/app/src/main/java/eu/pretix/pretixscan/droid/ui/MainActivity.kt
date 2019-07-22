@@ -825,7 +825,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     fun getRestrictions(ctx: Context) {
-        val myRestrictionsMgr = ctx.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return
+        }
+        val myRestrictionsMgr = ctx.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager?
+                ?: return
         val restrictions = myRestrictionsMgr.applicationRestrictions
 
         for (key in restrictions.keySet()) {
