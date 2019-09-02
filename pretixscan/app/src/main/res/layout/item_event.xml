@@ -46,6 +46,7 @@
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvLive"
             app:layout_constraintStart_toEndOf="@+id/radioButton"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             tools:text="01.09.2019 – 03.02.2019" />
@@ -60,6 +61,22 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/tvTitle"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="democon" />
+
+        <com.apg.mobile.roundtextview.RoundTextView
+            android:id="@+id/tvLive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="11dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@{item.live ? @string/label_shop_active : @string/label_shop_inactive}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/white"
+            app:allCorner="16dp"
+            app:bgColor="@{item.live ? @color/pretix_brand_green : @color/pretix_brand_red}"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvDate"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Aktiv" />
 
         <RadioButton
             android:id="@+id/radioButton"

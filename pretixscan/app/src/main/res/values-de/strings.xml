@@ -95,4 +95,6 @@
     <string name="force_full_resync_help">Dies löscht keine lokalen Daten, aber die nächste Synchronisation jeder Veranstaltung wird alle Daten neu herunterladen, nicht nur kürzlich geänderte.</string>
     <string name="full_delete">Lösche alle lokal gespeicherten Daten und setze Gerät zurück</string>
     <string name="full_delete_confirm">Soll dieses Gerät wirklich zurückgesetzt werden\? Du musst es danach neu mit dem Online-System verbinden.</string>
+    <string name="label_shop_active">Aktiv</string>
+    <string name="label_shop_inactive">Shop deaktiviert</string>
 </resources>
