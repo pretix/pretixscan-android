@@ -15,12 +15,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.MediaController
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
@@ -102,6 +104,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
+    private var keyboardBuffer: String = ""
     private var dialog: Dialog? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
@@ -758,6 +761,31 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
         handleScan(s, null, false)
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action != KeyEvent.ACTION_DOWN || currentFocus is TextView) {
+            return super.dispatchKeyEvent(event)
+        }
+        return when (event.keyCode) {
+            KeyEvent.KEYCODE_ENTER -> {
+                if (keyboardBuffer.isEmpty()) {
+                    false
+                }
+                handleScan(keyboardBuffer, null, false)
+                keyboardBuffer = ""
+                true
+            }
+            else -> {
+                val codepoint = event.keyCharacterMap.get(event.keyCode, 0)
+                if (codepoint > 0) {
+                    keyboardBuffer += codepoint.toChar()
+                    true
+                } else {
+                    super.dispatchKeyEvent(event)
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
