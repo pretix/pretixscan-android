@@ -383,7 +383,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 (application as PretixScan).fileStorage,
                 60000L,
                 5 * 60000L,
-                false
+                false,
+                BuildConfig.VERSION_CODE,
+                Build.BRAND,
+                Build.MODEL,
+                "pretixSCAN",
+                BuildConfig.VERSION_NAME
         )
     }
 

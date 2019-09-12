@@ -1,6 +1,7 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -32,7 +33,12 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 (application as PretixScan).fileStorage,
                 1000L,
                 1000L,
-                false
+                false,
+                BuildConfig.VERSION_CODE,
+                Build.BRAND,
+                Build.MODEL,
+                "pretixSCAN",
+                BuildConfig.VERSION_NAME
         )
         sm.sync(true)
     }

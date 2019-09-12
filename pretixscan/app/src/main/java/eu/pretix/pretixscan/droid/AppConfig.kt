@@ -150,9 +150,13 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_SCAN_AUTOFOCUS, true)
         set(value) = prefs.edit().putBoolean(PREFS_KEY_SCAN_AUTOFOCUS, value).apply()
 
-    var deviceKnownVersion: String
-        get() = prefs.getString(PREFS_KEY_DEVICE_KNOWN_VERSION, "")
-        set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
+    override fun getDeviceKnownVersion(): Int {
+        return prefs.getInt(PREFS_KEY_DEVICE_KNOWN_VERSION, 0)
+    }
+
+    override fun setDeviceKnownVersion(value: Int) {
+        prefs.edit().putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
+    }
 
     var deviceRegistered: Boolean = false
         get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
