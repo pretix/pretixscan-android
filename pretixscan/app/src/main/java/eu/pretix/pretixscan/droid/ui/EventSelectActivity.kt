@@ -7,14 +7,17 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.setup.EventManager
+import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixpos.anim.MorphingDialogActivity
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import kotlinx.android.synthetic.main.activity_event_select.*
+import kotlinx.coroutines.experimental.internal.RemoveFirstDesc
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import java.lang.Exception
 
 
 class EventSelectActivity : MorphingDialogActivity() {
@@ -68,9 +71,22 @@ class EventSelectActivity : MorphingDialogActivity() {
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
         eventManager = EventManager((application as PretixScan).data, api, conf, false)
         eventsAdapter = EventAdapter(null)
+        tvError.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
         doAsync {
-            val events = eventManager.getAvailableEvents()
+            val events: List<RemoteEvent>
+            try {
+                events = eventManager.getAvailableEvents()
+            } catch (e: Exception) {
+                swipe_container.isRefreshing = false
+                uiThread {
+                    tvError.text = e.toString()
+                    tvError.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
+                    eventsAdapter.submitList(emptyList())
+                }
+                return@doAsync
+            }
             uiThread {
                 progressBar.visibility = View.GONE
                 eventsAdapter.selectedEvent = events.find { it.slug == conf.eventSlug && it.subevent_id == conf.subeventId }
