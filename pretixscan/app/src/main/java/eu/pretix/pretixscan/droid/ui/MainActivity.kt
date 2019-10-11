@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 // Zebra DataWedge
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = intent.getStringExtra("com.symbol.datawedge.data_string")
-                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"), null, false)
+                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"), null, !conf.unpaidAsk)
             } else if (intent.hasExtra("barocode")) {
                 // Intent receiver for LECOM-manufactured hardware scanners
                 val barcode = intent?.getByteArrayExtra("barocode") // sic!
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 val barcodeStr = String(barcode, 0, barocodelen)
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = barcodeStr
-                handleScan(barcodeStr, null, false)
+                handleScan(barcodeStr, null, !conf.unpaidAsk)
             }
         }
     }
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         lastScanTime = System.currentTimeMillis()
                         lastScanCode = res.secret
                         hideSearchCard()
-                        handleScan(res.secret, null, false)
+                        handleScan(res.secret, null, !conf.unpaidAsk)
                     }
                 })
                 runOnUiThread {
@@ -765,7 +765,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
-        handleScan(s, null, false)
+        handleScan(s, null, !conf.unpaidAsk)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -777,7 +777,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 if (keyboardBuffer.isEmpty()) {
                     false
                 }
-                handleScan(keyboardBuffer, null, false)
+                handleScan(keyboardBuffer, null, !conf.unpaidAsk)
                 keyboardBuffer = ""
                 true
             }
