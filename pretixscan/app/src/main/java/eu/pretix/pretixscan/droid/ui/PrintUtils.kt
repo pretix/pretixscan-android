@@ -12,6 +12,7 @@ import androidx.core.content.FileProvider
 import eu.pretix.libpretixsync.db.BadgeLayout
 import eu.pretix.libpretixsync.db.BadgeLayoutItem
 import eu.pretix.libpretixsync.db.Item
+import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import org.json.JSONArray
@@ -78,6 +79,9 @@ fun receiverForSending(actualReceiver: ResultReceiver): ResultReceiver {
 fun printBadge(context: Context, application: PretixScan, position: JSONObject, recv: ResultReceiver?) {
     val positions = JSONArray()
     positions.put(position)
+    if (AppConfig(context).printBadgesTwice) {
+        positions.put(position)
+    }
     val data = JSONObject()
     data.put("positions", positions)
 

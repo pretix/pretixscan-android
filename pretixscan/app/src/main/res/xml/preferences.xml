@@ -14,34 +14,37 @@
         android:key="pref_scan_offline"
         android:summary="@string/settings_summary_scan_offline"
         android:title="@string/settings_label_scan_offline" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="pref_print_badges"
-        android:title="@string/preference_badgeprint_enable" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="pref_auto_print_badges"
-        android:dependency="pref_print_badges"
-        android:title="@string/preference_autobadgeprint_enable" />
+    <PreferenceCategory android:title="@string/settings_label_badges">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_print_badges"
+            android:title="@string/preference_badgeprint_enable" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_print_badges"
+            android:key="pref_auto_print_badges"
+            android:title="@string/preference_autobadgeprint_enable" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_print_badges"
+            android:key="pref_print_badges_twice"
+            android:title="@string/preference_badges_twice" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
             android:key="version"
-            android:title="@string/settings_label_version"
-            />
+            android:title="@string/settings_label_version" />
         <Preference
             android:key="licenses"
-            android:title="@string/settings_label_licenses"
-            />
+            android:title="@string/settings_label_licenses" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_troubleshooting">
         <Preference
             android:key="full_resync"
-            android:title="@string/force_full_resync"
             android:summary="@string/force_full_resync_help"
-            />
+            android:title="@string/force_full_resync" />
         <Preference
             android:key="full_delete"
-            android:title="@string/full_delete"
-            />
+            android:title="@string/full_delete" />
     </PreferenceCategory>
 </PreferenceScreen>

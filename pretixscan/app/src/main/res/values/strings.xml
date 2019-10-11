@@ -61,6 +61,8 @@
     <string name="settings_label_device_camera">Use device camera</string>
     <string name="settings_label_scan_offline">Offline scanning</string>
     <string name="settings_summary_scan_offline">When scanning offline, your device will verify all input with its internal database instead with the server and synchronize its database with the server occasionally. This is more reliable, but allows a ticket to be scanned twice if you scan with multiple devices.</string>
+    <string name="settings_label_badges">Badges</string>
+    <string name="preference_badges_twice">Print every badge twice</string>
     <string name="question_validation_error">Some of your input could not be validated.</string>
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>
