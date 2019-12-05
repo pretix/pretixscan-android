@@ -55,7 +55,6 @@ android {
 
     buildTypes {
 		def sentry_dsn = "null"
-        def sumup_key = "null"
 		try {
 			Properties properties = new Properties()
 			properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -65,12 +64,6 @@ android {
             } else {
                 sentry_dsn = "\"" + sentry_dsn + "\""
             }
-			sumup_key = properties.getProperty('sumup.key')
-			if (sumup_key == null) {
-                sumup_key = "null"
-			} else {
-                sumup_key = "\"" + sumup_key + "\""
-			}
 		} catch (ignore) {
 		}
 
@@ -78,14 +71,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "SENTRY_DSN", sentry_dsn
-            buildConfigField "String", "SUMUP_AFFILIATE_KEY", sumup_key
         }
         debug {
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             buildConfigField "String", "SENTRY_DSN", "null"
-            buildConfigField "String", "SUMUP_AFFILIATE_KEY", sumup_key
         }
     }
 
