@@ -730,12 +730,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.attention.set(result.isRequireAttention)
 
         if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-            printBadge(this@MainActivity, application as PretixScan, result.position, null)
+            printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
         }
         if (result?.position != null && conf.printBadges) {
-            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position) != null)
+            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position, conf.eventSlug!!) != null)
             ibPrint.setOnClickListener {
-                printBadge(this@MainActivity, application as PretixScan, result.position, null)
+                printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
             }
         } else {
             view_data.show_print.set(false)

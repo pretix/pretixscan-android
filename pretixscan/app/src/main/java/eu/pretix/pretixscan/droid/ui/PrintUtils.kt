@@ -27,7 +27,7 @@ fun getDefaultBadgeLayout(): BadgeLayout {
     return tl
 }
 
-fun getBadgeLayout(application: PretixScan, position: JSONObject): BadgeLayout? {
+fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: String): BadgeLayout? {
     val itemid = position.getLong("item")
 
     val litem = application.data.select(BadgeLayoutItem::class.java)
@@ -48,10 +48,12 @@ fun getBadgeLayout(application: PretixScan, position: JSONObject): BadgeLayout? 
     if (item.getBadge_layout_id() != null) {
         return application.data.select(BadgeLayout::class.java)
                 .where(BadgeLayout.SERVER_ID.eq(item.getBadge_layout_id()))
+                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
                 .get().firstOrNull() ?: getDefaultBadgeLayout()
     } else {
         return application.data.select(BadgeLayout::class.java)
                 .where(BadgeLayout.IS_DEFAULT.eq(true))
+                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
                 .get().firstOrNull() ?: getDefaultBadgeLayout()
     }
 }
@@ -76,7 +78,7 @@ fun receiverForSending(actualReceiver: ResultReceiver): ResultReceiver {
 }
 
 
-fun printBadge(context: Context, application: PretixScan, position: JSONObject, recv: ResultReceiver?) {
+fun printBadge(context: Context, application: PretixScan, position: JSONObject, eventSlug: String, recv: ResultReceiver?) {
     val positions = JSONArray()
     positions.put(position)
     if (AppConfig(context).printBadgesTwice) {
@@ -92,7 +94,7 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     val dataFile = File(dir, "order.json")
     val backgroundFiles = ArrayList<File>()
 
-    val badgelayout = getBadgeLayout(application, position) ?: return
+    val badgelayout = getBadgeLayout(application, position, eventSlug) ?: return
     position.put("__layout", badgelayout.json.getJSONArray("layout"))
 
     if (badgelayout.getBackground_filename() != null) {
