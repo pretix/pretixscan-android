@@ -226,6 +226,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                Sentry.capture(e)
                 runOnUiThread {
                     resume()
                     alert(Appcompat, e.message ?: "Unknown error").show()
