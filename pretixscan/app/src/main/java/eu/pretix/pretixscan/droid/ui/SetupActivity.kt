@@ -25,6 +25,7 @@ import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.R
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.alert
