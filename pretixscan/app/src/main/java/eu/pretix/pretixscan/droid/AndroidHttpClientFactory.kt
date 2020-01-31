@@ -5,6 +5,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import okhttp3.OkHttpClient
 import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 import javax.security.cert.CertificateException
 
@@ -16,6 +17,10 @@ class AndroidHttpClientFactory : HttpClientFactory {
         } else {
             OkHttpClient.Builder()
         }
+
+        builder.connectTimeout(30, TimeUnit.SECONDS)
+        builder.readTimeout(30, TimeUnit.SECONDS)
+        builder.writeTimeout(30, TimeUnit.SECONDS)
 
         if (ignore_ssl) {
             val trustAllCerts = arrayOf<X509TrustManager>(object : X509TrustManager {
