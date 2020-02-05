@@ -35,6 +35,11 @@ class AndroidHttpClientFactory : HttpClientFactory {
                 @Throws(CertificateException::class)
                 override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {
                 }
+
+                fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String, wat: String) {
+                    // Called reflectively by
+                    // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/net/http/X509TrustManagerExtensions.java#64
+                }
             })
 
             // Install the all-trusting trust manager
@@ -43,11 +48,7 @@ class AndroidHttpClientFactory : HttpClientFactory {
             val sslSocketFactory = sslContext.getSocketFactory()
 
             builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0])
-            builder.hostnameVerifier(object : HostnameVerifier {
-                override fun verify(hostname: String, session: SSLSession): Boolean {
-                    return true
-                }
-            })
+            builder.hostnameVerifier(HostnameVerifier { hostname, session -> true })
         }
 
         return builder.build()
