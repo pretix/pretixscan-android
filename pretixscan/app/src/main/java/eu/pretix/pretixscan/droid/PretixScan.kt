@@ -78,7 +78,7 @@ class PretixScan : MultiDexApplication() {
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
         if (conf.proxyMode) {
-            return ProxyCheckProvider(conf, data, conf.checkinListId)
+            return ProxyCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
         } else if (conf.offlineMode) {
             return AsyncCheckProvider(conf.eventSlug, data, conf.checkinListId)
         } else {

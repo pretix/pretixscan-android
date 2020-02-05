@@ -12,7 +12,6 @@ import eu.pretix.pretixscan.utils.KeystoreHelper
 
 
 class AppConfig(ctx: Context) : ConfigStore {
-
     private val prefs: SharedPreferences
     private val default_prefs: SharedPreferences
 
@@ -158,6 +157,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         prefs.edit().putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
     }
 
+    override fun setKnownPretixVersion(value: Long) {
+        prefs.edit().putLong(PREFS_KEY_KNOWN_PRETIX_VERSION, value).apply()
+    }
+
+    override fun getKnownPretixVersion(): Long {
+        return prefs.getLong(PREFS_KEY_KNOWN_PRETIX_VERSION, 0L);
+    }
+
     var deviceRegistered: Boolean = false
         get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
 
@@ -209,6 +216,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_ID = "device_pos_id"
         val PREFS_KEY_DEVICE_SERIAL = "device_pos_serial"
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
+        val PREFS_KEY_KNOWN_PRETIX_VERSION = "known_pretix_version"
         val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
