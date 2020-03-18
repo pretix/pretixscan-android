@@ -24,6 +24,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.MediaController
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
@@ -769,7 +770,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action != KeyEvent.ACTION_DOWN || currentFocus is TextView) {
+        if (event.action != KeyEvent.ACTION_DOWN || (currentFocus is TextView && currentFocus !is AppCompatButton)) {
             return super.dispatchKeyEvent(event)
         }
         return when (event.keyCode) {
