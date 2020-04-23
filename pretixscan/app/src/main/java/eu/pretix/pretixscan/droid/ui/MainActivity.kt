@@ -66,7 +66,8 @@ enum class ResultState {
     ERROR,
     DIALOG,
     WARNING,
-    SUCCESS
+    SUCCESS,
+    SUCCESS_EXIT
 }
 
 class ViewDataHolder(private val ctx: Context) {
@@ -79,13 +80,15 @@ class ViewDataHolder(private val ctx: Context) {
     val detail3 = ObservableField<String>()
     val detail4 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
+    val hardwareScan = ObservableField<Boolean>()
+    val scanType = ObservableField<String>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
             ResultState.DIALOG, ResultState.LOADING -> R.color.pretix_brand_lightgrey
             ResultState.ERROR -> R.color.pretix_brand_red
             ResultState.WARNING -> R.color.pretix_brand_orange
-            ResultState.SUCCESS -> R.color.pretix_brand_green
+            ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> R.color.pretix_brand_green
         })
     }
 }
@@ -546,7 +549,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             scanner_view.setResultHandler(this)
             scanner_view.startCamera()
         }
-        tvHardwareScan.visibility = if (conf.useCamera) View.GONE else View.VISIBLE
+        view_data.scanType.set(conf.scanType)
+        view_data.hardwareScan.set(!conf.useCamera)
         reloadCameraState()
     }
 
@@ -639,7 +643,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             if (Regex("[0-9A-Za-z]+").matches(result)) {
                 val provider = (application as PretixScan).getCheckProvider(conf)
                 try {
-                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, TicketCheckProvider.CheckInType.ENTRY)
+                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                        "exit" -> TicketCheckProvider.CheckInType.EXIT
+                        else -> TicketCheckProvider.CheckInType.ENTRY
+                    })
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
@@ -695,7 +702,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.result_text.set(result.message)
         view_data.result_state.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.VALID -> ResultState.SUCCESS
+            TicketCheckProvider.CheckResult.Type.VALID -> {
+                when (result.scanType) {
+                    TicketCheckProvider.CheckInType.EXIT -> ResultState.SUCCESS_EXIT
+                    TicketCheckProvider.CheckInType.ENTRY -> ResultState.SUCCESS
+                }
+            }
             TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.RULES -> ResultState.ERROR
@@ -821,6 +833,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
 
+        menu.findItem(R.id.action_scantype).title = if (conf.scanType == "exit") {
+            getString(R.string.action_label_scantype_entry)
+        } else {
+            getString(R.string.action_label_scantype_exit)
+        }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (query.isEmpty()) {
@@ -860,6 +878,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 val intent = Intent(this@MainActivity, EventinfoActivity::class.java)
                 startActivity(intent)
                 return true
+            }
+            R.id.action_scantype -> {
+                if (conf.scanType == "entry") {
+                    conf.scanType = "exit"
+                    item.title = getString(R.string.action_label_scantype_entry)
+                } else {
+                    conf.scanType = "entry"
+                    item.title = getString(R.string.action_label_scantype_exit)
+                }
+                view_data.scanType.set(conf.scanType)
             }
             R.id.action_sync -> {
                 syncNow()

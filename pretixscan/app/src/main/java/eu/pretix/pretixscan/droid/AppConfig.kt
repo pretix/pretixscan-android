@@ -192,6 +192,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_PRINTBADGESTWICE, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGESTWICE, value).apply()
 
+    var scanType: String
+        get() = default_prefs.getString(PREFS_KEY_SCAN_TYPE, "entry")
+        set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_TYPE, value).apply()
+
     var unpaidAsk: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
@@ -226,5 +230,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_PRINTBADGESTWICE = "pref_print_badges_twice"
         val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
+        val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
     }
 }

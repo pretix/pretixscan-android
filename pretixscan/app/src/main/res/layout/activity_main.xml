@@ -40,18 +40,46 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvHardwareScan"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="32dp"
                     android:gravity="center"
-                    android:text="@string/hardware_scanner" />
+                    android:orientation="vertical"
+                    android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}"
+                    android:id="@+id/vHardwareScan">
+
+                    <ImageView
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="@{data.scanType == &quot;exit&quot; ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_exit_orange_24dp" />
+                    />
+                    <TextView
+                        android:id="@+id/tvHardwareScan"
+                        android:text="@string/hardware_scanner"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" />
+                </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:keepScreenOn="true">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:visibility="@{!data.hardwareScan &amp;&amp; data.scanType == &quot;exit&quot; ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_exit_orange_24dp" />
+                    />
 
                     <TextView
                         android:id="@+id/textView_status"
@@ -143,6 +171,13 @@
                                         android:layout_height="48dp"
                                         android:visibility="@{data.result_state == ResultState.SUCCESS ? View.VISIBLE : View.GONE}"
                                         app:srcCompat="@drawable/ic_check_circle_white_24dp" />
+
+                                    <ImageView
+                                        android:id="@+id/ivStatusIconSuccessExit"
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:visibility="@{data.result_state == ResultState.SUCCESS_EXIT ? View.VISIBLE : View.GONE}"
+                                        app:srcCompat="@drawable/ic_exit_white_24dp" />
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconWarning"
