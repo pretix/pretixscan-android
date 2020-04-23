@@ -35,7 +35,7 @@ internal constructor(private val resultItem: TicketCheckProvider.StatusResultIte
         val variationList = view.findViewById<View>(R.id.variationList) as ViewGroup
         variationList.removeAllViews()
 
-        for (current in resultItem.variations) {
+        for (current in resultItem.variations!!) {
             val variationLine = inflater.inflate(R.layout.listitem_eventitemvariation, parent, false)
             (variationLine.findViewById<View>(R.id.itemVariationTitle) as TextView).text = current.name
             (variationLine.findViewById<View>(R.id.itemVariationQuantity) as TextView).text = current.checkins.toString() + "/" + current.total.toString()

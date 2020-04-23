@@ -157,9 +157,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
                         lastScanTime = System.currentTimeMillis()
-                        lastScanCode = res.secret
+                        lastScanCode = res.secret!!
                         hideSearchCard()
-                        handleScan(res.secret, null, !conf.unpaidAsk)
+                        handleScan(res.secret!!, null, !conf.unpaidAsk)
                     }
                 })
                 runOnUiThread {
@@ -639,7 +639,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             if (Regex("[0-9A-Za-z]+").matches(result)) {
                 val provider = (application as PretixScan).getCheckProvider(conf)
                 try {
-                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges)
+                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, TicketCheckProvider.CheckInType.ENTRY)
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
@@ -681,10 +681,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         if (result.message == null) {
-            result.message = when (result.type) {
+            result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
                 TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
                 TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
+                TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
@@ -692,11 +693,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
         view_data.result_text.set(result.message)
-        view_data.result_state.set(when (result.type) {
+        view_data.result_state.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.VALID -> ResultState.SUCCESS
             TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.RULES -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
@@ -730,13 +732,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         view_data.attention.set(result.isRequireAttention)
 
-        if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-            printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
+        if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
+            printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
         }
-        if (result?.position != null && conf.printBadges) {
-            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position, conf.eventSlug!!) != null)
+        if (result.position != null && conf.printBadges) {
+            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, conf.eventSlug!!) != null)
             ibPrint.setOnClickListener {
-                printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
+                printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
             }
         } else {
             view_data.show_print.set(false)

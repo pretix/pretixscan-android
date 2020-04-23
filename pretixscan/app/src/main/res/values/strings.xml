@@ -82,6 +82,7 @@
     <string name="scan_result_invalid">Invalid ticket</string>
     <string name="scan_result_product">Invalid product</string>
     <string name="scan_result_unpaid">Ticket not paid</string>
+    <string name="scan_result_rules">Entry not allowed</string>
     <string name="scan_result_canceled">Order canceled</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>

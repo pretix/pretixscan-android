@@ -102,7 +102,7 @@ class EventinfoActivity : AppCompatActivity() {
                 eia.addItem(ici)
 
                 val items = result.items
-                for (item in items) {
+                for (item in items!!) {
                     val eici = EventItemCardItem(item)
                     eia.addItem(eici)
                 }

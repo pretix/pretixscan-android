@@ -46,13 +46,13 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
     val view = inflater.inflate(R.layout.dialog_questions, null)
     val llFormFields = view.findViewById<LinearLayout>(R.id.llFormFields)
 
-    for (ra in res.requiredAnswers) {
+    for (ra in res.requiredAnswers!!) {
         val tv = TextView(ctx)
         tv.text = ra.question.question
         llFormFields.addView(tv)
         labels.put(ra.question, tv)
 
-        when (ra.getQuestion().getType()) {
+        when (ra.question.getType()) {
             QuestionType.S -> {
                 val fieldS = EditText(ctx)
                 fieldS.setText(ra.currentValue)
@@ -89,7 +89,7 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
             }
             QuestionType.M -> {
                 val fields = ArrayList<CheckBox>()
-                val selected = ra.currentValue.split(",")
+                val selected = ra.currentValue!!.split(",")
                 for (opt in ra.question.options) {
                     val field = CheckBox(ctx)
                     field.text = opt.value
@@ -121,7 +121,7 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
             }
             QuestionType.D -> {
                 val fieldD = DatePickerField(ctx)
-                if (ra.currentValue.isNotEmpty()) {
+                if (ra.currentValue!!.isNotEmpty()) {
                     try {
                         fieldD.setValue(df.parse(ra.currentValue))
                     } catch (e: ParseException) {
@@ -158,7 +158,7 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
                 fieldsW.add(fieldWH)
                 llInner.addView(fieldWH)
 
-                if (ra.currentValue.isNotEmpty()) {
+                if (ra.currentValue!!.isNotEmpty()) {
                     try {
                         fieldWD.setValue(wf.parse(ra.currentValue))
                         fieldWH.value = fromDateFields(wf.parse(ra.currentValue))
@@ -188,7 +188,7 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
             val answers = ArrayList<TicketCheckProvider.Answer>()
             var has_errors = false
 
-            for (ra in res.requiredAnswers) {
+            for (ra in res.requiredAnswers!!) {
                 var answer = ""
                 var empty = false
                 var field = fviews.get(ra.question)
