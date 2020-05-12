@@ -14,7 +14,6 @@ import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import kotlinx.android.synthetic.main.activity_event_select.*
-import kotlinx.coroutines.experimental.internal.RemoveFirstDesc
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.lang.Exception
@@ -92,6 +91,11 @@ class EventSelectActivity : MorphingDialogActivity() {
                 eventsAdapter.selectedEvent = events.find { it.slug == conf.eventSlug && it.subevent_id == conf.subeventId }
                 eventsAdapter.submitList(events)
                 events_list.adapter = eventsAdapter
+
+                var last = events.findLast { it.date_from.isBeforeNow }
+                if (last != null) {
+                    eventsLayoutManager.scrollToPositionWithOffset(events.indexOf(last), 10)
+                }
             }
         }
     }
