@@ -747,13 +747,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         view_data.attention.set(result.isRequireAttention)
 
-        if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-            printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
-        }
-        if (result.position != null && conf.printBadges) {
-            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, conf.eventSlug!!) != null)
-            ibPrint.setOnClickListener {
+        if (result.scanType != TicketCheckProvider.CheckInType.EXIT) {
+            if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
                 printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
+            }
+            if (result.position != null && conf.printBadges) {
+                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, conf.eventSlug!!) != null)
+                ibPrint.setOnClickListener {
+                    printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
+                }
+            } else {
+                view_data.show_print.set(false)
             }
         } else {
             view_data.show_print.set(false)
@@ -840,6 +844,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             getString(R.string.action_label_scantype_entry)
         } else {
             getString(R.string.action_label_scantype_exit)
+        }
+        if (conf.knownPretixVersion < 30090001000) {
+            menu.findItem(R.id.action_scantype).isVisible = false
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
