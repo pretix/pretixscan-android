@@ -47,9 +47,9 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         var lists = (application as PretixScan).data.select(CheckInList::class.java)
                 .where(CheckInList.EVENT_SLUG.eq(conf.eventSlug))
         if (conf.subeventId != null && conf.subeventId!! > 0) {
-            lists = lists.and(CheckInList.SUBEVENT_ID.eq(conf.subeventId))
+            lists = lists.and(CheckInList.SUBEVENT_ID.eq(conf.subeventId).or(CheckInList.SUBEVENT_ID.eq(0)))
         }
-        return lists.get().toList();
+        return lists.get().toList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
