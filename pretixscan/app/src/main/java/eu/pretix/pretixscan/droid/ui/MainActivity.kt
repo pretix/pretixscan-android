@@ -320,9 +320,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        conf = AppConfig(this)
+
         getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         view_data.result_state.set(ResultState.ERROR)
+        view_data.scanType.set(conf.scanType)
+        view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
 
         setSupportActionBar(toolbar)
@@ -332,7 +336,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         volumeControlStream = AudioManager.STREAM_MUSIC
         buildMediaPlayer()
 
-        conf = AppConfig(this)
         if (!conf.deviceRegistered) {
             registerDevice()
             return
