@@ -19,6 +19,7 @@ class HardwareScanner(val receiver: ScanReceiver) {
                 // Zebra DataWedge
                 receiver.scanResult(intent.getStringExtra("com.symbol.datawedge.data_string"))
             } else if (intent.hasExtra("EXTRA_BARCODE_DECODING_DATA")) {
+                // Bluebird
                 val barcode = String(intent.getByteArrayExtra("EXTRA_BARCODE_DECODING_DATA")).trim()
                 receiver.scanResult(barcode)
             } else if (intent.hasExtra("barocode")) {
