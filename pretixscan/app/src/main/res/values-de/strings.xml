@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="app_name">pretixSCAN</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">pretixSCAN</string>
     <string name="title_activity_main">pretixSCAN</string>
     <string name="headline_setup">Willkommen zu pretixSCAN!</string>
     <string name="action_sync">Jetzt synchronisieren</string>
@@ -16,17 +17,17 @@
     <string name="operation_select_checkinlist">Check-In-Liste auswählen</string>
     <string name="settings_label_auto_sync">Automatische Synchronisierung</string>
     <plurals name="sync_status_time_minutes">
-	<item quantity="one">vor %d Minute synchronisiert</item>
-	<item quantity="other">vor %d Minuten synchronisiert</item>
-</plurals>
+        <item quantity="one">vor %d Minute synchronisiert</item>
+        <item quantity="other">vor %d Minuten synchronisiert</item>
+    </plurals>
     <plurals name="sync_status_time_hours">
-	<item quantity="one">vor %d Stunde synchronisiert</item>
-	<item quantity="other">vor %d Stunden synchronisiert</item>
-</plurals>
+        <item quantity="one">vor %d Stunde synchronisiert</item>
+        <item quantity="other">vor %d Stunden synchronisiert</item>
+    </plurals>
     <plurals name="sync_status_time_days">
-	<item quantity="one">vor %d Tag synchronisiert</item>
-	<item quantity="other">vor %d Tagen synchronisiert</item>
-</plurals>
+        <item quantity="one">vor %d Tag synchronisiert</item>
+        <item quantity="other">vor %d Tagen synchronisiert</item>
+    </plurals>
     <string name="sync_status">Synchronisations-Status</string>
     <string name="sync_status_last">Letzte erfolgreiche Synchronisierung:</string>
     <string name="sync_status_last_failed">Letzte fehlgeschlagene Synchronisierung:</string>
@@ -101,5 +102,8 @@
     <string name="full_delete_confirm">Soll dieses Gerät wirklich zurückgesetzt werden\? Du musst es danach neu mit dem Online-System verbinden.</string>
     <string name="label_shop_active">Aktiv</string>
     <string name="label_shop_inactive">Shop deaktiviert</string>
-<string name="settings_label_details">Details</string>
-    </resources>
+    <string name="settings_label_details">Details</string>
+    <string name="scan_result_rules">Eingang nicht erlaubt</string>
+    <string name="action_label_scantype_exit">Als Ausgang scannen</string>
+    <string name="action_label_scantype_entry">Als Eingang scannen</string>
+</resources>
