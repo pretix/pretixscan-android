@@ -66,7 +66,8 @@ enum class ResultState {
     ERROR,
     DIALOG,
     WARNING,
-    SUCCESS
+    SUCCESS,
+    SUCCESS_EXIT
 }
 
 class ViewDataHolder(private val ctx: Context) {
@@ -79,13 +80,15 @@ class ViewDataHolder(private val ctx: Context) {
     val detail3 = ObservableField<String>()
     val detail4 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
+    val hardwareScan = ObservableField<Boolean>()
+    val scanType = ObservableField<String>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
             ResultState.DIALOG, ResultState.LOADING -> R.color.pretix_brand_lightgrey
             ResultState.ERROR -> R.color.pretix_brand_red
             ResultState.WARNING -> R.color.pretix_brand_orange
-            ResultState.SUCCESS -> R.color.pretix_brand_green
+            ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> R.color.pretix_brand_green
         })
     }
 }
@@ -157,9 +160,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
                         lastScanTime = System.currentTimeMillis()
-                        lastScanCode = res.secret
+                        lastScanCode = res.secret!!
                         hideSearchCard()
-                        handleScan(res.secret, null, !conf.unpaidAsk)
+                        handleScan(res.secret!!, null, !conf.unpaidAsk)
                     }
                 })
                 runOnUiThread {
@@ -317,9 +320,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        conf = AppConfig(this)
+
         getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         view_data.result_state.set(ResultState.ERROR)
+        view_data.scanType.set(conf.scanType)
+        view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
 
         setSupportActionBar(toolbar)
@@ -329,7 +336,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         volumeControlStream = AudioManager.STREAM_MUSIC
         buildMediaPlayer()
 
-        conf = AppConfig(this)
         if (!conf.deviceRegistered) {
             registerDevice()
             return
@@ -546,7 +552,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             scanner_view.setResultHandler(this)
             scanner_view.startCamera()
         }
-        tvHardwareScan.visibility = if (conf.useCamera) View.GONE else View.VISIBLE
+        view_data.scanType.set(conf.scanType)
+        view_data.hardwareScan.set(!conf.useCamera)
         reloadCameraState()
     }
 
@@ -639,7 +646,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             if (Regex("[0-9A-Za-z]+").matches(result)) {
                 val provider = (application as PretixScan).getCheckProvider(conf)
                 try {
-                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges)
+                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                        "exit" -> TicketCheckProvider.CheckInType.EXIT
+                        else -> TicketCheckProvider.CheckInType.ENTRY
+                    })
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
@@ -681,10 +691,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         if (result.message == null) {
-            result.message = when (result.type) {
+            result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
                 TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
                 TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
+                TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
@@ -692,11 +703,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
         view_data.result_text.set(result.message)
-        view_data.result_state.set(when (result.type) {
+        view_data.result_state.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.VALID -> ResultState.SUCCESS
+            TicketCheckProvider.CheckResult.Type.VALID -> {
+                when (result.scanType) {
+                    TicketCheckProvider.CheckInType.EXIT -> ResultState.SUCCESS_EXIT
+                    TicketCheckProvider.CheckInType.ENTRY -> ResultState.SUCCESS
+                }
+            }
             TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.RULES -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
@@ -730,13 +747,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         view_data.attention.set(result.isRequireAttention)
 
-        if (result?.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-            printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
-        }
-        if (result?.position != null && conf.printBadges) {
-            view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position, conf.eventSlug!!) != null)
-            ibPrint.setOnClickListener {
-                printBadge(this@MainActivity, application as PretixScan, result.position, conf.eventSlug!!, null)
+        if (result.scanType != TicketCheckProvider.CheckInType.EXIT) {
+            if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
+                printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
+            }
+            if (result.position != null && conf.printBadges) {
+                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, conf.eventSlug!!) != null)
+                ibPrint.setOnClickListener {
+                    printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.eventSlug!!, null)
+                }
+            } else {
+                view_data.show_print.set(false)
             }
         } else {
             view_data.show_print.set(false)
@@ -819,6 +840,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
 
+        menu.findItem(R.id.action_scantype).title = if (conf.scanType == "exit") {
+            getString(R.string.action_label_scantype_entry)
+        } else {
+            getString(R.string.action_label_scantype_exit)
+        }
+        if (conf.knownPretixVersion < 30090001000) {
+            menu.findItem(R.id.action_scantype).isVisible = false
+        }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (query.isEmpty()) {
@@ -858,6 +888,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 val intent = Intent(this@MainActivity, EventinfoActivity::class.java)
                 startActivity(intent)
                 return true
+            }
+            R.id.action_scantype -> {
+                if (conf.scanType == "entry") {
+                    conf.scanType = "exit"
+                    item.title = getString(R.string.action_label_scantype_entry)
+                } else {
+                    conf.scanType = "entry"
+                    item.title = getString(R.string.action_label_scantype_exit)
+                }
+                view_data.scanType.set(conf.scanType)
             }
             R.id.action_sync -> {
                 syncNow()

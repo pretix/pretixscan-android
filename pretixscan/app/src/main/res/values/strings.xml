@@ -10,6 +10,8 @@
     <string name="error_not_synchronized">Your device has not been properly synchronized with the server</string>
     <string name="action_label_settings">Settings</string>
     <string name="action_label_statistics">Statistics</string>
+    <string name="action_label_scantype_entry">Switch to entry scanning</string>
+    <string name="action_label_scantype_exit">Switch to exit scanning</string>
     <string name="action_search">Search</string>
     <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
@@ -82,6 +84,7 @@
     <string name="scan_result_invalid">Invalid ticket</string>
     <string name="scan_result_product">Invalid product</string>
     <string name="scan_result_unpaid">Ticket not paid</string>
+    <string name="scan_result_rules">Entry not allowed</string>
     <string name="scan_result_canceled">Order canceled</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>

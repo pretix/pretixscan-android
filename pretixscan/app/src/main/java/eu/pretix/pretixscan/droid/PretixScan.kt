@@ -80,7 +80,7 @@ class PretixScan : MultiDexApplication() {
         if (conf.proxyMode) {
             return ProxyCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
         } else if (conf.offlineMode) {
-            return AsyncCheckProvider(conf.eventSlug, data, conf.checkinListId)
+            return AsyncCheckProvider(conf.eventSlug!!, data, conf.checkinListId)
         } else {
             return OnlineCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
         }
