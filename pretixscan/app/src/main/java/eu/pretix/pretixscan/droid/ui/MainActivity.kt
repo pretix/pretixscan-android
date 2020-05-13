@@ -39,6 +39,8 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.pretixscan.HardwareScanner
+import eu.pretix.pretixscan.ScanReceiver
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
@@ -121,24 +123,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
     }
 
-    private val scanReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.hasExtra("com.symbol.datawedge.data_string")) {
-                // Zebra DataWedge
-                lastScanTime = System.currentTimeMillis()
-                lastScanCode = intent.getStringExtra("com.symbol.datawedge.data_string")
-                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"), null, !conf.unpaidAsk)
-            } else if (intent.hasExtra("barocode")) {
-                // Intent receiver for LECOM-manufactured hardware scanners
-                val barcode = intent?.getByteArrayExtra("barocode") // sic!
-                val barocodelen = intent?.getIntExtra("length", 0)
-                val barcodeStr = String(barcode, 0, barocodelen)
-                lastScanTime = System.currentTimeMillis()
-                lastScanCode = barcodeStr
-                handleScan(barcodeStr, null, !conf.unpaidAsk)
-            }
+    private val hardwareScanner = HardwareScanner(object : ScanReceiver {
+        override fun scanResult(result: String) {
+            lastScanTime = System.currentTimeMillis()
+            lastScanCode = result
+            handleScan(result, null, !conf.unpaidAsk)
         }
-    }
+    })
 
     override fun reload() {
         reloadSyncStatus()
@@ -543,10 +534,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         super.onResume()
         getRestrictions(this)
 
-        val filter = IntentFilter()
-        filter.addAction("scan.rcv.message")
-        filter.addAction("eu.pretix.SCAN")
-        registerReceiver(scanReceiver, filter)
+        hardwareScanner.start(this)
 
         if (conf.useCamera) {
             scanner_view.setResultHandler(this)
@@ -632,7 +620,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (conf.useCamera) {
             scanner_view.stopCamera()
         }
-        unregisterReceiver(scanReceiver);
+        hardwareScanner.stop(this)
     }
 
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {

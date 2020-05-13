@@ -21,6 +21,8 @@ import eu.pretix.libpretixsync.setup.SetupBadRequestException
 import eu.pretix.libpretixsync.setup.SetupBadResponseException
 import eu.pretix.libpretixsync.setup.SetupManager
 import eu.pretix.libpretixsync.setup.SetupServerErrorException
+import eu.pretix.pretixscan.HardwareScanner
+import eu.pretix.pretixscan.ScanReceiver
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
@@ -44,20 +46,11 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     var conf: AppConfig? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
-    private val scanReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.hasExtra("com.symbol.datawedge.data_string")) {
-                // Zebra DataWedge
-                handleScan(intent.getStringExtra("com.symbol.datawedge.data_string"))
-            } else if (intent.hasExtra("barocode")) {
-                // Intent receiver for LECOM-manufactured hardware scanners
-                val barcode = intent?.getByteArrayExtra("barocode") // sic!
-                val barocodelen = intent?.getIntExtra("length", 0)
-                val barcodeStr = String(barcode, 0, barocodelen)
-                handleScan(barcodeStr)
-            }
+    private val hardwareScanner = HardwareScanner(object : ScanReceiver {
+        override fun scanResult(result: String) {
+            handleScan(result)
         }
-    }
+    })
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,10 +82,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             }
         }
         tvHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
-        val filter = IntentFilter()
-        filter.addAction("scan.rcv.message")
-        filter.addAction("eu.pretix.SCAN")
-        registerReceiver(scanReceiver, filter)
+        hardwareScanner.start(this)
     }
 
     override fun onPause() {
@@ -102,7 +92,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 scanner_view.stopCamera()
             }
         }
-        unregisterReceiver(scanReceiver)
+        hardwareScanner.stop(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,

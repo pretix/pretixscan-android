@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import eu.pretix.pretixscan.defaultToScanner
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityWelcomeBinding
@@ -21,7 +22,7 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (Build.BRAND == "Zebra" && (Build.MODEL == "TC20" || Build.MODEL == "TC25")) {
+        if (defaultToScanner()) {
             val conf = AppConfig(this)
             conf.useCamera = false
         }
