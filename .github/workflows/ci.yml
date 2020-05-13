@@ -18,3 +18,4 @@ jobs:
         java-version: 1.8
     - name: Unit tests
       run: TERM=dumb ./gradlew lintPretixDebug assemblePretixDebug
+      working-directory: ./pretixscan
