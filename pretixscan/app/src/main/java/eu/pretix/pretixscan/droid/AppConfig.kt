@@ -177,7 +177,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_PROXY, value).apply()
 
     var offlineMode: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_SCAN_OFFLINE, true)
+        get() = default_prefs.getBoolean(PREFS_KEY_SCAN_OFFLINE, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_OFFLINE, value).apply()
 
     var printBadges: Boolean
