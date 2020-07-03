@@ -65,7 +65,7 @@
     <string name="question_validation_error">Teile der Eingabe waren ungültig.</string>
     <string name="question_input_required">Diese Frage muss beantwortet werden.</string>
     <string name="question_input_invalid">Die eingegebene Antwort ist nicht gültig.</string>
-    <string name="yes">Yes</string>
+    <string name="yes">Ja</string>
     <string name="cancel">Abbrechen</string>
     <string name="status_redeemed">Eingelöst</string>
     <string name="status_unpaid">Unbezahlt</string>
