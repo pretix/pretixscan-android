@@ -100,8 +100,10 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         when (requestCode) {
             1337 -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    scanner_view.setResultHandler(this)
-                    scanner_view.startCamera()
+                    if (conf!!.useCamera) {
+                        scanner_view.setResultHandler(this)
+                        scanner_view.startCamera()
+                    }
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1338)
                 } else {
                     Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
