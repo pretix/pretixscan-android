@@ -184,6 +184,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 conf!!.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
                 conf!!.proxyMode = token.startsWith("proxy=")
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     pdialog.dismiss()
 
                     val intent = Intent(this@SetupActivity, MainActivity::class.java)
@@ -194,6 +197,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             } catch (e: SSLException) {
                 e.printStackTrace();
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     resume()
                     alert(Appcompat, R.string.setup_error_ssl).show()
                 }
@@ -201,18 +207,27 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             } catch (e: IOException) {
                 e.printStackTrace();
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     resume()
                     alert(Appcompat, R.string.setup_error_io).show()
                 }
                 return@doAsync
             } catch (e: SetupServerErrorException) {
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     resume()
                     alert(Appcompat, R.string.setup_error_server).show()
                 }
             } catch (e: SetupBadResponseException) {
                 e.printStackTrace()
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     resume()
                     alert(Appcompat, R.string.setup_error_response).show()
                 }
@@ -220,6 +235,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 e.printStackTrace()
                 Sentry.capture(e)
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     resume()
                     alert(Appcompat, e.message ?: "Unknown error").show()
                 }
