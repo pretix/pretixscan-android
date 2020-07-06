@@ -46,6 +46,7 @@
     <string name="setup_error_invalid_qr_code">The QR code you scanned is not a valid configuration code. Please make sure you created the code in the "Devices" section of a pretix organizer account.</string>
     <string name="setup_error_version_too_high">The QR code you scanned is from a newer version of pretix than this app has been built for. Please check if you can get an update for this app!</string>
     <string name="setup_progress">Initializing device…</string>
+    <string name="setup_error_request">Request rejected by server. Please double-check your input.</string>
     <string name="setup_error_io">Connection error while trying to reach the server.</string>
     <string name="setup_error_ssl">Security error while trying to reach the server.</string>
     <string name="setup_error_server">Server error while trying to register the device.</string>

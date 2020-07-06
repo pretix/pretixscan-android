@@ -194,6 +194,16 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     startActivity(intent)
                     finish()
                 }
+            } catch (e: SetupBadRequestException) {
+                e.printStackTrace();
+                runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
+                    resume()
+                    alert(Appcompat, R.string.setup_error_request).show()
+                }
+                return@doAsync
             } catch (e: SSLException) {
                 e.printStackTrace();
                 runOnUiThread {

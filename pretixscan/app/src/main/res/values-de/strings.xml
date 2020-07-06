@@ -45,6 +45,7 @@
     <string name="setup_error_invalid_qr_code">Der QR-Code, den Sie gescannt haben, ist nicht gültig. Bitte stellen Sie sicher, dass er aus der \"Geräte\"-Sektion Ihres pretix-Veranstalterkontos stammt.</string>
     <string name="setup_error_version_too_high">Der gescannte QR-Code ist von einer neueren pretix-Version als für diese App ausgelegt. Bitte prüfen Sie, ob es ein Update für diese App gibt!</string>
     <string name="setup_progress">Initialisiere Gerät…</string>
+    <string name="setup_error_request">Anfrage vom Server abgelehnt, bitte prüfen Sie Ihre Eingabe.</string>
     <string name="setup_error_io">Verbindungsfehler beim Versuch, den Server zu erreichen.</string>
     <string name="setup_error_ssl">Sicherheitsfehler bei der Verbindung zum Server.</string>
     <string name="setup_error_server">Serverfehler beim Registrieren des Geräts.</string>
