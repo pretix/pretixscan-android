@@ -687,8 +687,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.message == null) {
             result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
-                TicketCheckProvider.CheckResult.Type.VALID -> getString(R.string.scan_result_valid)
-                TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
+                TicketCheckProvider.CheckResult.Type.VALID -> when(result.scanType) {
+                    TicketCheckProvider.CheckInType.EXIT -> getString(R.string.scan_result_exit)
+                    TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
+                }
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)

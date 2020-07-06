@@ -80,6 +80,7 @@
     <string name="status_valid">Valid</string>
     <string name="status_empty">No search results have been found. Be sure to enter at least four characters.</string>
     <string name="scan_result_valid">Valid ticket</string>
+    <string name="scan_result_exit">Exit recorded</string>
     <string name="scan_result_used">Ticket already used</string>
     <string name="scan_result_questions">Information required</string>
     <string name="scan_result_invalid">Invalid ticket</string>

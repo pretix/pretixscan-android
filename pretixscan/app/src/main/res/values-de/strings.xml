@@ -74,6 +74,7 @@
     <string name="status_canceled">Storniert</string>
     <string name="status_empty">Keine Suchergebnisse gefunden. Bitte geben Sie mindestens vier Zeichen ein.</string>
     <string name="scan_result_valid">Ticket gültig</string>
+    <string name="scan_result_exit">Ausgang erfasst</string>
     <string name="scan_result_used">Ticket bereits eingelöst</string>
     <string name="scan_result_questions">Infos benötigt</string>
     <string name="scan_result_invalid">Ticket ungültig</string>
