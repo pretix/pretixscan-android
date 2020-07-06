@@ -504,6 +504,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     }
                 }
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     reload()
                     if (selectList) {
                         selectCheckInList()
@@ -516,6 +519,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
                     }
