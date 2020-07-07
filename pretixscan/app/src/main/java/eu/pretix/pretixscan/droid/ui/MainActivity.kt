@@ -289,6 +289,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         p0?.seekTo(0)
     }
 
+    @SuppressWarnings("ResourceType")
     private fun buildMediaPlayer() {
         val resourceIds = listOf(R.raw.enter, R.raw.exit, R.raw.error, R.raw.beep)
         for (r in resourceIds) {
