@@ -14,6 +14,10 @@
         android:key="pref_scan_offline"
         android:summary="@string/settings_summary_scan_offline"
         android:title="@string/settings_label_scan_offline" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_sounds"
+        android:title="@string/settings_label_sounds" />
     <PreferenceCategory android:title="@string/settings_label_badges">
         <CheckBoxPreference
             android:defaultValue="false"

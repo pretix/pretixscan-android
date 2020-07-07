@@ -635,7 +635,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         showLoadingCard()
         hideSearchCard()
-        if (answers == null && !ignore_unpaid && !conf.offlineMode) {
+        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
         doAsync {
@@ -665,6 +665,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+        if (conf.sounds)
         when (result.type) {
             TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
                 TicketCheckProvider.CheckInType.ENTRY -> mediaPlayers[R.raw.enter]?.start()

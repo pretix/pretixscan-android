@@ -172,8 +172,12 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
 
+    var sounds: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_SOUNDS, true)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SOUNDS, value).apply()
+
     var proxyMode: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_SCAN_PROXY, true)
+        get() = default_prefs.getBoolean(PREFS_KEY_SCAN_PROXY, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_PROXY, value).apply()
 
     var offlineMode: Boolean
@@ -231,5 +235,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
+        val PREFS_KEY_SOUNDS = "pref_sounds"
     }
 }
