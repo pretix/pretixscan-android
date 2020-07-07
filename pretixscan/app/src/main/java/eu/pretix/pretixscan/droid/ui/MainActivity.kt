@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private val hideHandler = Handler()
     private var card_state = ResultCardState.HIDDEN
     private var view_data = ViewDataHolder(this)
-    private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayers: MutableMap<Int, MediaPlayer> = mutableMapOf()
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
@@ -290,21 +290,24 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun buildMediaPlayer() {
-        mediaPlayer = MediaPlayer()
-        mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        mediaPlayer!!.setOnCompletionListener(this)
-        // mediaPlayer.setOnErrorListener(this)
-        try {
-            val file = resources.openRawResourceFd(R.raw.beep)
+        val resourceIds = listOf(R.raw.enter, R.raw.exit, R.raw.error, R.raw.beep)
+        for (r in resourceIds) {
+            val mediaPlayer = MediaPlayer()
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            mediaPlayer.setOnCompletionListener(this)
+            // mediaPlayer.setOnErrorListener(this)
             try {
-                mediaPlayer!!.setDataSource(file.fileDescriptor, file.startOffset, file.length)
-            } finally {
-                file.close();
+                val file = resources.openRawResourceFd(r)
+                try {
+                    mediaPlayer.setDataSource(file.fileDescriptor, file.startOffset, file.length)
+                } finally {
+                    file.close();
+                }
+                mediaPlayer.setVolume(0.2f, 0.2f)
+                mediaPlayer.prepare()
+                mediaPlayers[r] = mediaPlayer
+            } catch (ioe: IOException) {
             }
-            mediaPlayer!!.setVolume(0.10f, 0.1f)
-            mediaPlayer!!.prepare()
-        } catch (ioe: IOException) {
-            mediaPlayer = null
         }
     }
 
@@ -632,8 +635,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         showLoadingCard()
         hideSearchCard()
-        if (answers == null && !ignore_unpaid) {
-            mediaPlayer?.start()
+        if (answers == null && !ignore_unpaid && !conf.offlineMode) {
+            mediaPlayers[R.raw.beep]?.start()
         }
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
@@ -662,6 +665,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+        when (result.type) {
+            TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
+                TicketCheckProvider.CheckInType.ENTRY -> mediaPlayers[R.raw.enter]?.start()
+                TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
+            }
+            TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.ERROR -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.UNPAID -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
+            TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
+            else -> {}
+        }
+
         hideHandler.removeCallbacks(hideRunnable)
         hideHandler.postDelayed(hideRunnable, 30000)
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
