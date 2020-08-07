@@ -127,7 +127,7 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
                 "${BuildConfig.APPLICATION_ID}.fileprovider",
                 bgFile)
         context.grantUriPermission(intent.`package`, bgUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        intent.clipData.addItem(ClipData.Item(bgUri))
+        intent.clipData!!.addItem(ClipData.Item(bgUri))
     }
 
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

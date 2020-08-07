@@ -82,18 +82,18 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = prefs.edit().putLong(PREFS_KEY_CHECKINLIST_ID, value).apply()
 
     override fun getOrganizerSlug(): String {
-        return prefs.getString(PREFS_KEY_ORGANIZER_SLUG, "")
+        return prefs.getString(PREFS_KEY_ORGANIZER_SLUG, "") ?: ""
     }
 
     override fun getApiUrl(): String {
-        return prefs.getString(PREFS_KEY_API_URL, "")
+        return prefs.getString(PREFS_KEY_API_URL, "") ?: ""
     }
 
     override fun getApiKey(): String {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, ""), false)!!
+            return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, "") ?: "", false)!!
         } else {
-            return prefs.getString(PREFS_KEY_API_KEY, "")
+            return prefs.getString(PREFS_KEY_API_KEY, "") ?: ""
         }
     }
 
@@ -122,7 +122,7 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     override fun getLastFailedSyncMsg(): String {
-        return prefs.getString(PREFS_KEY_LAST_FAILED_SYNC_MSG, "")
+        return prefs.getString(PREFS_KEY_LAST_FAILED_SYNC_MSG, "") ?: ""
     }
 
     override fun setLastFailedSyncMsg(`val`: String) {
@@ -138,7 +138,7 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     var devicePosSerial: String
-        get() = prefs.getString(PREFS_KEY_DEVICE_SERIAL, "")
+        get() = prefs.getString(PREFS_KEY_DEVICE_SERIAL, "") ?: ""
         set(value) = prefs.edit().putString(PREFS_KEY_DEVICE_SERIAL, value).apply()
 
     var scanFlash: Boolean
@@ -197,7 +197,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGESTWICE, value).apply()
 
     var scanType: String
-        get() = default_prefs.getString(PREFS_KEY_SCAN_TYPE, "entry")
+        get() = default_prefs.getString(PREFS_KEY_SCAN_TYPE, "entry") ?: "entry"
         set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_TYPE, value).apply()
 
     var unpaidAsk: Boolean
