@@ -49,6 +49,16 @@
                     android:orientation="vertical"
                     android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_entry : @string/scantype_exit}"
+                        android:textAllCaps="true"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
                     <ImageView
                         android:layout_width="128dp"
                         android:layout_height="128dp"

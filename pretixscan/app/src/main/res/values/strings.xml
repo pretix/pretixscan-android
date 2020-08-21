@@ -12,6 +12,8 @@
     <string name="action_label_statistics">Statistics</string>
     <string name="action_label_scantype_entry">Switch to entry scanning</string>
     <string name="action_label_scantype_exit">Switch to exit scanning</string>
+    <string name="scantype_entry">Entry</string>
+    <string name="scantype_exit">Exit</string>
     <string name="action_search">Search</string>
     <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
