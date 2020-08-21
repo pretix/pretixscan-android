@@ -13,6 +13,7 @@ import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.AbstractQuestion
 import eu.pretix.libpretixsync.db.Question
+import eu.pretix.libpretixsync.db.QuestionLike
 import eu.pretix.libpretixsync.db.QuestionOption
 import eu.pretix.pretixscan.droid.R
 import org.joda.time.LocalDate
@@ -267,7 +268,7 @@ fun showQuestionsDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
                     try {
                         ra.question.clean_answer(answer, ra.question.options)
                         addQuestionsError(ctx, field!!, labels[ra.question], 0)
-                    } catch (e: AbstractQuestion.ValidationException) {
+                    } catch (e: QuestionLike.ValidationException) {
                         has_errors = true
                         addQuestionsError(ctx, field!!, labels[ra.question], R.string.question_input_invalid)
                     }
