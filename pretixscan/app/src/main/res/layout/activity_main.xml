@@ -41,32 +41,50 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
+                    android:id="@+id/vHardwareScan"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="32dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}"
-                    android:id="@+id/vHardwareScan">
+                    android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}">
+
+                    <ImageView
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="@{data.scanType.equals(&quot;entry&quot;) ? View.VISIBLE : View.GONE}"
+                        app:srcCompat="@drawable/ic_entry_gray_24dp" />
 
                     <ImageView
                         android:layout_width="128dp"
                         android:layout_height="128dp"
                         android:layout_marginBottom="16dp"
                         android:visibility="@{data.scanType.equals(&quot;exit&quot;) ? View.VISIBLE : View.GONE}"
-                        app:srcCompat="@drawable/ic_exit_orange_24dp"
-                    />
+                        app:srcCompat="@drawable/ic_exit_orange_24dp" />
+
                     <TextView
                         android:id="@+id/tvHardwareScan"
-                        android:text="@string/hardware_scanner"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_width="match_parent" />
+                        android:text="@string/hardware_scanner" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:keepScreenOn="true">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:visibility="@{!data.hardwareScan &amp;&amp; data.scanType.equals(&quot;entry&quot;) ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_entry_gray_24dp" />
+                    />
 
                     <ImageView
                         android:layout_width="48dp"
@@ -137,8 +155,8 @@
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:paddingBottom="8dp"
-                                android:background="@{data.getColor(data.result_state)}">
+                                android:background="@{data.getColor(data.result_state)}"
+                                android:paddingBottom="8dp">
 
                                 <ImageButton
                                     android:id="@+id/ibPrint"
@@ -205,8 +223,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:layout_marginTop="0dp"
-                                    android:layout_marginBottom="8dp"
                                     android:layout_marginEnd="16dp"
+                                    android:layout_marginBottom="8dp"
                                     android:gravity="center"
                                     android:text="@{data.result_text}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -237,8 +255,8 @@
                                     android:id="@+id/textView4"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="0dp"
                                     android:layout_marginStart="16dp"
+                                    android:layout_marginTop="0dp"
                                     android:layout_marginBottom="8dp"
                                     android:gravity="center"
                                     android:text="@{data.detail2}"
@@ -288,11 +306,11 @@
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
                             <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/attention_flag"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/attention_flag"
-                                android:visibility="@{data.attention ? View.VISIBLE : View.GONE}"
-                                android:background="@color/pretix_brand_blue">
+                                android:background="@color/pretix_brand_blue"
+                                android:visibility="@{data.attention ? View.VISIBLE : View.GONE}">
 
                                 <ImageView
                                     android:id="@+id/imageView"
@@ -371,6 +389,7 @@
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
+
                                 <TextView
                                     android:id="@+id/tvSearchEmpty"
                                     android:layout_width="0dp"
