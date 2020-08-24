@@ -386,6 +386,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 60000L,
                 5 * 60000L,
                 false,
+                conf.printBadges,
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,
                 Build.MODEL,

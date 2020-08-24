@@ -34,6 +34,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 1000L,
                 1000L,
                 false,
+                conf.printBadges,
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,
                 Build.MODEL,
