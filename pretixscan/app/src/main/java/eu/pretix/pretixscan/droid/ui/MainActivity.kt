@@ -81,6 +81,7 @@ class ViewDataHolder(private val ctx: Context) {
     val detail2 = ObservableField<String>()
     val detail3 = ObservableField<String>()
     val detail4 = ObservableField<String>()
+    val detail5 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
@@ -755,11 +756,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail3.set(null)
         }
-        if (result.firstScanned != null) {
-            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-            view_data.detail4.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+        if (result.seat != null) {
+            view_data.detail4.set(result.seat)
         } else {
             view_data.detail4.set(null)
+        }
+        if (result.firstScanned != null) {
+            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+            view_data.detail5.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+        } else {
+            view_data.detail5.set(null)
         }
 
         view_data.attention.set(result.isRequireAttention)

@@ -49,29 +49,29 @@
                     android:orientation="vertical"
                     android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:gravity="center"
-                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_entry : @string/scantype_exit}"
-                        android:textAllCaps="true"
-                        android:textSize="32sp"
-                        android:textStyle="bold" />
-
                     <ImageView
                         android:layout_width="128dp"
                         android:layout_height="128dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginBottom="8dp"
                         android:visibility="@{data.scanType.equals(&quot;entry&quot;) ? View.VISIBLE : View.GONE}"
                         app:srcCompat="@drawable/ic_entry_gray_24dp" />
 
                     <ImageView
                         android:layout_width="128dp"
                         android:layout_height="128dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginBottom="8dp"
                         android:visibility="@{data.scanType.equals(&quot;exit&quot;) ? View.VISIBLE : View.GONE}"
                         app:srcCompat="@drawable/ic_exit_orange_24dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_exit : @string/scantype_entry}"
+                        android:textAllCaps="true"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvHardwareScan"
@@ -311,6 +311,24 @@
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/textView5"
+                                    tools:text="Detail" />
+
+                                <TextView
+                                    android:id="@+id/textView7"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:text="@{data.detail5}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                    android:textColor="@color/white"
+                                    android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView6"
                                     tools:text="Detail" />
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
