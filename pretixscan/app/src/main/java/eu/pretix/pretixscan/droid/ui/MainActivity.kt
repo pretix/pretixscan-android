@@ -6,7 +6,9 @@ import android.animation.ObjectAnimator
 import android.annotation.TargetApi
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.RestrictionsManager
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.media.AudioManager
@@ -21,8 +23,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
-import android.widget.MediaController
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
@@ -32,7 +34,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.andrognito.pinlockview.IndicatorDots
+import com.andrognito.pinlockview.PinLockListener
+import com.andrognito.pinlockview.PinLockView
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
@@ -46,6 +52,7 @@ import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_pin.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
@@ -410,7 +417,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (event != null && ViewCompat.isLaidOut(event)) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, event, "morph_transition")
-            startActivityForResult(intentFor<EventSelectActivity>(), REQ_EVENT, options.toBundle())
+            val intent = intentFor<EventSelectActivity>()
+            startWithPIN(intent, "statistics", REQ_EVENT, options.toBundle())
         } else {
             startActivityForResult(intentFor<EventSelectActivity>(), REQ_EVENT)
         }
@@ -669,20 +677,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
         if (conf.sounds)
-        when (result.type) {
-            TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
-                TicketCheckProvider.CheckInType.ENTRY -> mediaPlayers[R.raw.enter]?.start()
-                TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
+            when (result.type) {
+                TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
+                    TicketCheckProvider.CheckInType.ENTRY -> mediaPlayers[R.raw.enter]?.start()
+                    TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
+                }
+                TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.ERROR -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.UNPAID -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
+                else -> {
+                }
             }
-            TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.ERROR -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.UNPAID -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
-            TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
-            else -> {}
-        }
 
         hideHandler.removeCallbacks(hideRunnable)
         hideHandler.postDelayed(hideRunnable, 30000)
@@ -709,7 +718,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.message == null) {
             result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
-                TicketCheckProvider.CheckResult.Type.VALID -> when(result.scanType) {
+                TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
                     TicketCheckProvider.CheckInType.EXIT -> getString(R.string.scan_result_exit)
                     TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
                 }
@@ -899,28 +908,74 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         return super.onCreateOptionsMenu(menu)
     }
 
+    fun pinProtect(key: String, valid: ((pin: String) -> Unit)) {
+        if (!conf.requiresPin(key)) {
+            valid("")
+            return
+        }
+        val view = layoutInflater.inflate(R.layout.dialog_pin, null)
+        val dialog = AlertDialog.Builder(this)
+                .setView(view)
+                .create()
+        dialog.setOnShowListener {
+            val mPinLockListener: PinLockListener = object : PinLockListener {
+                override fun onComplete(pin: String) {
+                    this.onPinChange(pin.length, pin)
+                }
+
+                override fun onEmpty() {
+                }
+
+                override fun onPinChange(pinLength: Int, intermediatePin: String) {
+                    if (conf.verifyPin(intermediatePin)) {
+                        dialog.dismiss()
+                        valid(intermediatePin)
+                    }
+                }
+            }
+
+            val lockView = view.findViewById(R.id.pin_lock_view) as PinLockView
+            lockView.setPinLockListener(mPinLockListener)
+            val idots = view.findViewById(R.id.indicator_dots) as IndicatorDots
+            lockView.attachIndicatorDots(idots);
+        }
+        dialog.show()
+    }
+
+    fun startWithPIN(intent: Intent, key: String, resultCode: Int? = null, bundle: Bundle? = null) {
+        pinProtect(key) { pin ->
+            intent.putExtra("pin", pin)
+            if (resultCode != null) {
+                startActivityForResult(intent, resultCode, bundle)
+            } else {
+                startActivity(intent)
+            }
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                startActivity(intent)
+                startWithPIN(intent, "settings")
                 return true
             }
             R.id.action_stats -> {
                 val intent = Intent(this@MainActivity, EventinfoActivity::class.java)
-                startActivity(intent)
+                startWithPIN(intent, "statistics")
                 return true
             }
             R.id.action_scantype -> {
-                if (conf.scanType == "entry") {
-                    conf.scanType = "exit"
-                    item.title = getString(R.string.action_label_scantype_entry)
-                } else {
-                    conf.scanType = "entry"
-                    item.title = getString(R.string.action_label_scantype_exit)
+                pinProtect("switch_mode") {
+                    if (conf.scanType == "entry") {
+                        conf.scanType = "exit"
+                        item.title = getString(R.string.action_label_scantype_entry)
+                    } else {
+                        conf.scanType = "entry"
+                        item.title = getString(R.string.action_label_scantype_exit)
+                    }
+                    view_data.scanType.set(conf.scanType)
                 }
-                view_data.scanType.set(conf.scanType)
             }
             R.id.action_sync -> {
                 syncNow()

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <EditTextPreference
+        android:inputType="numberPassword"
+        android:key="pref_pin"
+        android:maxLength="4"
+        android:title="@string/pin_protection_pin" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:enabled="true"
+        android:key="pref_pin_enable"
+        android:dependency="pref_pin"
+        android:title="@string/pin_protection_enable" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:dependency="pref_pin_enable"
+        android:enabled="false"
+        android:key="pref_pin_settings"
+        android:title="@string/pin_protection_settings" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_pin_statistics"
+        android:title="@string/pin_protection_statistics" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_pin_switch_event"
+        android:title="@string/pin_protection_switch_event" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_pin_switch_mode"
+        android:title="@string/pin_protection_switch_mode" />
+</PreferenceScreen>

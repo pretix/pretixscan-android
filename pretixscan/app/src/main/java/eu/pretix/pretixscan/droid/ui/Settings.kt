@@ -1,9 +1,15 @@
 package eu.pretix.pretixscan.droid.ui
 
 
+import android.app.AlarmManager
+import android.app.Fragment
+import android.app.FragmentTransaction
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.text.Html
 import android.text.method.LinkMovementMethod
@@ -14,21 +20,30 @@ import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
+import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.db.ResourceLastModified
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import eu.pretix.libpretixsync.Models
-import org.jetbrains.anko.*
+
+
+class PinSettingsFragment : PreferenceFragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        addPreferencesFromResource(R.xml.preferences_pin)
+    }
+}
 
 
 class SettingsFragment : PreferenceFragment() {
@@ -66,7 +81,7 @@ class SettingsFragment : PreferenceFragment() {
                     System.exit(0)
 
                 }
-                noButton {  }
+                noButton { }
             }.show()
             return@setOnPreferenceClickListener true
         }
@@ -139,6 +154,13 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         super.onCreate(savedInstanceState)
         setupActionBar()
 
+        val c = AppConfig(this)
+        if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(intent.getStringExtra("pin")))) {
+            // Protect against external calls
+            finish();
+            return
+        }
+
         // Display the fragment as the main content.
         fragmentManager.beginTransaction()
                 .replace(android.R.id.content, SettingsFragment())
@@ -154,19 +176,64 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        NavUtils.navigateUpFromSameTask(this)
+        if (fragmentManager.backStackEntryCount == 0) {
+            NavUtils.navigateUpFromSameTask(this)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             // Respond to the action bar's Up/Home button
             android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
+                if (fragmentManager.backStackEntryCount == 0) {
+                    NavUtils.navigateUpFromSameTask(this)
+                } else {
+                    fragmentManager.popBackStack()
+                }
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun isValidFragment(fragmentName: String): Boolean {
+        return fragmentName.contains("SettingsFragment")
+    }
+
+
+    override fun onPreferenceStartFragment(caller: PreferenceFragment?, pref: Preference): Boolean {
+        val f: Fragment = Fragment.instantiate(this, pref.fragment, pref.extras)
+        val transaction= fragmentManager.beginTransaction()
+        transaction.replace(android.R.id.content, f)
+        if (pref.titleRes != 0) {
+            transaction.setBreadCrumbTitle(pref.titleRes)
+        } else if (pref.title != null) {
+            transaction.setBreadCrumbTitle(pref.title)
+        }
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        transaction.addToBackStack(":android:prefs")
+        transaction.commitAllowingStateLoss()
+        return true
+    }
+
+    /*
+    override fun onPreferenceStartFragment(caller: PreferenceFragment, pref: Preference): Boolean {
+        // Instantiate the new Fragment
+        val args = pref.extras
+        val fragment = fragment.instantiate(
+                classLoader,
+                pref.fragment)
+        fragment.arguments = args
+        fragment.setTargetFragment(caller, 0)
+        // Replace the existing Fragment with the new Fragment
+        fragmentManager.beginTransaction()
+                .replace(android.R.id.content, fragment)
+                .addToBackStack(null)
+                .commit()
+        return true
+    }
+     */
 }
 

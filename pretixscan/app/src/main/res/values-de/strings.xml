@@ -111,4 +111,11 @@
     <string name="action_label_scantype_entry">Zum Eingangs-Modus wechseln</string>
     <string name="scantype_entry">Eingang</string>
     <string name="scantype_exit">Ausgang</string>
+    <string name="pin_protection">PIN-Sperre</string>
+    <string name="pin_protection_pin">PIN setzen</string>
+    <string name="pin_protection_enable">PIN-Sperre aktivieren</string>
+    <string name="pin_protection_settings">Einstellungen sperren</string>
+    <string name="pin_protection_statistics">Statistiken sperren</string>
+    <string name="pin_protection_switch_event">Veranstaltungswechsel sperren</string>
+    <string name="pin_protection_switch_mode">Moduswechsel sperren</string>
 </resources>

@@ -18,6 +18,10 @@
         android:defaultValue="true"
         android:key="pref_sounds"
         android:title="@string/settings_label_sounds" />
+    <Preference
+        android:key="pin_protect"
+        android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
+        android:title="@string/pin_protection" />
     <PreferenceCategory android:title="@string/settings_label_badges">
         <CheckBoxPreference
             android:defaultValue="false"

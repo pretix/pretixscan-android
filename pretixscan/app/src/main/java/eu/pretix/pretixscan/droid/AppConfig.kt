@@ -31,7 +31,7 @@ class AppConfig(ctx: Context) : ConfigStore {
     fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
         val ckey = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             KeystoreHelper.secureValue(key, true)
-            else key
+        else key
         prefs.edit()
                 .putString(PREFS_KEY_API_URL, url)
                 .putString(PREFS_KEY_API_KEY, ckey)
@@ -163,6 +163,23 @@ class AppConfig(ctx: Context) : ConfigStore {
 
     override fun getKnownPretixVersion(): Long {
         return prefs.getLong(PREFS_KEY_KNOWN_PRETIX_VERSION, 0L);
+    }
+
+    fun verifyPin(pin: String): Boolean {
+        return default_prefs.getString("pref_pin", "") == pin
+    }
+
+    fun requiresPin(key: String): Boolean {
+        if (default_prefs.getString("pref_pin", "").isNullOrBlank()) {
+            return false
+        }
+        if (!default_prefs.getBoolean("pref_pin_enable", false)) {
+            return false
+        }
+        if (key == "settings") {
+            return true
+        }
+        return default_prefs.getBoolean("pref_pin_" + key, false)
     }
 
     var deviceRegistered: Boolean = false

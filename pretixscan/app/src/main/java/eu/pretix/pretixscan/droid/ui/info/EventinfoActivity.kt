@@ -55,6 +55,13 @@ class EventinfoActivity : AppCompatActivity() {
         this.mSwipeRefreshLayout.setOnRefreshListener { StatusTask().execute() }
 
         this.config = AppConfig(this)
+
+        if (this.config!!.requiresPin("statistics") && (!intent.hasExtra("pin") || !this.config!!.verifyPin(intent.getStringExtra("pin")))) {
+            // Protect against external calls
+            finish();
+            return
+        }
+
         this.checkProvider = (application as PretixScan).getCheckProvider(config!!)
 
         StatusTask().execute()
