@@ -118,6 +118,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+repositories {
+    mavenCentral()
+    jcenter()
+}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -144,12 +148,17 @@ dependencies {
     implementation 'io.requery:requery:1.6.0'
     implementation 'io.requery:requery-android:1.6.0'
     implementation 'io.requery:requery-kotlin:1.6.0'
-    implementation 'com.facebook.stetho:stetho:1.5.1'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.1'
     implementation "com.fasterxml.jackson.core:jackson-databind:2.10.1"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1"
+
+    implementation 'com.facebook.soloader:soloader:0.9.0'
+    debugImplementation 'com.facebook.flipper:flipper:0.52.1'
+    debugImplementation 'com.facebook.soloader:soloader:0.9.0'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.52.1'
+
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.54.0'
 
     annotationProcessor 'io.requery:requery-processor:1.6.0'
     implementation(project(':libpretixsync')) {
@@ -157,9 +166,6 @@ dependencies {
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.apg-mobile:android-round-textview:v1.0.0'
-}
-repositories {
-    mavenCentral()
 }
 kapt {
     generateStubs = true

@@ -24,7 +24,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     private lateinit var mRunnable: Runnable
 
     fun syncSync() {
-        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
+        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
         val sm = SyncManager(
                 conf,
                 api,

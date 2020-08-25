@@ -383,7 +383,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             event.text = conf.eventName
             (event.parent as View).forceLayout()
         }
-        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory())
+        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
 
         sm = SyncManager(
                 conf,

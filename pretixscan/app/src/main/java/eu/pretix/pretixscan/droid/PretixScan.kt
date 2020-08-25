@@ -4,13 +4,15 @@ import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import com.facebook.stetho.Stetho
+import com.facebook.flipper.android.AndroidFlipperClient
+import com.facebook.flipper.core.FlipperClient
+import com.facebook.soloader.SoLoader
+import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
-import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
-import eu.pretix.libpretixsync.Models
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
@@ -26,6 +28,7 @@ class PretixScan : MultiDexApplication() {
     private var dataStore: BlockingEntityStore<Persistable>? = null
     val fileStorage = AndroidFileStorage(this)
     val syncLock = ReentrantLock()
+    var flipperInit: FlipperInitializer.IntializationResult? = null
 
     val data: BlockingEntityStore<Persistable>
         get() {
@@ -38,7 +41,7 @@ class PretixScan : MultiDexApplication() {
                     dataStore = EntityDataStore<Persistable>(configuration)
                 } else {
                     val dbPass = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
-                            else KEYSTORE_PASSWORD
+                    else KEYSTORE_PASSWORD
 
 
                     var source = SqlCipherDatabaseSource(this,
@@ -65,10 +68,10 @@ class PretixScan : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this)
+        SoLoader.init(this, false)
 
-        }
+        val client: FlipperClient = AndroidFlipperClient.getInstance(this)
+        flipperInit = FlipperInitializer.initFlipperPlugins(this, client)
         if (BuildConfig.SENTRY_DSN != null) {
             val sentryDsn = BuildConfig.SENTRY_DSN
             Sentry.init(sentryDsn, AndroidSentryClientFactory(this))
@@ -78,11 +81,11 @@ class PretixScan : MultiDexApplication() {
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
         if (conf.proxyMode) {
-            return ProxyCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
+            return ProxyCheckProvider(conf, AndroidHttpClientFactory(this), data, conf.checkinListId)
         } else if (conf.offlineMode) {
             return AsyncCheckProvider(conf.eventSlug!!, data, conf.checkinListId)
         } else {
-            return OnlineCheckProvider(conf, AndroidHttpClientFactory(), data, conf.checkinListId)
+            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, conf.checkinListId)
         }
     }
 

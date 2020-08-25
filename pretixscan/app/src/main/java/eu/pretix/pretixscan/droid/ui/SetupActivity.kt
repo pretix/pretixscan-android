@@ -23,10 +23,7 @@ import eu.pretix.libpretixsync.setup.SetupManager
 import eu.pretix.libpretixsync.setup.SetupServerErrorException
 import eu.pretix.pretixscan.HardwareScanner
 import eu.pretix.pretixscan.ScanReceiver
-import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
-import eu.pretix.pretixscan.droid.AppConfig
-import eu.pretix.pretixscan.droid.BuildConfig
-import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.*
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
@@ -177,7 +174,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         doAsync {
             val setupm = SetupManager(
                     Build.BRAND, Build.MODEL, "pretixSCAN", BuildConfig.VERSION_NAME,
-                    AndroidHttpClientFactory()
+                    AndroidHttpClientFactory(application as PretixScan)
             )
             try {
                 val init = setupm.initialize(url, token)

@@ -1,21 +1,22 @@
 package eu.pretix.pretixscan.droid
 
-import com.facebook.stetho.okhttp3.StethoInterceptor
-
+import android.app.Application
+import android.content.Context
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import okhttp3.OkHttpClient
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.*
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 
-class AndroidHttpClientFactory : HttpClientFactory {
+class AndroidHttpClientFactory(val app: PretixScan) : HttpClientFactory {
     override fun buildClient(ignore_ssl: Boolean): OkHttpClient {
-        val builder = if (BuildConfig.DEBUG) {
-            OkHttpClient.Builder()
-                    .addNetworkInterceptor(StethoInterceptor())
-        } else {
-            OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
+
+        if (app.flipperInit?.interceptor != null) {
+            builder.addNetworkInterceptor(app.flipperInit!!.interceptor!!)
         }
 
         builder.connectTimeout(30, TimeUnit.SECONDS)
