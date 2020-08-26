@@ -68,6 +68,15 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             }
         }
+        btSwitchCamera.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                hardwareScanner.stop(this)
+                conf!!.useCamera = true
+                scanner_view.setResultHandler(this)
+                scanner_view.startCamera()
+                llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
+            }
+        }
     }
 
     override fun onResume() {
@@ -78,7 +87,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 scanner_view.startCamera()
             }
         }
-        tvHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
+        llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
         hardwareScanner.start(this)
     }
 
@@ -122,6 +131,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     }
 
     override fun handleResult(rawResult: Result) {
+        scanner_view.resumeCameraPreview(this)
         if (lastScanValue == rawResult.text && lastScanTime > System.currentTimeMillis() - 3000) {
             return
         }
@@ -135,28 +145,23 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             val jd = JSONObject(res)
             if (jd.has("version")) {
                 alert(Appcompat, R.string.setup_error_legacy_qr_code).show()
-                scanner_view.resumeCameraPreview(this)
                 return
             }
             if (!jd.has("handshake_version")) {
                 alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
-                scanner_view.resumeCameraPreview(this)
                 return
             }
             if (jd.getInt("handshake_version") > 1) {
                 alert(Appcompat, R.string.setup_error_version_too_high).show()
-                scanner_view.resumeCameraPreview(this)
                 return
             }
             if (!jd.has("url") || !jd.has("token")) {
                 alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
-                scanner_view.resumeCameraPreview(this)
                 return
             }
             initialize(jd.getString("url"), jd.getString("token"))
         } catch (e: JSONException) {
             alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
-            scanner_view.resumeCameraPreview(this)
             return
         }
     }

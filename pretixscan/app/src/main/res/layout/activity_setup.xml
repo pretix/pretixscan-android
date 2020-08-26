@@ -23,15 +23,32 @@
                 android:id="@+id/scanner_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp" >
 
-            <TextView
-                android:id="@+id/tvHardwareScan"
+            </eu.pretix.pretixscan.droid.ui.ScannerView>
+
+            <LinearLayout
+                android:id="@+id/llHardwareScan"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="32dp"
                 android:gravity="center"
-                android:text="@string/hardware_scanner" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvHardwareScan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="32dp"
+                    android:gravity="center"
+                    android:text="@string/hardware_scanner" />
+
+                <Button
+                    android:id="@+id/btSwitchCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hardware_scanner_switch_to_camera" />
+            </LinearLayout>
+
         </FrameLayout>
 
         <androidx.cardview.widget.CardView
