@@ -46,7 +46,7 @@ class PretixScan : MultiDexApplication() {
 
                     var source = SqlCipherDatabaseSource(this,
                             Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
-
+                    source.setLoggingEnabled(false)
                     try {
                         // check if database has been decrypted
                         source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray()) //source.getReadableDatabase().getSyncedTables() ???

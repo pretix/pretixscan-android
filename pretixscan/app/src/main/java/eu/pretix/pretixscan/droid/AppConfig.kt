@@ -113,6 +113,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         prefs.edit().putLong(PREFS_KEY_LAST_SYNC, `val`).apply()
     }
 
+    override fun getLastCleanup(): Long {
+        return prefs.getLong(PREFS_KEY_LAST_CLEAN, 0)
+    }
+
+    override fun setLastCleanup(`val`: Long) {
+        prefs.edit().putLong(PREFS_KEY_LAST_CLEAN, `val`).apply()
+    }
+
     override fun getLastFailedSync(): Long {
         return prefs.getLong(PREFS_KEY_LAST_FAILED_SYNC, 0)
     }
@@ -234,6 +242,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_ALLOW_SEARCH = "allow_search"
         val PREFS_KEY_API_VERSION = "pretix_api_version"
         val PREFS_KEY_LAST_SYNC = "last_sync"
+        val PREFS_KEY_LAST_CLEAN = "last_clean"
         val PREFS_KEY_LAST_FAILED_SYNC = "last_failed_sync"
         val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
         val PREFS_KEY_LAST_DOWNLOAD = "last_download"
