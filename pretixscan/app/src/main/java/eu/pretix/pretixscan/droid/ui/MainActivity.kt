@@ -586,6 +586,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.detail2.set(null)
         view_data.detail3.set(null)
         view_data.detail4.set(null)
+        view_data.detail5.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
