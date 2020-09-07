@@ -1,11 +1,12 @@
 package eu.pretix.pretixscan.droid.ui
 
 
-import android.R
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Environment
+import android.os.Bundle
 import android.util.Log
+import androidx.core.content.ContextCompat.getExternalFilesDirs
 import org.jetbrains.anko.defaultSharedPreferences
 import java.io.*
 
@@ -26,8 +27,8 @@ class DataWedgeHelper(private val ctx: Context) {
 
     private val stagingDirectory: File
         get() {
-            val externalStorageDirectory = Environment.getExternalStorageDirectory()
-            val stagingDirectory = File(externalStorageDirectory.path, "/datawedge_import")
+            val externalStorageDirectory = getExternalFilesDirs(ctx, null)
+            val stagingDirectory = File(externalStorageDirectory[0].path, "/datawedge_import")
             if (!stagingDirectory.exists()) {
                 stagingDirectory.mkdirs()
             }
@@ -98,7 +99,18 @@ class DataWedgeHelper(private val ctx: Context) {
 
         val rawin = ctx.resources.openRawResource(eu.pretix.pretixscan.droid.R.raw.dwprofile)
         copyFile(rawin, stgout)
+
+        // Legacy DataWedge Profile import
         copyAllStagedFiles()
+
+        // New DataWedge Profile import (available since DataWedge 6.7)
+        val importIntent = Intent()
+        val importBundle = Bundle()
+        importBundle.putString("FOLDER_PATH", stagingDirectory.toString())
+        importIntent.action = "com.symbol.datawedge.api.ACTION"
+        importIntent.putExtra("com.symbol.datawedge.api.IMPORT_CONFIG", importBundle)
+        ctx.sendBroadcast(importIntent)
+
         ctx.defaultSharedPreferences.edit().putBoolean("__dwprofile_installed", true).apply()
     }
 }
