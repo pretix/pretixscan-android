@@ -62,6 +62,7 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("version")?.summary = BuildConfig.VERSION_NAME
         findPreference("full_resync")?.setOnPreferenceClickListener {
             (activity!!.application as PretixScan).data.delete(ResourceLastModified::class.java).get().value();
+            conf.lastCleanup = 0
             toast("OK")
             return@setOnPreferenceClickListener true
         }
