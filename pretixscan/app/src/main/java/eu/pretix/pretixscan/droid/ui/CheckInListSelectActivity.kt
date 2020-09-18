@@ -41,7 +41,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 "pretixSCAN",
                 BuildConfig.VERSION_NAME
         )
-        sm.sync(true)
+        sm.syncMinimalEventSet {}
     }
 
     fun getAllLists(): List<CheckInList> {

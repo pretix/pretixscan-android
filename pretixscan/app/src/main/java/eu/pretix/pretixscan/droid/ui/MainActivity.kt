@@ -495,7 +495,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun syncNow(selectList: Boolean = false) {
         syncMessage = ""
-        dialog = indeterminateProgressDialog(title = R.string.progress_syncing, message = R.string.progress_syncing)
+        dialog = indeterminateProgressDialog(title = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing, message = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing)
         (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
         (dialog as ProgressDialog).setCancelable(false)
         doAsync {
@@ -507,14 +507,27 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 return@doAsync
             }
             try {
-                sm.sync(true) { current_action ->
-                    runOnUiThread {
-                        if (isDestroyed) {
-                            return@runOnUiThread
+                if (selectList) {
+                    sm.syncMinimalEventSet { current_action ->
+                        runOnUiThread {
+                            if (isDestroyed) {
+                                return@runOnUiThread
+                            }
+                            reloadSyncStatus()
+                            syncMessage = current_action
+                            (dialog as ProgressDialog).setMessage(current_action)
                         }
-                        reloadSyncStatus()
-                        syncMessage = current_action
-                        (dialog as ProgressDialog).setMessage(current_action)
+                    }
+                } else {
+                    sm.sync(true) { current_action ->
+                        runOnUiThread {
+                            if (isDestroyed) {
+                                return@runOnUiThread
+                            }
+                            reloadSyncStatus()
+                            syncMessage = current_action
+                            (dialog as ProgressDialog).setMessage(current_action)
+                        }
                     }
                 }
                 runOnUiThread {
@@ -855,9 +868,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 syncNow(true)
                 reload()
             }
-        } else if (resultCode == REQ_CHECKINLIST) {
+        } else if (requestCode == REQ_CHECKINLIST) {
             if (resultCode == RESULT_OK) {
                 reload()
+                scheduleSync()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

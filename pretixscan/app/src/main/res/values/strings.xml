@@ -3,6 +3,7 @@
     <string name="title_activity_main">pretixSCAN</string>
     <string name="headline_setup">Welcome to pretixSCAN!</string>
     <string name="action_sync">Synchronize now</string>
+    <string name="progress_syncing_first">Downloading event configuration…</string>
     <string name="progress_syncing">Synchronizing with server…</string>
     <string name="progress_processing">Processing…</string>
     <string name="progress_registering">Registering device with server…</string>
