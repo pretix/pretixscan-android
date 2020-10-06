@@ -33,12 +33,10 @@
         </activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.WelcomeActivity"
-            android:noHistory="true"
             android:label="@string/headline_setup">
         </activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.SetupActivity"
-            android:noHistory="true"
             android:label="@string/headline_setup">
         </activity>
         <activity
