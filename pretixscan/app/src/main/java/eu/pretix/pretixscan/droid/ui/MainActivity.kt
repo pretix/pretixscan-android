@@ -149,44 +149,46 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         reloadSyncStatus()
 
         var confdetails = ""
-        val event = (application as PretixScan).data.select(Event::class.java)
-                .where(Event.SLUG.eq(conf.eventSlug))
-                .get().firstOrNull()
-        if (event != null) {
-            confdetails += getString(R.string.debug_info_event, event.name)
+        if (!conf.eventSlug.isNullOrBlank()) {
+            val event = (application as PretixScan).data.select(Event::class.java)
+                    .where(Event.SLUG.eq(conf.eventSlug))
+                    .get().firstOrNull()
+            if (event != null) {
+                confdetails += getString(R.string.debug_info_event, event.name)
 
-            if (conf.subeventId != null && conf.subeventId!! > 0) {
-                val subevent = (application as PretixScan).data.select(SubEvent::class.java)
-                        .where(SubEvent.SERVER_ID.eq(conf.subeventId))
-                        .get().firstOrNull()
-                if (subevent != null) {
-                    confdetails += "\n"
-                    val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-                    confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.date_from))
+                if (conf.subeventId != null && conf.subeventId!! > 0) {
+                    val subevent = (application as PretixScan).data.select(SubEvent::class.java)
+                            .where(SubEvent.SERVER_ID.eq(conf.subeventId))
+                            .get().firstOrNull()
+                    if (subevent != null) {
+                        confdetails += "\n"
+                        val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+                        confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.date_from))
+                    }
+                }
+
+                if (conf.checkinListId > 0) {
+                    val cl = (application as PretixScan).data.select(CheckInList::class.java)
+                            .where(CheckInList.SERVER_ID.eq(conf.checkinListId))
+                            .get().firstOrNull()
+                    if (cl != null) {
+                        confdetails += "\n"
+                        confdetails += getString(R.string.debug_info_list, cl.name)
+                    }
+                }
+            }
+            if (!conf.kioskMode) {
+                confdetails += "\n"
+                if (conf.proxyMode) {
+                    confdetails += getString(R.string.checktype_proxy)
+                } else if (conf.offlineMode) {
+                    confdetails += getString(R.string.checktype_offline)
+                } else {
+                    confdetails += getString(R.string.checktype_online)
                 }
             }
 
-            if (conf.checkinListId > 0) {
-                val cl = (application as PretixScan).data.select(CheckInList::class.java)
-                        .where(CheckInList.SERVER_ID.eq(conf.checkinListId))
-                        .get().firstOrNull()
-                if (cl != null) {
-                    confdetails += "\n"
-                    confdetails += getString(R.string.debug_info_list, cl.name)
-                }
-            }
         }
-        if (!conf.kioskMode) {
-            confdetails += "\n"
-            if (conf.proxyMode) {
-                confdetails += getString(R.string.checktype_proxy)
-            } else if (conf.offlineMode) {
-                confdetails += getString(R.string.checktype_offline)
-            } else {
-                confdetails += getString(R.string.checktype_online)
-            }
-        }
-
         view_data.configDetails.set(confdetails)
     }
 
