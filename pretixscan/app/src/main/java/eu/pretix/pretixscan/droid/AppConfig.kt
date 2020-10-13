@@ -241,6 +241,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
 
+    var syncOrders: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
+
     companion object {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
@@ -263,6 +267,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_KNOWN_PRETIX_VERSION = "known_pretix_version"
         val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
+        val PREFS_KEY_SYNC_ORDERS = "pref_sync_orders"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
         val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"

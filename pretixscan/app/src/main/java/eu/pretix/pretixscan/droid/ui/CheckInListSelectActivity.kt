@@ -33,7 +33,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 (application as PretixScan).fileStorage,
                 1000L,
                 1000L,
-                false,
+                SyncManager.Profile.PRETIXSCAN,
                 conf.printBadges,
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,

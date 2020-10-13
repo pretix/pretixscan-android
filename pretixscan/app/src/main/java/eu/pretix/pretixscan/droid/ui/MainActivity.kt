@@ -442,7 +442,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 (application as PretixScan).fileStorage,
                 60000L,
                 5 * 60000L,
-                false,
+                if (conf.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,
                 conf.printBadges,
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,
@@ -614,6 +614,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun onResume() {
         reload()
         super.onResume()
+        setupApi()
         getRestrictions(this)
 
         view_data.kioskMode.set(conf.kioskMode)

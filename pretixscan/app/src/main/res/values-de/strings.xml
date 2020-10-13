@@ -134,4 +134,6 @@
     <string name="settings_label_search_disable">Suche deaktivieren</string>
     <string name="settings_label_kioskmode">Kiosk-Modus</string>
     <string name="settings_summary_kioskmode">Der Kiosk-Modus versteckt Menüs die bei Selbstbedienung nicht benutzt werden sollten. Der Kiosk-Modus hindert Nutzer nicht daran, die App über Systemfunktionen zu verlassen. Um die Einstellungen zu betreten, müssen Sie einen QR-Code mit Ihrer PIN scannen.</string>
+    <string name="settings_label_orders_sync">Bestellungen herunterladen</string>
+    <string name="settings_summary_orders_sync">Ohne diese Option wird pretixSCAN keine Bestelldaten herunterladen und bei Standardeinstellungen im Offline-Modus keine Tickets erknnen.</string>
 </resources>
