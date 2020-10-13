@@ -36,7 +36,7 @@
     <string name="sync_status_progress">Synchronisation läuft…</string>
     <string name="sync_status_now">gerade eben synchronisiert</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
-    <string name="short_datetime_format">dd.MM HH:mm</string>
+    <string name="short_datetime_format">dd.MM. HH:mm</string>
     <string name="sync_status_local">Noch nicht hochgeladene Checkins:</string>
     <string name="first_scanned">Zuerst gescannt: %s</string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
