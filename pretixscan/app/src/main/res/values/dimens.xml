@@ -12,4 +12,11 @@
     <dimen name="default_card_corners">1dp</dimen>
     <dimen name="dialog_minwidth"/>
     <dimen name="event_name_length">240dp</dimen>
+    <dimen name="card_result_padding_bottom">8dp</dimen>
+    <dimen name="card_result_icon_padding">8dp</dimen>
+    <dimen name="card_result_min_height">100dp</dimen>
+    <dimen name="card_result_icon_size">48dp</dimen>
+    <dimen name="card_result_test_size_small">14sp</dimen>
+    <dimen name="card_result_test_size_medium">18sp</dimen>
+    <dimen name="card_result_test_size_large">22sp</dimen>
 </resources>
