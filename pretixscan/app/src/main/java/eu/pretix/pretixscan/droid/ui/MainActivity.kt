@@ -175,6 +175,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             }
         }
+        confdetails += "\n"
+        if (conf.proxyMode) {
+            confdetails += getString(R.string.checktype_proxy)
+        } else if (conf.offlineMode) {
+            confdetails += getString(R.string.checktype_offline)
+        } else {
+            confdetails += getString(R.string.checktype_online)
+        }
 
 
         view_data.configDetails.set(confdetails)
