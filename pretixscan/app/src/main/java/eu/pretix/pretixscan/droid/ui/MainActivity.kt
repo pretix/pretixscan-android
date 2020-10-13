@@ -717,10 +717,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
-        if (conf.requiresPin("settings") && conf.verifyPin(result)) {
-            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-            intent.putExtra("pin", result)
-            startActivity(intent)
+        if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(result)) {
+            supportActionBar?.show()
             return
         }
         showLoadingCard()
