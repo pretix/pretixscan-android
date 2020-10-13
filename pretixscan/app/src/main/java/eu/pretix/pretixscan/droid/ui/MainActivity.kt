@@ -95,6 +95,7 @@ class ViewDataHolder(private val ctx: Context) {
     val detail5 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
+    val kioskMode = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
 
@@ -175,13 +176,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             }
         }
-        confdetails += "\n"
-        if (conf.proxyMode) {
-            confdetails += getString(R.string.checktype_proxy)
-        } else if (conf.offlineMode) {
-            confdetails += getString(R.string.checktype_offline)
-        } else {
-            confdetails += getString(R.string.checktype_online)
+        if (!conf.kioskMode) {
+            confdetails += "\n"
+            if (conf.proxyMode) {
+                confdetails += getString(R.string.checktype_proxy)
+            } else if (conf.offlineMode) {
+                confdetails += getString(R.string.checktype_offline)
+            } else {
+                confdetails += getString(R.string.checktype_online)
+            }
         }
 
 
@@ -612,6 +615,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         super.onResume()
         getRestrictions(this)
 
+        view_data.kioskMode.set(conf.kioskMode)
+        if (conf.kioskMode) {
+            supportActionBar?.hide()
+            window.decorView.apply {
+                systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            }
+        } else {
+            supportActionBar?.show()
+        }
+
         hardwareScanner.start(this)
 
         if (conf.useCamera) {
@@ -703,6 +716,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+        if (conf.requiresPin("settings") && conf.verifyPin(result)) {
+            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+            intent.putExtra("pin", result)
+            startActivity(intent)
+            return
+        }
         showLoadingCard()
         hideSearchCard()
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
@@ -997,8 +1016,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
 
             val lockView = view.findViewById(R.id.pin_lock_view) as PinLockView
+            lockView.pinLength = conf.getPinLength()
             lockView.setPinLockListener(mPinLockListener)
             val idots = view.findViewById(R.id.indicator_dots) as IndicatorDots
+            idots.pinLength = conf.getPinLength()
             lockView.attachIndicatorDots(idots);
         }
         dialog.show()

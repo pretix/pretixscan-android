@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
         android:inputType="numberPassword"
         android:key="pref_pin"
-        android:maxLength="4"
         android:title="@string/pin_protection_pin" />
     <CheckBoxPreference
         android:defaultValue="false"
+        android:dependency="pref_pin"
         android:enabled="true"
         android:key="pref_pin_enable"
-        android:dependency="pref_pin"
         android:title="@string/pin_protection_enable" />
     <CheckBoxPreference
         android:defaultValue="true"
@@ -33,4 +31,15 @@
         android:dependency="pref_pin_enable"
         android:key="pref_pin_switch_mode"
         android:title="@string/pin_protection_switch_mode" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_search_disable"
+        android:title="@string/settings_label_search_disable" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_kiosk_mode"
+        android:summary="@string/settings_summary_kioskmode"
+        android:title="@string/settings_label_kioskmode" />
 </PreferenceScreen>

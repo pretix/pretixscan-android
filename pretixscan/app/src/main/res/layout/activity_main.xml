@@ -68,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:gravity="center"
-                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_exit : @string/scantype_entry}"
+                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? (data.kioskMode ? @string/scantype_exit_kiosk : @string/scantype_exit) : (data.kioskMode ? @string/scantype_entry_kiosk : @string/scantype_entry)}"
                         android:textAllCaps="true"
                         android:textSize="32sp"
                         android:textStyle="bold" />
@@ -83,6 +83,7 @@
                         android:id="@+id/tvHardwareScan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="@{!data.kioskMode ? View.VISIBLE : View.GONE}"
                         android:text="@string/hardware_scanner" />
                 </LinearLayout>
 

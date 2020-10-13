@@ -15,6 +15,8 @@
     <string name="action_label_scantype_exit">Switch to exit scanning</string>
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
+    <string name="scantype_entry_kiosk">Scan your ticket to check in</string>
+    <string name="scantype_exit_kiosk">Scan your ticket to check out</string>
     <string name="checktype_online">Online verification</string>
     <string name="checktype_offline">Offline verification</string>
     <string name="checktype_proxy">Base station verification</string>
@@ -122,6 +124,8 @@
     <string name="label_shop_active">Active</string>
     <string name="label_shop_inactive">Shop deactivated</string>
     <string name="settings_label_search_disable">Disable search</string>
+    <string name="settings_label_kioskmode">Kiosk mode</string>
+    <string name="settings_summary_kioskmode">Kiosk mode hides menus that are not supposed to be used in a self-service installation. Kiosk mode does not prevent users from exiting the app through system features. To access settings, you need to scan a QR code with your PIN.</string>
     <string name="pin_protection">PIN protection</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>

@@ -173,6 +173,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         return prefs.getLong(PREFS_KEY_KNOWN_PRETIX_VERSION, 0L);
     }
 
+    fun getPinLength(): Int {
+        return default_prefs.getString("pref_pin", "")!!.length
+    }
+
     fun verifyPin(pin: String): Boolean {
         return default_prefs.getString("pref_pin", "") == pin
     }
@@ -229,6 +233,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SEARCH_DISABLE, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SEARCH_DISABLE, value).apply()
 
+    var kioskMode: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_MODE, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_KIOSK_MODE, value).apply()
+
     var unpaidAsk: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
@@ -265,5 +273,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
         val PREFS_KEY_SOUNDS = "pref_sounds"
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
+        val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
     }
 }

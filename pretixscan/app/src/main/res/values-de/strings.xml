@@ -129,4 +129,9 @@
     <string name="settings_label_verification">Ticketkontrolle</string>
     <string name="settings_label_sync">Synchronisierung</string>
     <string name="settings_label_ui">Benutzeroberfläche</string>
+    <string name="scantype_entry_kiosk">Scannen Sie Ihr Ticket um sich anzumelden</string>
+    <string name="scantype_exit_kiosk">Scannen Sie Ihr Ticket um sich abzumelden</string>
+    <string name="settings_label_search_disable">Suche deaktivieren</string>
+    <string name="settings_label_kioskmode">Kiosk-Modus</string>
+    <string name="settings_summary_kioskmode">Der Kiosk-Modus versteckt Menüs die bei Selbstbedienung nicht benutzt werden sollten. Der Kiosk-Modus hindert Nutzer nicht daran, die App über Systemfunktionen zu verlassen. Um die Einstellungen zu betreten, müssen Sie einen QR-Code mit Ihrer PIN scannen.</string>
 </resources>

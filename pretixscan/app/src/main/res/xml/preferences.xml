@@ -27,10 +27,6 @@
             android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
             android:key="pin_protect"
             android:title="@string/pin_protection" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="pref_search_disable"
-            android:title="@string/settings_label_search_disable" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_badges">
         <CheckBoxPreference
