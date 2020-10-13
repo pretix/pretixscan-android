@@ -113,6 +113,9 @@
     <string name="action_label_scantype_entry">Zum Eingangs-Modus wechseln</string>
     <string name="scantype_entry">Eingang</string>
     <string name="scantype_exit">Ausgang</string>
+    <string name="debug_info_event">Veranstaltung: %1$s</string>
+    <string name="debug_info_subevent">Termin: %1$s (%2$s)</string>
+    <string name="debug_info_list">Liste: %1$s</string>
     <string name="pin_protection">PIN-Sperre</string>
     <string name="pin_protection_pin">PIN setzen</string>
     <string name="pin_protection_enable">PIN-Sperre aktivieren</string>

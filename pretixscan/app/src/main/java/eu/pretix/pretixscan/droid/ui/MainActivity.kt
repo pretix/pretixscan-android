@@ -44,6 +44,9 @@ import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.db.Event
+import eu.pretix.libpretixsync.db.SubEvent
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.HardwareScanner
 import eu.pretix.pretixscan.ScanReceiver
@@ -59,6 +62,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 interface ReloadableActivity {
@@ -92,6 +96,7 @@ class ViewDataHolder(private val ctx: Context) {
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
+    val configDetails = ObservableField<String>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -141,6 +146,38 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     override fun reload() {
         reloadSyncStatus()
+
+        var confdetails = ""
+        val event = (application as PretixScan).data.select(Event::class.java)
+                .where(Event.SLUG.eq(conf.eventSlug))
+                .get().firstOrNull()
+        if (event != null) {
+            confdetails += getString(R.string.debug_info_event, event.name)
+
+            if (conf.subeventId != null && conf.subeventId!! > 0) {
+                val subevent = (application as PretixScan).data.select(SubEvent::class.java)
+                        .where(SubEvent.SERVER_ID.eq(conf.subeventId))
+                        .get().firstOrNull()
+                if (subevent != null) {
+                    confdetails += "\n"
+                    val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+                    confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.date_from))
+                }
+            }
+
+            if (conf.checkinListId > 0) {
+                val cl = (application as PretixScan).data.select(CheckInList::class.java)
+                        .where(CheckInList.SERVER_ID.eq(conf.checkinListId))
+                        .get().firstOrNull()
+                if (cl != null) {
+                    confdetails += "\n"
+                    confdetails += getString(R.string.debug_info_list, cl.name)
+                }
+            }
+        }
+
+
+        view_data.configDetails.set(confdetails)
     }
 
     private fun setSearchFilter(f: String) {

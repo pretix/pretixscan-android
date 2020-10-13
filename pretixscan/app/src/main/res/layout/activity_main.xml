@@ -74,6 +74,12 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="@{data.configDetails}" />
+
+                    <TextView
                         android:id="@+id/tvHardwareScan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -82,7 +88,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="match_parent">
                     android:keepScreenOn="true">
 
                     <ImageView
