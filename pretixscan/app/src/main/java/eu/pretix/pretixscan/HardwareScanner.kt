@@ -47,7 +47,7 @@ class HardwareScanner(val receiver: ScanReceiver) {
 
 fun defaultToScanner(): Boolean {
     return when (Build.BRAND) {
-        "Zebra" -> Build.MODEL.startsWith("TC") || Build.MODEL.startsWith("M")
+        "Zebra" -> Build.MODEL.startsWith("TC") || Build.MODEL.startsWith("M") || Build.MODEL.startsWith("CC6")
         "Bluebird" -> Build.MODEL.startsWith("EF")
         else -> false
     }

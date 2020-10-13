@@ -187,7 +187,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
 
-
         view_data.configDetails.set(confdetails)
     }
 
