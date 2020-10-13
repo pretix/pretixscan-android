@@ -126,4 +126,7 @@
     <string name="pin_protection_statistics">Statistiken sperren</string>
     <string name="pin_protection_switch_event">Veranstaltungswechsel sperren</string>
     <string name="pin_protection_switch_mode">Moduswechsel sperren</string>
+    <string name="settings_label_verification">Ticketkontrolle</string>
+    <string name="settings_label_sync">Synchronisierung</string>
+    <string name="settings_label_ui">Benutzeroberfläche</string>
 </resources>

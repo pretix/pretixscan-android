@@ -68,6 +68,9 @@
     <string name="hint_url">URL</string>
     <string name="hint_token">Token</string>
     <string name="dismiss">Dismiss</string>
+    <string name="settings_label_verification">Ticket verification</string>
+    <string name="settings_label_sync">Synchronization</string>
+    <string name="settings_label_ui">User interface</string>
     <string name="settings_label_about">About this app</string>
     <string name="settings_label_licenses">Author and licenses</string>
     <string name="settings_label_device_camera">Use device camera</string>
@@ -118,6 +121,7 @@
     <string name="full_delete_confirm">Do you really want to reset the device? You will need to pair it with the online system again.</string>
     <string name="label_shop_active">Active</string>
     <string name="label_shop_inactive">Shop deactivated</string>
+    <string name="settings_label_search_disable">Disable search</string>
     <string name="pin_protection">PIN protection</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>

@@ -932,6 +932,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
 
+        searchItem.isVisible = !conf.searchDisabled
+
         menu.findItem(R.id.action_scantype).title = if (conf.scanType == "exit") {
             getString(R.string.action_label_scantype_entry)
         } else {

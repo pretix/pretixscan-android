@@ -225,6 +225,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getString(PREFS_KEY_SCAN_TYPE, "entry") ?: "entry"
         set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_TYPE, value).apply()
 
+    var searchDisabled: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_SEARCH_DISABLE, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SEARCH_DISABLE, value).apply()
+
     var unpaidAsk: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
@@ -238,8 +242,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_EVENT_NAME = "event_name"
         val PREFS_KEY_CHECKINLIST_ID = "checkin_list_id"
         val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
-        val PREFS_KEY_SHOW_INFO = "show_info"
-        val PREFS_KEY_ALLOW_SEARCH = "allow_search"
         val PREFS_KEY_API_VERSION = "pretix_api_version"
         val PREFS_KEY_LAST_SYNC = "last_sync"
         val PREFS_KEY_LAST_CLEAN = "last_clean"
@@ -262,5 +264,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
         val PREFS_KEY_SOUNDS = "pref_sounds"
+        val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
     }
 }

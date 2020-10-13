@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="pref_sync_auto"
-        android:title="@string/settings_label_auto_sync" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="pref_use_camera"
-        android:title="@string/settings_label_device_camera" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="pref_scan_offline"
-        android:summary="@string/settings_summary_scan_offline"
-        android:title="@string/settings_label_scan_offline" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="pref_sounds"
-        android:title="@string/settings_label_sounds" />
-    <Preference
-        android:key="pin_protect"
-        android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
-        android:title="@string/pin_protection" />
+    <PreferenceCategory android:title="@string/settings_label_verification">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_scan_offline"
+            android:summary="@string/settings_summary_scan_offline"
+            android:title="@string/settings_label_scan_offline" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_label_sync">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_sync_auto"
+            android:title="@string/settings_label_auto_sync" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_label_ui">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_use_camera"
+            android:title="@string/settings_label_device_camera" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_sounds"
+            android:title="@string/settings_label_sounds" />
+        <Preference
+            android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
+            android:key="pin_protect"
+            android:title="@string/pin_protection" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_search_disable"
+            android:title="@string/settings_label_search_disable" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_badges">
         <CheckBoxPreference
             android:defaultValue="false"
@@ -42,9 +52,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_unpaid_ask"
-            android:title="@string/pref_unpaid_ask"
             android:summary="@string/pref_unpaid_ask_summary"
-            />
+            android:title="@string/pref_unpaid_ask" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
