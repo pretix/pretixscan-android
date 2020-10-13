@@ -83,8 +83,9 @@
                         android:id="@+id/tvHardwareScan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="@{!data.kioskMode ? View.VISIBLE : View.GONE}"
-                        android:text="@string/hardware_scanner" />
+                        android:gravity="center"
+                        android:text="@string/hardware_scanner"
+                        android:visibility="@{!data.kioskMode ? View.VISIBLE : View.GONE}" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -162,7 +163,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_max="600dp">
+                        app:layout_constraintWidth_max="800dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -173,7 +174,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@{data.getColor(data.result_state)}"
-                                android:paddingBottom="8dp">
+                                android:paddingBottom="@dimen/card_result_padding_bottom"
+                                android:minHeight="@dimen/card_result_min_height">
 
                                 <ImageButton
                                     android:id="@+id/ibPrint"
@@ -191,46 +193,46 @@
 
                                 <FrameLayout
                                     android:id="@+id/frameLayout"
-                                    android:layout_width="64dp"
-                                    android:layout_height="64dp"
-                                    android:padding="8dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="@dimen/card_result_icon_padding"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent">
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconSuccess"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
+                                        android:layout_width="@dimen/card_result_icon_size"
+                                        android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.SUCCESS ? View.VISIBLE : View.GONE}"
                                         app:srcCompat="@drawable/ic_check_circle_white_24dp" />
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconSuccessExit"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
+                                        android:layout_width="@dimen/card_result_icon_size"
+                                        android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.SUCCESS_EXIT ? View.VISIBLE : View.GONE}"
                                         app:srcCompat="@drawable/ic_exit_white_24dp" />
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconWarning"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
+                                        android:layout_width="@dimen/card_result_icon_size"
+                                        android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.WARNING ? View.VISIBLE : View.GONE}"
                                         app:srcCompat="@drawable/ic_warning_white_24dp" />
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconError"
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
+                                        android:layout_width="@dimen/card_result_icon_size"
+                                        android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.ERROR ? View.VISIBLE : View.GONE}"
                                         app:srcCompat="@drawable/ic_error_white_24dp" />
 
                                     <ProgressBar
                                         android:id="@+id/pbResultProgress"
                                         style="?android:attr/progressBarStyle"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="@dimen/card_result_icon_size"
+                                        android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.LOADING ? View.VISIBLE : View.GONE}" />
                                 </FrameLayout>
 
@@ -246,6 +248,7 @@
                                     android:text="@{data.result_text}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_large"
                                     android:visibility="@{data.result_text != null ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
@@ -262,6 +265,7 @@
                                     android:text="@{data.detail1}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_medium"
                                     android:visibility="@{data.detail1 != null ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
@@ -279,6 +283,7 @@
                                     android:text="@{data.detail2}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_medium"
                                     android:visibility="@{data.detail2 != null ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/textView3"
@@ -296,6 +301,7 @@
                                     android:text="@{data.detail3}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_medium"
                                     android:visibility="@{data.detail3 != null &amp;&amp; !&quot;null&quot;.equals(data.detail3) ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toEndOf="@+id/textView4"
@@ -313,6 +319,7 @@
                                     android:text="@{data.detail4}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_small"
                                     android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
@@ -331,6 +338,7 @@
                                     android:text="@{data.detail5}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                                     android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_small"
                                     android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"

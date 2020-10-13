@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_result_padding_bottom">24dp</dimen>
+    <dimen name="card_result_icon_padding">32dp</dimen>
+    <dimen name="card_result_min_height">400dp</dimen>
+    <dimen name="card_result_icon_size">96dp</dimen>
+    <dimen name="card_result_test_size_small">28sp</dimen>
+    <dimen name="card_result_test_size_medium">36sp</dimen>
+    <dimen name="card_result_test_size_large">44sp</dimen>
+</resources>
