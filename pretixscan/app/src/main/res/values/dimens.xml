@@ -5,8 +5,6 @@
     <dimen name="keyboard_button_text_size">20sp</dimen>
     <dimen name="keyboard_button_padding">15dp</dimen>
     <dimen name="keyboard_button_ripple_padding">30dp</dimen>
-    <dimen name="activity_successful_sale_check_size">48dp</dimen>
-    <dimen name="activity_successful_sale_header_size">75dp</dimen>
     <dimen name="camera_height">324dp</dimen>
     <dimen name="default_dialog_corners">4dp</dimen>
     <dimen name="default_card_corners">1dp</dimen>
