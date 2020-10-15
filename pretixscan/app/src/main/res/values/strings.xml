@@ -23,6 +23,7 @@
     <string name="debug_info_event">Event: %1$s</string>
     <string name="debug_info_subevent">Date: %1$s (%2$s)</string>
     <string name="debug_info_list">List: %1$s</string>
+    <string name="debug_info_device">Device: %1$s</string>
     <string name="action_search">Search</string>
     <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>

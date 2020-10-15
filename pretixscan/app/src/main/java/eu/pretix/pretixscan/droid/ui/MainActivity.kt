@@ -179,6 +179,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             if (!conf.kioskMode) {
                 confdetails += "\n"
+                confdetails += getString(R.string.debug_info_device, conf.deviceKnownName)
+                confdetails += "\n"
                 if (conf.proxyMode) {
                     confdetails += getString(R.string.checktype_proxy)
                 } else if (conf.offlineMode) {
