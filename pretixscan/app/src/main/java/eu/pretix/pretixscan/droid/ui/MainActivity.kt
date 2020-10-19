@@ -731,7 +731,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
-            if (Regex("[0-9A-Za-z]+").matches(result)) {
+            if (Regex("[0-9A-Za-z+/=]+").matches(result)) {
                 val provider = (application as PretixScan).getCheckProvider(conf)
                 try {
                     checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
@@ -768,6 +768,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.REVOKED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
                 else -> {
                 }
@@ -803,6 +804,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
                 }
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
+                TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
@@ -821,6 +823,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.RULES -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.REVOKED -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ResultState.ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR

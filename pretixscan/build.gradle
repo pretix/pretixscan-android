@@ -14,6 +14,7 @@ buildscript {
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.21"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.sentry:sentry-android-gradle-plugin:1.7.23'
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.11"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
