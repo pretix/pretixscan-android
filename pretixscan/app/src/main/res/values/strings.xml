@@ -137,4 +137,5 @@
     <string name="pin_protection_statistics">Protect statistics</string>
     <string name="pin_protection_switch_event">Protect event switch</string>
     <string name="pin_protection_switch_mode">Protect mode switch</string>
+    <string name="currently_inside">currently attending</string>
 </resources>

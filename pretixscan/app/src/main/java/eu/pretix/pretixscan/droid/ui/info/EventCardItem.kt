@@ -32,6 +32,14 @@ internal constructor(private val statusResult: TicketCheckProvider.StatusResult)
         (view.findViewById<View>(R.id.eventTitle) as TextView).text = statusResult.eventName
         (view.findViewById<View>(R.id.tickets_sold) as TextView).text = statusResult.totalTickets.toString()
         (view.findViewById<View>(R.id.total_scanned) as TextView).text = statusResult.alreadyScanned.toString()
+        if (statusResult.currentlyInside != null) {
+            (view.findViewById<View>(R.id.inside_number) as TextView).text = statusResult.alreadyScanned.toString()
+            view.findViewById<View>(R.id.inside_number).visibility = View.VISIBLE
+            view.findViewById<View>(R.id.inside_label).visibility = View.VISIBLE
+        } else {
+            view.findViewById<View>(R.id.inside_number).visibility = View.GONE
+            view.findViewById<View>(R.id.inside_label).visibility = View.GONE
+        }
     }
 
 }
