@@ -34,6 +34,7 @@ object KeystoreHelper {
     private val ANDROID_KEY_STORE = "AndroidKeyStore"
 
     // Works since android M, for previous versions this will simply return the plain value unaltered
+    @SuppressLint("NewApi")
     fun secureValue(value: String, encrypt: Boolean): String {
         if (value.length > 0 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
@@ -74,10 +75,10 @@ object KeystoreHelper {
                     return String(cipher.doFinal(bytes), Charset.forName("UTF-8"))
                 }
 
-            } catch (@SuppressLint("NewApi") e: UserNotAuthenticatedException) {
+            } catch (e: UserNotAuthenticatedException) {
                 Log.d("KeystoreHelper", "UserNotAuthenticatedException: " + e.message)
                 return value
-            } catch (@SuppressLint("NewApi") e: KeyPermanentlyInvalidatedException) {
+            } catch (e: KeyPermanentlyInvalidatedException) {
                 Log.d("KeystoreHelper", "KeyPermanentlyInvalidatedException: " + e.message)
                 return value
             } catch (e: BadPaddingException) {

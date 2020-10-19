@@ -30,6 +30,10 @@ android {
     dataBinding {
         enabled = true
     }
+	dexOptions {
+		javaMaxHeapSize "3g"
+	}
+
 
     lintOptions {
         disable 'InvalidPackage' // problem with jetty and bouncycastle
