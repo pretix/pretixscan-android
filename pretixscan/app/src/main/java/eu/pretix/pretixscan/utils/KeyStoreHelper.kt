@@ -74,10 +74,10 @@ object KeystoreHelper {
                     return String(cipher.doFinal(bytes), Charset.forName("UTF-8"))
                 }
 
-            } catch (e: UserNotAuthenticatedException) {
+            } catch (@SuppressLint("NewApi") e: UserNotAuthenticatedException) {
                 Log.d("KeystoreHelper", "UserNotAuthenticatedException: " + e.message)
                 return value
-            } catch (e: KeyPermanentlyInvalidatedException) {
+            } catch (@SuppressLint("NewApi") e: KeyPermanentlyInvalidatedException) {
                 Log.d("KeystoreHelper", "KeyPermanentlyInvalidatedException: " + e.message)
                 return value
             } catch (e: BadPaddingException) {
