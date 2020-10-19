@@ -953,20 +953,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
 
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem?.actionView as SearchView
-
-        searchItem.isVisible = !conf.searchDisabled
-
         menu.findItem(R.id.action_scantype).title = if (conf.scanType == "exit") {
             getString(R.string.action_label_scantype_entry)
         } else {
             getString(R.string.action_label_scantype_exit)
         }
-        if (conf.knownPretixVersion < 30090001000) {
-            menu.findItem(R.id.action_scantype).isVisible = false
-        }
+        menu.findItem(R.id.action_scantype).isVisible = conf.knownPretixVersion >= 30090001000
+        menu.findItem(R.id.action_stats).isVisible = !conf.offlineMode || conf.syncOrders
 
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchItem.isVisible = !conf.searchDisabled
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (query.isEmpty()) {
