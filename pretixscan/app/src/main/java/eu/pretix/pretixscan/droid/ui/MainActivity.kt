@@ -34,7 +34,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrognito.pinlockview.IndicatorDots
 import com.andrognito.pinlockview.PinLockListener
@@ -55,14 +54,12 @@ import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.dialog_pin.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
 
 
 interface ReloadableActivity {
@@ -175,6 +172,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         confdetails += "\n"
                         confdetails += getString(R.string.debug_info_list, cl.name)
                     }
+                }
+
+                if (!conf.deviceKnownGateName.isNullOrBlank()) {
+                    confdetails += "\n"
+                    confdetails += getString(R.string.debug_info_gate, conf.deviceKnownGateName)
                 }
             }
             if (!conf.kioskMode) {

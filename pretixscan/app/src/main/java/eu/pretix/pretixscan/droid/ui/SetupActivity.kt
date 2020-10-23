@@ -185,6 +185,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 val init = setupm.initialize(url, token)
                 conf!!.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
                 conf!!.deviceKnownName = init.device_name
+                conf!!.deviceKnownGateName = init.gate_name ?: ""
                 conf!!.proxyMode = token.startsWith("proxy=")
                 if (init.security_profile == "pretixscan_online_kiosk") {
                     conf!!.syncOrders = false
