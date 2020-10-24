@@ -139,5 +139,7 @@
     <string name="settings_summary_kioskmode">Der Kiosk-Modus versteckt Menüs die bei Selbstbedienung nicht benutzt werden sollten. Der Kiosk-Modus hindert Nutzer nicht daran, die App über Systemfunktionen zu verlassen. Um die Einstellungen zu betreten, müssen Sie einen QR-Code mit Ihrer PIN scannen.</string>
     <string name="settings_label_orders_sync">Bestellungen herunterladen</string>
     <string name="settings_summary_orders_sync">Ohne diese Option wird pretixSCAN keine Bestelldaten herunterladen und bei Standardeinstellungen im Offline-Modus keine Tickets erknnen.</string>
+    <string name="settings_label_auto_switch">Automatische Veranstaltungswahl</string>
+    <string name="settings_summary_auto_switch">Mit dieser Option fragt pretixSCAN den Server bei der Synchronisierung, ob ein Wechsel zu einer anderen Veranstaltung und Check-in-Liste empfohlen wird und führt diesen Wechsel automatisch durch.</string>
     <string name="currently_inside">aktuell anwesend</string>
 </resources>

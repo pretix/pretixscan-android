@@ -18,6 +18,11 @@
             android:key="pref_sync_orders"
             android:summary="@string/settings_summary_orders_sync"
             android:title="@string/settings_label_orders_sync" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_auto_switch"
+            android:title="@string/settings_label_auto_switch"
+            android:summary="@string/settings_summary_auto_switch" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_ui">
         <CheckBoxPreference

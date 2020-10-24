@@ -29,9 +29,11 @@
     <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_checkinlist">Select Check-in list</string>
-    <string name="settings_label_auto_sync">Automatical Synchronization</string>
+    <string name="settings_label_auto_sync">Automatic Synchronization</string>
     <string name="settings_label_orders_sync">Download orders</string>
     <string name="settings_summary_orders_sync">Without this option, pretixSCAN will not download order data and not be able to scan offline tickets with pretix\'s default settings.</string>
+    <string name="settings_label_auto_switch">Automatic event selection</string>
+    <string name="settings_summary_auto_switch">With this option, pretixSCAN will ask the server during synchronization if the server suggests switching the app to a different event and check-in list and then switches automatically.</string>
     <plurals name="sync_status_time_minutes">
         <item quantity="one">synchronized %d minute ago</item>
         <item quantity="other">synchronized %d minutes ago</item>

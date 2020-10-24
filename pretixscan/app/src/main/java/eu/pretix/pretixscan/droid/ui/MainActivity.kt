@@ -513,7 +513,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             try {
                 if (defaultSharedPreferences.getBoolean("pref_sync_auto", true)) {
-                    val result = sm.sync(false) {
+                    val result = sm.sync(false, conf.checkinListId) {
                         runOnUiThread {
                             syncMessage = it
                             reloadSyncStatus()
@@ -528,6 +528,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 runOnUiThread {
                     reloadSyncStatus()
                     scheduleSync()
+                }
+            } catch (e: SyncManager.EventSwitchRequested) {
+                runOnUiThread {
+                    conf.eventSlug = e.eventSlug
+                    conf.subeventId = e.subeventId
+                    conf.eventName = e.eventName
+                    conf.checkinListId = e.checkinlistId
+                    setupApi()
+                    syncNow(!(e.checkinlistId > 0))
+                    reload()
                 }
             } catch (e: Exception) {
                 runOnUiThread {
@@ -572,7 +582,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         }
                     }
                 } else {
-                    sm.sync(true) { current_action ->
+                    sm.sync(true, conf.checkinListId) { current_action ->
                         runOnUiThread {
                             if (isDestroyed) {
                                 return@runOnUiThread
@@ -595,6 +605,20 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (conf.lastFailedSync > 0) {
                         alert(Appcompat, conf.lastFailedSyncMsg).show()
                     }
+                }
+            } catch (e: SyncManager.EventSwitchRequested) {
+                runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
+                    (dialog as ProgressDialog).dismiss()
+                    conf.eventSlug = e.eventSlug
+                    conf.subeventId = e.subeventId
+                    conf.eventName = e.eventName
+                    conf.checkinListId = e.checkinlistId
+                    setupApi()
+                    syncNow(!(e.checkinlistId > 0))
+                    reload()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
