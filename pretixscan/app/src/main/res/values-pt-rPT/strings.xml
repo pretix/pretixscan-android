@@ -1,2 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="pin_protection_statistics">Proteger estatísticas</string>
+    <string name="pin_protection_enable">Ativar proteção por PIN</string>
+    <string name="pin_protection">Proteção por PIN</string>
+    <string name="pin_protection_pin">Escolher PIN</string>
+    <string name="label_shop_inactive">Bilheteira desativada</string>
+    <string name="settings_label_search_disable">Desativar pesquisa</string>
+    <string name="settings_label_kioskmode">Modo kiosk</string>
+    <string name="label_shop_active">Ativo</string>
+    <string name="settings_label_version">Versão</string>
+    <string name="dialog_unpaid_title">Encomenda por pagar</string>
+    <string name="scan_result_canceled">Encomenda cancelada</string>
+    <string name="scan_result_product">Produto inválido</string>
+    <string name="scan_result_invalid">Bilhete inválido</string>
+    <string name="scan_result_valid">Bilhete válido</string>
+    <string name="status_valid">Válido</string>
+    <string name="status_canceled">Cancelado</string>
+    <string name="cancel">Cancelar</string>
+    <string name="yes">Sim</string>
+    <string name="settings_label_details">Detalhes</string>
+    <string name="settings_label_device_camera">Usar camara do dispositovo</string>
+    <string name="settings_label_licenses">Autor e licenças</string>
+    <string name="settings_label_about">Sobre esta app</string>
+    <string name="dismiss">Ignorar</string>
+    <string name="cont">CONTINUAR</string>
+    <string name="hint_token">Token</string>
+    <string name="hint_url">URL</string>
+    <string name="ok">OK</string>
+    <string name="action_search">Procurar</string>
+    <string name="checktype_online">Verificação online</string>
+    <string name="scantype_exit">Saída</string>
+    <string name="action_label_statistics">Estatísticas</string>
+    <string name="action_label_settings">Definições</string>
+    <string name="progress_processing">A processar…</string>
+    <string name="headline_setup">Bem-vindo ao pretixSCAN!</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="app_name">pretixSCAN</string>
+</resources>
