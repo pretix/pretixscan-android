@@ -557,6 +557,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun syncNow(selectList: Boolean = false) {
+        if (isDestroyed) return
         syncMessage = ""
         dialog = indeterminateProgressDialog(title = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing, message = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing)
         (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
