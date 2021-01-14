@@ -2,3 +2,6 @@
 	path = pretixscan/libpretixsync-repo
 	url = https://github.com/pretix/libpretixsync.git
 	branch = master
+[submodule "pretixscan/libpretixui-repo"]
+	path = pretixscan/libpretixui-repo
+	url = https://github.com/pretix/libpretixui-android.git

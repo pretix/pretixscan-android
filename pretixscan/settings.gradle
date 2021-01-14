@@ -1,2 +1,3 @@
-include ':app', ':libpretixsync'
+include ':app', ':libpretixsync', ':libpretixui-android'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
+project(':libpretixui-android').projectDir = new File('libpretixui-repo/libpretixui-android')

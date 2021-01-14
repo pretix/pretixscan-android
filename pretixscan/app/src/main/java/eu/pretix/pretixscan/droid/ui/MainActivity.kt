@@ -43,9 +43,7 @@ import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.CheckInList
-import eu.pretix.libpretixsync.db.Event
-import eu.pretix.libpretixsync.db.SubEvent
+import eu.pretix.libpretixsync.db.*
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.HardwareScanner
 import eu.pretix.pretixscan.ScanReceiver
@@ -746,7 +744,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         hardwareScanner.stop(this)
     }
 
-    fun handleScan(result: String, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+    fun handleScan(result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(result)) {
             supportActionBar?.show()
             return
@@ -782,7 +780,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
     }
 
-    fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<TicketCheckProvider.Answer>?, ignore_unpaid: Boolean = false) {
+    fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
+                            retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): Dialog {
+        val questions = res.requiredAnswers!!.map { it.question }
+        val values = mutableMapOf<QuestionLike, String>()
+        res.requiredAnswers!!.forEach {
+            if (!it.currentValue.isNullOrBlank()) {
+                values[it.question] = it.currentValue!!
+            }
+        }
+        return eu.pretix.libpretixui.android.questions.showQuestionsDialog(this, questions, values, null) { answers ->
+            retryHandler(secret, answers, ignore_unpaid)
+        }
+    }
+
+    fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
         if (conf.sounds)
             when (result.type) {
                 TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
@@ -805,7 +817,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         hideHandler.postDelayed(hideRunnable, 30000)
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.result_state.set(ResultState.DIALOG)
-            dialog = showQuestionsDialog(this, result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener {
