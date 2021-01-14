@@ -16,7 +16,7 @@
     <item
         android:id="@+id/action_scantype"
         android:title="@string/action_label_scantype_exit"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_stats"
         android:title="@string/action_label_statistics"
