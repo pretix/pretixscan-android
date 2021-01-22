@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import com.google.zxing.BarcodeFormat
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 
@@ -11,7 +12,13 @@ class ScannerView : ZXingScannerView {
 
     constructor(context: Context) : super(context) {}
 
-    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {}
+    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
+        this.setFormats(
+                listOf(
+                        BarcodeFormat.QR_CODE
+                )
+        )
+    }
 
     @Synchronized
     override fun getFramingRectInPreview(previewWidth: Int, previewHeight: Int): Rect {
