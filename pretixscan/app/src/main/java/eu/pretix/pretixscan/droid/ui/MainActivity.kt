@@ -7,6 +7,7 @@ import android.annotation.TargetApi
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.RestrictionsManager
 import android.content.pm.PackageManager
@@ -45,6 +46,7 @@ import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.*
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.pretixscan.HardwareScanner
 import eu.pretix.pretixscan.ScanReceiver
 import eu.pretix.pretixscan.droid.*
@@ -120,7 +122,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
     private var keyboardBuffer: String = ""
-    private var dialog: Dialog? = null
+    private var dialog: QuestionsDialogInterface? = null
+    private var pdialog: ProgressDialog? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
     private var searchAdapter: SearchListAdapter? = null
@@ -492,7 +495,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private val hideRunnable = Runnable {
         runOnUiThread {
-            if (dialog != null && dialog!!.isShowing) {
+            if (dialog != null && dialog!!.isShowing()) {
                 return@runOnUiThread
             }
             hideCard()
@@ -557,9 +560,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     fun syncNow(selectList: Boolean = false) {
         if (isDestroyed) return
         syncMessage = ""
-        dialog = indeterminateProgressDialog(title = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing, message = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing)
-        (dialog as ProgressDialog).setCanceledOnTouchOutside(false)
-        (dialog as ProgressDialog).setCancelable(false)
+        pdialog = indeterminateProgressDialog(title = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing, message = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing)
+        (pdialog as ProgressDialog).setCanceledOnTouchOutside(false)
+        (pdialog as ProgressDialog).setCancelable(false)
         doAsync {
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
@@ -577,7 +580,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                             }
                             reloadSyncStatus()
                             syncMessage = current_action
-                            (dialog as ProgressDialog).setMessage(current_action)
+                            (pdialog as ProgressDialog).setMessage(current_action)
                         }
                     }
                 } else {
@@ -588,7 +591,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                             }
                             reloadSyncStatus()
                             syncMessage = current_action
-                            (dialog as ProgressDialog).setMessage(current_action)
+                            (pdialog as ProgressDialog).setMessage(current_action)
                         }
                     }
                 }
@@ -600,7 +603,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (selectList) {
                         selectCheckInList()
                     }
-                    (dialog as ProgressDialog).dismiss()
+                    (pdialog as ProgressDialog).dismiss()
                     if (conf.lastFailedSync > 0) {
                         alert(Appcompat, conf.lastFailedSyncMsg).show()
                     }
@@ -610,7 +613,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (isDestroyed) {
                         return@runOnUiThread
                     }
-                    (dialog as ProgressDialog).dismiss()
+                    (pdialog as ProgressDialog).dismiss()
                     conf.eventSlug = e.eventSlug
                     conf.subeventId = e.subeventId
                     conf.eventName = e.eventName
@@ -628,7 +631,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.capture(e)
                     }
-                    (dialog as ProgressDialog).dismiss()
+                    (pdialog as ProgressDialog).dismiss()
                     alert(Appcompat, e.message
                             ?: getString(R.string.error_unknown_exception)).show()
                 }
@@ -781,7 +784,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
-                            retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): Dialog {
+                            retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question }
         val values = mutableMapOf<QuestionLike, String>()
         res.requiredAnswers!!.forEach {
@@ -820,9 +823,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
                 handleScan(secret, answers, ignore_unpaid)
             }
-            dialog!!.setOnCancelListener {
-                hideCard()
-            }
+            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
@@ -830,9 +831,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
                 handleScan(secret, answers, ignore_unpaid)
             }
-            dialog!!.setOnCancelListener {
-                hideCard()
-            }
+            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             return
         }
         if (result.message == null) {
@@ -931,7 +930,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun handleResult(rawResult: Result) {
         scanner_view.resumeCameraPreview(this@MainActivity)
 
-        if ((dialog != null && dialog!!.isShowing) || view_data.result_state.get() == ResultState.LOADING) {
+        if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == ResultState.LOADING) {
             return
         }
 
@@ -981,6 +980,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 reload()
                 scheduleSync()
             }
+        } else if (dialog?.handleActivityResult(requestCode, resultCode, data) == true) {
+            return
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }

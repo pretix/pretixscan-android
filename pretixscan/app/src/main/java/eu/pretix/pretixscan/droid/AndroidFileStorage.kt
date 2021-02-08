@@ -6,6 +6,7 @@ import java.io.OutputStream
 
 import eu.pretix.libpretixsync.sync.FileStorage
 import java.io.File
+import java.io.FilenameFilter
 
 class AndroidFileStorage(private val context: Context) : FileStorage {
 
@@ -19,6 +20,10 @@ class AndroidFileStorage(private val context: Context) : FileStorage {
 
     override fun contains(filename: String): Boolean {
         return File(getDir(), filename).exists()
+    }
+
+    override fun listFiles(filter: FilenameFilter?): Array<String> {
+        return if (filter != null) getDir().list(filter)!! else getDir().list()!!
     }
 
     fun getFile(filename: String): File {

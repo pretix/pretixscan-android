@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="eu.pretix.pretixscan.droid">
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -11,15 +12,19 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.lifecycle, androidx.camera.core, androidx.camera.camera2, com.serenegiant.usbcameracommon" />
+
     <application
         android:name="eu.pretix.pretixscan.droid.PretixScan"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:logo="@drawable/ic_logo"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
-        <meta-data android:name="android.content.APP_RESTRICTIONS" android:resource="@xml/app_restrictions" />
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="android.content.APP_RESTRICTIONS"
+            android:resource="@xml/app_restrictions" />
 
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.MainActivity"
@@ -29,45 +34,55 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.WelcomeActivity"
-            android:label="@string/headline_setup">
-        </activity>
+            android:label="@string/headline_setup"></activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.SetupActivity"
-            android:label="@string/headline_setup">
-        </activity>
+            android:label="@string/headline_setup"></activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.info.EventinfoActivity"
-            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"
-            android:label="@string/action_label_statistics">
-        </activity>
+            android:label="@string/action_label_statistics"
+            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"></activity>
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.SettingsActivity"
-            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"
-            android:label="@string/action_label_settings">
-        </activity>
-        <activity android:name="eu.pretix.pretixscan.droid.ui.EventSelectActivity"
-            android:theme="@style/AppTheme.Dialog.Animated"
-            android:label="@string/operation_select_event"/>
-        <activity android:name="eu.pretix.pretixscan.droid.ui.CheckInListSelectActivity"
-            android:theme="@style/AppTheme.Dialog.Animated"
-            android:label="@string/operation_select_event"/>
+            android:label="@string/action_label_settings"
+            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"></activity>
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.EventSelectActivity"
+            android:label="@string/operation_select_event"
+            android:theme="@style/AppTheme.Dialog.Animated" />
+        <activity
+            android:name="eu.pretix.pretixscan.droid.ui.CheckInListSelectActivity"
+            android:label="@string/operation_select_event"
+            android:theme="@style/AppTheme.Dialog.Animated" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-            android:exported="true"/>
+        <activity
+            android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

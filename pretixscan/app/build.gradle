@@ -169,10 +169,8 @@ dependencies {
 
     // libpretixui
     implementation(project(':libpretixui-android')) {
-        transitive = false
+        transitive = true
     }
-    implementation 'com.neovisionaries:nv-i18n:1.27'
-    implementation 'com.github.ialokim:android-phone-field:0.2.3'
 
     // libpretixsync
     annotationProcessor 'io.requery:requery-processor:1.6.0'

@@ -9,9 +9,7 @@ import android.os.Build
 import android.os.Parcel
 import android.os.ResultReceiver
 import androidx.core.content.FileProvider
-import eu.pretix.libpretixsync.db.BadgeLayout
-import eu.pretix.libpretixsync.db.BadgeLayoutItem
-import eu.pretix.libpretixsync.db.Item
+import eu.pretix.libpretixsync.db.*
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -84,6 +82,7 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     if (AppConfig(context).printBadgesTwice) {
         positions.put(position)
     }
+    val store = application.data
     val data = JSONObject()
     data.put("positions", positions)
 
@@ -92,15 +91,23 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
         dir.mkdirs()
     }
     val dataFile = File(dir, "order.json")
-    val backgroundFiles = ArrayList<File>()
+    val mediaFiles = ArrayList<File>()
 
     val badgelayout = getBadgeLayout(application, position, eventSlug) ?: return
     position.put("__layout", badgelayout.json.getJSONArray("layout"))
 
     if (badgelayout.getBackground_filename() != null) {
-        backgroundFiles.add(application.fileStorage.getFile(badgelayout.getBackground_filename()))
-        position.put("__file_index", backgroundFiles.size)
+        mediaFiles.add(application.fileStorage.getFile(badgelayout.getBackground_filename()))
+        position.put("__file_index", mediaFiles.size)
     }
+
+    val etagMap = JSONObject()
+    val files = store.select(CachedPdfImage::class.java).where(CachedPdfImage.ORDERPOSITION_ID.eq(position.getLong("id"))).get().toList()
+    for (f in files) {
+        mediaFiles.add(application.fileStorage.getFile("pdfimage_${f.getEtag()}.bin"))
+        etagMap.put(f.key, mediaFiles.size)
+    }
+    position.put("__image_map", etagMap)
 
     dataFile.outputStream().use {
         it.write(data.toString().toByteArray(Charset.forName("UTF-8")))
@@ -121,13 +128,13 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     context.grantUriPermission(intent.`package`, dataUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intent.clipData = ClipData.newRawUri(null, dataUri)
 
-    for (bgFile in backgroundFiles) {
-        val bgUri = FileProvider.getUriForFile(
+    for (mediaFile in mediaFiles) {
+        val mediaUrl = FileProvider.getUriForFile(
                 context,
                 "${BuildConfig.APPLICATION_ID}.fileprovider",
-                bgFile)
-        context.grantUriPermission(intent.`package`, bgUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        intent.clipData!!.addItem(ClipData.Item(bgUri))
+                mediaFile)
+        context.grantUriPermission(intent.`package`, mediaUrl, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.clipData!!.addItem(ClipData.Item(mediaUrl))
     }
 
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
