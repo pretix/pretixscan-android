@@ -567,7 +567,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
                     alert(Appcompat, getString(R.string.error_sync_in_background)).show()
-                    (dialog as ProgressDialog).dismiss()
+                    (pdialog as ProgressDialog).dismiss()
                 }
                 return@doAsync
             }
