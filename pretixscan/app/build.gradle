@@ -20,8 +20,8 @@ android {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 37
-        versionName "1.9.4"
+        versionCode 38
+        versionName "1.9.5"
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
@@ -156,7 +156,6 @@ dependencies {
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.2'
     implementation "com.fasterxml.jackson.core:jackson-databind:2.10.1"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1"
-    implementation 'commons-codec:commons-codec:1.15'
     implementation 'net.i2p.crypto:eddsa:0.3.0'
     implementation 'com.google.protobuf:protobuf-lite:3.0.0'
 
