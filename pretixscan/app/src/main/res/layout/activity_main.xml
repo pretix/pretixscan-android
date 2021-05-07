@@ -321,7 +321,6 @@
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/card_result_test_size_small"
                                     android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/textView5"
@@ -340,10 +339,28 @@
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/card_result_test_size_small"
                                     android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/textView6"
+                                    tools:text="Detail" />
+
+                                <TextView
+                                    android:id="@+id/textView8"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:text="@{data.detail6}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_small"
+                                    android:visibility="@{data.detail6 != null &amp;&amp; !&quot;null&quot;.equals(data.detail6) ? View.VISIBLE : View.GONE}"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView7"
                                     tools:text="Detail" />
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
