@@ -40,7 +40,7 @@ class ConnectivityHelper(val conf: AppConfig) : SyncManager.CheckConnectivityFee
         }.joinToString(", "))
 
         if (conf.offlineMode) {
-            val switchToOnline = !hardOffline && resultHistory.count { it == null } == 0 && resultHistory.size >= MAX_ERRORS_IN_HISTORY && resultHistory.filterNotNull().toLongArray().average() < maxDuration
+            val switchToOnline = !hardOffline && (resultHistory.size == 0 || (resultHistory.count { it == null } == 0 && resultHistory.size >= MAX_ERRORS_IN_HISTORY && resultHistory.filterNotNull().toLongArray().average() < maxDuration))
             if (switchToOnline) {
                 conf.offlineMode = false
                 this.listeners.forEach { it.onConnectivityChanged() }

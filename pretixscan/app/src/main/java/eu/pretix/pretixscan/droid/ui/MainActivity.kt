@@ -4,7 +4,6 @@ import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.annotation.TargetApi
-import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -14,6 +13,10 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -128,9 +131,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var keyboardBuffer: String = ""
     private var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val dataWedgeHelper = DataWedgeHelper(this)
-    private lateinit var networkStateReceiver: NetworkStateReceiver
 
     private var searchAdapter: SearchListAdapter? = null
     private var searchFilter = ""
@@ -385,8 +388,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         conf = AppConfig(this)
-
-        networkStateReceiver = NetworkStateReceiver
 
         getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -678,6 +679,30 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         reloadCameraState()
 
         (application as PretixScan).connectivityHelper.addListener(this)
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            val networkRequest = NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+                    .build()
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            fun check() {
+                (application as PretixScan).connectivityHelper.setHardOffline(connectivityManager.activeNetworkInfo?.isConnectedOrConnecting != true)
+            }
+
+            networkCallback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    (application as PretixScan).connectivityHelper.setHardOffline(false)
+                }
+
+                override fun onLost(network: Network) {
+                    check()
+                }
+            }
+            check()
+            connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
+        }
     }
 
     fun hideSearchCard() {
@@ -759,6 +784,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             scanner_view.stopCamera()
         }
         hardwareScanner.stop(this)
+
+        if (Build.VERSION.SDK_INT >= 21 && networkCallback != null) {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
     }
 
     fun handleScan(result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
