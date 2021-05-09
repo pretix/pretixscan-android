@@ -7,6 +7,13 @@
             android:key="pref_scan_offline"
             android:summary="@string/settings_summary_scan_offline"
             android:title="@string/settings_label_scan_offline" />
+        <ListPreference
+            android:defaultValue="off"
+            android:entries="@array/settings_valuelabels_auto_offline"
+            android:entryValues="@array/settings_values_auto_offline"
+            android:key="pref_auto_offline"
+            android:summary="%s"
+            android:title="@string/settings_label_auto_offline" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_sync">
         <CheckBoxPreference
@@ -21,8 +28,8 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_auto_switch"
-            android:title="@string/settings_label_auto_switch"
-            android:summary="@string/settings_summary_auto_switch" />
+            android:summary="@string/settings_summary_auto_switch"
+            android:title="@string/settings_label_auto_switch" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_ui">
         <CheckBoxPreference
