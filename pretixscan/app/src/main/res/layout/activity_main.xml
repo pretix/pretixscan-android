@@ -27,9 +27,44 @@
 
             <include layout="@layout/include_main_toolbar" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{data.isOffline ? View.VISIBLE : View.GONE}"
+                android:background="@color/pretix_brand_red">
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_cloud_off_white_24" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/checktype_offline"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="fill_parent">
 
                 <eu.pretix.pretixscan.droid.ui.ScannerView
                     android:id="@+id/scanner_view"
@@ -174,8 +209,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@{data.getColor(data.result_state)}"
-                                android:paddingBottom="@dimen/card_result_padding_bottom"
-                                android:minHeight="@dimen/card_result_min_height">
+                                android:minHeight="@dimen/card_result_min_height"
+                                android:paddingBottom="@dimen/card_result_padding_bottom">
 
                                 <ImageButton
                                     android:id="@+id/ibPrint"

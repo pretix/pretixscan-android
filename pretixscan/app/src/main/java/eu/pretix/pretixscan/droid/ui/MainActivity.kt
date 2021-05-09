@@ -96,6 +96,7 @@ class ViewDataHolder(private val ctx: Context) {
     val kioskMode = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
+    val isOffline = ObservableField<Boolean>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -196,6 +197,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         }
         view_data.configDetails.set(confdetails)
+        view_data.isOffline.set(conf.offlineMode)
     }
 
     private fun setSearchFilter(f: String) {
