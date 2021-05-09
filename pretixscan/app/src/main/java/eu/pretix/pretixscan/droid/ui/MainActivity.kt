@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
+import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.*
 import eu.pretix.libpretixsync.sync.SyncManager
@@ -50,6 +51,7 @@ import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.pretixscan.HardwareScanner
 import eu.pretix.pretixscan.ScanReceiver
 import eu.pretix.pretixscan.droid.*
+import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
@@ -108,7 +110,7 @@ class ViewDataHolder(private val ctx: Context) {
     }
 }
 
-class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler, MediaPlayer.OnCompletionListener {
+class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
 
     private val REQ_EVENT = 1
     private val REQ_CHECKINLIST = 2
@@ -126,7 +128,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var keyboardBuffer: String = ""
     private var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
+
     private val dataWedgeHelper = DataWedgeHelper(this)
+    private lateinit var networkStateReceiver: NetworkStateReceiver
 
     private var searchAdapter: SearchListAdapter? = null
     private var searchFilter = ""
@@ -382,6 +386,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         super.onCreate(savedInstanceState)
         conf = AppConfig(this)
 
+        networkStateReceiver = NetworkStateReceiver
+
         getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         view_data.result_state.set(ResultState.ERROR)
@@ -457,7 +463,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 Build.MODEL,
                 "pretixSCAN",
                 BuildConfig.VERSION_NAME,
-                null
+                (application as PretixScan).connectivityHelper
         )
     }
 
@@ -670,6 +676,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         reloadCameraState()
+
+        (application as PretixScan).connectivityHelper.addListener(this)
     }
 
     fun hideSearchCard() {
@@ -745,6 +753,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     override fun onPause() {
         handler.removeCallbacks(syncRunnable)
+        (application as PretixScan).connectivityHelper.removeListener(this)
         super.onPause()
         if (conf.useCamera) {
             scanner_view.stopCamera()
@@ -766,17 +775,26 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             var checkResult: TicketCheckProvider.CheckResult? = null
             if (Regex("[0-9A-Za-z+/=]+").matches(result)) {
                 val provider = (application as PretixScan).getCheckProvider(conf)
+                val startedAt = System.currentTimeMillis()
                 try {
                     checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                         "exit" -> TicketCheckProvider.CheckInType.EXIT
                         else -> TicketCheckProvider.CheckInType.ENTRY
                     })
+                    if (provider is OnlineCheckProvider) {
+                        if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
+                            (application as PretixScan).connectivityHelper.recordError()
+                        } else {
+                            (application as PretixScan).connectivityHelper.recordSuccess(System.currentTimeMillis() - startedAt)
+                        }
+                    }
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.captureException(e)
                     } else {
                         e.printStackTrace()
                     }
+                    (application as PretixScan).connectivityHelper.recordError()
                     checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_unknown_exception))
                 }
             } else {
@@ -1132,5 +1150,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         for (key in restrictions.keySet()) {
             defaultSharedPreferences.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
         }
+    }
+
+    override fun onConnectivityChanged() {
+        reload()
     }
 }

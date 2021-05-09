@@ -233,6 +233,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SCAN_OFFLINE, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_OFFLINE, value).apply()
 
+    var autoOfflineMode: String
+        get() = default_prefs.getString(PREFS_KEY_SCAN_OFFLINE_AUTO, "off") ?: "off"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_OFFLINE_AUTO, value).apply()
+
     var printBadges: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_PRINTBADGES, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGES, value).apply()
@@ -293,6 +297,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_AUTO_SWITCH = "pref_auto_switch"
         val PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
+        val PREFS_KEY_SCAN_OFFLINE_AUTO = "pref_auto_offline"
         val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"
         val PREFS_KEY_PRINTBADGES = "pref_print_badges"
         val PREFS_KEY_PRINTBADGESTWICE = "pref_print_badges_twice"

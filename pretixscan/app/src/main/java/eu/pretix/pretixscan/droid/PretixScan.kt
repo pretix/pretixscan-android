@@ -13,6 +13,7 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
+import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
@@ -28,6 +29,7 @@ class PretixScan : MultiDexApplication() {
     val fileStorage = AndroidFileStorage(this)
     val syncLock = ReentrantLock()
     var flipperInit: FlipperInitializer.IntializationResult? = null
+    lateinit var connectivityHelper: ConnectivityHelper
 
     val data: BlockingEntityStore<Persistable>
         get() {
@@ -41,7 +43,6 @@ class PretixScan : MultiDexApplication() {
                 } else {
                     val dbPass = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
                     else KEYSTORE_PASSWORD
-
 
                     var source = SqlCipherDatabaseSource(this,
                             Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
@@ -77,7 +78,9 @@ class PretixScan : MultiDexApplication() {
                 options.release = BuildConfig.APPLICATION_ID + "@" + BuildConfig.VERSION_NAME
             }
         }
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        connectivityHelper = ConnectivityHelper(AppConfig(this))
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {

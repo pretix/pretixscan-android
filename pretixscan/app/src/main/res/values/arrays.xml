@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="settings_values_auto_offline">
+        <item>off</item>
+        <item>1s</item>
+        <item>2s</item>
+        <item>3s</item>
+        <item>5s</item>
+        <item>10s</item>
+        <item>15s</item>
+        <item>20s</item>
+        <item>errors</item>
+    </string-array>
+</resources>

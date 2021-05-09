@@ -83,6 +83,18 @@
     <string name="settings_label_licenses">Author and licenses</string>
     <string name="settings_label_device_camera">Use device camera</string>
     <string name="settings_label_scan_offline">Offline scanning</string>
+    <string name="settings_label_auto_offline">Automatically turn offline mode on and off</string>
+    <string-array name="settings_valuelabels_auto_offline">
+        <item>Manual mode</item>
+        <item>Switch to offline on errors and if scans take longer than 1 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 2 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 3 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 5 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 10 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 15 second on average</item>
+        <item>Switch to offline on errors and if scans take longer than 20 second on average</item>
+        <item>Switch to offline only on errors or connection loss</item>
+    </string-array>
     <string name="settings_summary_scan_offline">When scanning offline, your device will verify all input with its internal database instead with the server and synchronize its database with the server occasionally. This is more reliable, but allows a ticket to be scanned twice if you scan with multiple devices.</string>
     <string name="settings_label_sounds">Play sounds</string>
     <string name="settings_label_badges">Badges</string>
