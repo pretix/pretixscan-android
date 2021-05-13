@@ -21,6 +21,10 @@ class ConnectivityHelper(val conf: AppConfig) : SyncManager.CheckConnectivityFee
         }
     }
 
+    fun resetHistory() {
+        resultHistory.clear()
+    }
+
     private fun checkConditions() {
         val maxDuration = when (conf.autoOfflineMode) {
             "off" -> return
