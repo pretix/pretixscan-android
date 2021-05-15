@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.sentry.android.gradle'
 
 def flavors = [:]
 try {
@@ -14,7 +13,6 @@ try {
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
@@ -111,11 +109,6 @@ android {
     }
 }
 
-sentry {
-    autoProguardConfig true
-    autoUpload true
-}
-
 android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -146,7 +139,7 @@ dependencies {
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
 
     implementation 'com.squareup.okhttp3:okhttp:4.3.0'
-    implementation 'io.sentry:sentry-android:1.7.29'
+    implementation 'io.sentry:sentry-android:4.3.0'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation 'joda-time:joda-time:2.10.6'
     implementation 'io.requery:requery:1.6.0'
@@ -159,12 +152,12 @@ dependencies {
     implementation 'net.i2p.crypto:eddsa:0.3.0'
     implementation 'com.google.protobuf:protobuf-lite:3.0.0'
 
-    implementation 'com.facebook.soloader:soloader:0.9.0'
-    debugImplementation 'com.facebook.flipper:flipper:0.62.0'
-    debugImplementation 'com.facebook.soloader:soloader:0.9.0'
-    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.62.0'
+    implementation 'com.facebook.soloader:soloader:0.10.1'
+    debugImplementation 'com.facebook.flipper:flipper:0.87.0'
+    debugImplementation 'com.facebook.soloader:soloader:0.10.1'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.87.0'
 
-    releaseImplementation 'com.facebook.flipper:flipper-noop:0.62.0'
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.87.0'
 
     // libpretixui
     implementation(project(':libpretixui-android')) {

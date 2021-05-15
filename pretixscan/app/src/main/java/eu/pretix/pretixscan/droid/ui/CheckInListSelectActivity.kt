@@ -39,7 +39,8 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 Build.BRAND,
                 Build.MODEL,
                 "pretixSCAN",
-                BuildConfig.VERSION_NAME
+                BuildConfig.VERSION_NAME,
+                null
         )
         sm.syncMinimalEventSet {}
     }

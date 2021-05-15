@@ -237,7 +237,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             } catch (e: Exception) {
                 if (BuildConfig.SENTRY_DSN != null) {
-                    Sentry.capture(e)
+                    Sentry.captureException(e)
                 } else {
                     e.printStackTrace()
                 }
@@ -456,7 +456,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 Build.BRAND,
                 Build.MODEL,
                 "pretixSCAN",
-                BuildConfig.VERSION_NAME
+                BuildConfig.VERSION_NAME,
+                null
         )
     }
 
@@ -632,7 +633,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         return@runOnUiThread
                     }
                     if (BuildConfig.SENTRY_DSN != null) {
-                        Sentry.capture(e)
+                        Sentry.captureException(e)
                     }
                     (pdialog as ProgressDialog).dismiss()
                     alert(Appcompat, e.message
@@ -772,7 +773,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     })
                 } catch (e: Exception) {
                     if (BuildConfig.SENTRY_DSN != null) {
-                        Sentry.capture(e)
+                        Sentry.captureException(e)
                     } else {
                         e.printStackTrace()
                     }

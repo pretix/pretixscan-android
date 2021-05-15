@@ -19,8 +19,7 @@ import io.requery.Persistable
 import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
-import io.sentry.Sentry
-import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.android.core.SentryAndroid
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -73,8 +72,10 @@ class PretixScan : MultiDexApplication() {
         val client: FlipperClient = AndroidFlipperClient.getInstance(this)
         flipperInit = FlipperInitializer.initFlipperPlugins(this, client)
         if (BuildConfig.SENTRY_DSN != null) {
-            val sentryDsn = BuildConfig.SENTRY_DSN
-            Sentry.init(sentryDsn, AndroidSentryClientFactory(this))
+            SentryAndroid.init(this) { options ->
+                options.dsn = BuildConfig.SENTRY_DSN
+                options.release = BuildConfig.APPLICATION_ID + "@" + BuildConfig.VERSION_NAME
+            }
         }
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }

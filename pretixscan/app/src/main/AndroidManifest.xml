@@ -25,6 +25,7 @@
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"
             android:resource="@xml/app_restrictions" />
+        <meta-data android:name="io.sentry.auto-init" android:value="false" />
 
         <activity
             android:name="eu.pretix.pretixscan.droid.ui.MainActivity"

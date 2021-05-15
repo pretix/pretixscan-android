@@ -251,7 +251,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Sentry.capture(e)
+                Sentry.captureException(e)
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread

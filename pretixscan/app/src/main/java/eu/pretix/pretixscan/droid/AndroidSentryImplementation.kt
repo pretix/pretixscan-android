@@ -3,30 +3,23 @@ package eu.pretix.pretixscan.droid
 
 import eu.pretix.libpretixsync.SentryInterface
 import io.sentry.Sentry
-import io.sentry.event.BreadcrumbBuilder
 
 
 class AndroidSentryImplementation : SentryInterface {
     override fun addHttpBreadcrumb(url: String, method: String, statusCode: Int) {
-        Sentry.getContext().recordBreadcrumb(
-                BreadcrumbBuilder().setMessage("$method $url [$statusCode]").build()
-        )
+        Sentry.addBreadcrumb("$method $url [$statusCode]")
     }
 
     override fun addBreadcrumb(a: String, b: String) {
-        Sentry.getContext().recordBreadcrumb(
-                BreadcrumbBuilder().setMessage("$a $b").build()
-        )
+        Sentry.addBreadcrumb("$a $b")
     }
 
     override fun captureException(t: Throwable) {
-        Sentry.capture(t)
+        Sentry.captureException(t)
     }
 
     override fun captureException(t: Throwable, message: String) {
-        Sentry.getContext().recordBreadcrumb(
-                BreadcrumbBuilder().setMessage(message).build()
-        )
-        Sentry.capture(t)
+        Sentry.addBreadcrumb(message)
+        Sentry.captureException(t)
     }
 }
