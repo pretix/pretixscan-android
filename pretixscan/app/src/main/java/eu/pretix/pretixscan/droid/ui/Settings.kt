@@ -66,6 +66,10 @@ class SettingsFragment : PreferenceFragment() {
             toast("OK")
             return@setOnPreferenceClickListener true
         }
+        findPreference("pref_scan_offline")?.setOnPreferenceChangeListener { preference, newValue ->
+            (activity.application as PretixScan).connectivityHelper.resetHistory()
+            true
+        }
         findPreference("full_delete")?.setOnPreferenceClickListener {
             alert(Appcompat, R.string.full_delete_confirm) {
                 yesButton {

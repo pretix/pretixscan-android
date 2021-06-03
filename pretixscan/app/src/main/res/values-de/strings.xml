@@ -63,6 +63,18 @@
     <string name="settings_label_licenses">Autoren und Lizenzen</string>
     <string name="settings_label_device_camera">Geräte-Kamera benutzen</string>
     <string name="settings_label_scan_offline">Offline scannen</string>
+    <string name="settings_label_auto_offline">Offline-Modus automatisch steuern</string>
+    <string-array name="settings_valuelabels_auto_offline">
+        <item>Manuelle Steuerung</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 1 Sekunde dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 2 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 3 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 5 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 10 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 15 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 20 Sekunden dauern</item>
+        <item>Wechsle zu Offline-Modus nur bei Fehlern und fehlender Verbindung</item>
+    </string-array>
     <string name="settings_summary_scan_offline">Wenn Sie offline scannen, gleicht die App alle Eingaben mit ihrer internen Datenbank statt mit dem Server ab und synchronisiert ihre Datenbank gelegentlich. Dies ist zuverlässiger, aber ermöglicht, dass ein Ticket auf verschiedenen Geräten ggf. mehrfach gescannt werden kann.</string>
     <string name="settings_label_sounds">Signaltöne abspielen</string>
     <string name="question_validation_error">Teile der Eingabe waren ungültig.</string>
@@ -138,7 +150,7 @@
     <string name="settings_label_kioskmode">Kiosk-Modus</string>
     <string name="settings_summary_kioskmode">Der Kiosk-Modus versteckt Menüs die bei Selbstbedienung nicht benutzt werden sollten. Der Kiosk-Modus hindert Nutzer nicht daran, die App über Systemfunktionen zu verlassen. Um die Einstellungen zu betreten, müssen Sie einen QR-Code mit Ihrer PIN scannen.</string>
     <string name="settings_label_orders_sync">Bestellungen herunterladen</string>
-    <string name="settings_summary_orders_sync">Ohne diese Option wird pretixSCAN keine Bestelldaten herunterladen und bei Standardeinstellungen im Offline-Modus keine Tickets erknnen.</string>
+    <string name="settings_summary_orders_sync">Ohne diese Option wird pretixSCAN keine Bestelldaten herunterladen und bei Standardeinstellungen im Offline-Modus keine Tickets erkennen.</string>
     <string name="settings_label_auto_switch">Automatische Veranstaltungswahl</string>
     <string name="settings_summary_auto_switch">Mit dieser Option fragt pretixSCAN den Server bei der Synchronisierung, ob ein Wechsel zu einer anderen Veranstaltung und Check-in-Liste empfohlen wird und führt diesen Wechsel automatisch durch.</string>
     <string name="currently_inside">aktuell anwesend</string>
