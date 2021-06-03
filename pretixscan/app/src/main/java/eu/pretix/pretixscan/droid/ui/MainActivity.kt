@@ -803,32 +803,28 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
-            if (Regex("[0-9A-Za-z+/=]+").matches(result)) {
-                val provider = (application as PretixScan).getCheckProvider(conf)
-                val startedAt = System.currentTimeMillis()
-                try {
-                    checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
-                        "exit" -> TicketCheckProvider.CheckInType.EXIT
-                        else -> TicketCheckProvider.CheckInType.ENTRY
-                    })
-                    if (provider is OnlineCheckProvider) {
-                        if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
-                            (application as PretixScan).connectivityHelper.recordError()
-                        } else {
-                            (application as PretixScan).connectivityHelper.recordSuccess(System.currentTimeMillis() - startedAt)
-                        }
-                    }
-                } catch (e: Exception) {
-                    if (BuildConfig.SENTRY_DSN != null) {
-                        Sentry.captureException(e)
+            val provider = (application as PretixScan).getCheckProvider(conf)
+            val startedAt = System.currentTimeMillis()
+            try {
+                checkResult = provider.check(result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                    "exit" -> TicketCheckProvider.CheckInType.EXIT
+                    else -> TicketCheckProvider.CheckInType.ENTRY
+                })
+                if (provider is OnlineCheckProvider) {
+                    if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
+                        (application as PretixScan).connectivityHelper.recordError()
                     } else {
-                        e.printStackTrace()
+                        (application as PretixScan).connectivityHelper.recordSuccess(System.currentTimeMillis() - startedAt)
                     }
-                    (application as PretixScan).connectivityHelper.recordError()
-                    checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_unknown_exception))
                 }
-            } else {
-                checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.scan_result_invalid))
+            } catch (e: Exception) {
+                if (BuildConfig.SENTRY_DSN != null) {
+                    Sentry.captureException(e)
+                } else {
+                    e.printStackTrace()
+                }
+                (application as PretixScan).connectivityHelper.recordError()
+                checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_unknown_exception))
             }
             runOnUiThread {
                 displayScanResult(checkResult!!, answers, ignore_unpaid)
