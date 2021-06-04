@@ -21,7 +21,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
 import eu.pretix.libpretixsync.Models
-import eu.pretix.libpretixsync.db.ResourceLastModified
+import eu.pretix.libpretixsync.db.ResourceSyncStatus
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -61,7 +61,7 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("pref_scan_offline")?.isEnabled = !conf.proxyMode
         findPreference("version")?.summary = BuildConfig.VERSION_NAME
         findPreference("full_resync")?.setOnPreferenceClickListener {
-            (activity!!.application as PretixScan).data.delete(ResourceLastModified::class.java).get().value();
+            (activity!!.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get().value();
             conf.lastCleanup = 0
             toast("OK")
             return@setOnPreferenceClickListener true
