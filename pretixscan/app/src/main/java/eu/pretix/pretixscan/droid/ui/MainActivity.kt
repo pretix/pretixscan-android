@@ -1179,6 +1179,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     override fun onConnectivityChanged() {
-        reload()
+        runOnUiThread {
+            reload()
+        }
     }
 }
