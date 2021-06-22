@@ -37,7 +37,10 @@
     <string name="sync_status_now">gerade eben synchronisiert</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
-    <string name="sync_status_local">Noch nicht hochgeladene Checkins:</string>
+    <plurals name="sync_status_pending">
+        <item quantity="one">%d ausstehender Upload</item>
+        <item quantity="other">%d ausstehende Uploads</item>
+    </plurals>
     <string name="first_scanned">Zuerst gescannt: %s</string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="ok">OK</string>

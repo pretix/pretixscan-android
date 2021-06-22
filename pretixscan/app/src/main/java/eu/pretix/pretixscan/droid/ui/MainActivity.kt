@@ -285,6 +285,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             text = getString(R.string.sync_status_now);
         }
+
+        if (!(application as PretixScan).syncLock.isLocked) {
+            val checkins = (application as PretixScan).data.count(QueuedCheckIn::class.java)
+                    .get().value()
+            val calls = (application as PretixScan).data.count(QueuedCall::class.java)
+                    .get().value()
+            text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
+        }
+
         textView_status.setText(text)
     }
 

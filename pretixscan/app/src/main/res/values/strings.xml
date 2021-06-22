@@ -52,9 +52,12 @@
     <string name="sync_status_never">not yet synchronized</string>
     <string name="sync_status_progress">synchronization is running</string>
     <string name="sync_status_now">synchronized just now</string>
+    <plurals name="sync_status_pending">
+        <item quantity="one">%d pending upload</item>
+        <item quantity="other">%d pending uploads</item>
+    </plurals>
     <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="short_datetime_format">MM/dd HH:mm</string>
-    <string name="sync_status_local">Checkins queued to upload:</string>
     <string name="first_scanned">First scanned: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
