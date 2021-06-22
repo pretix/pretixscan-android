@@ -92,7 +92,7 @@
     <string name="scan_result_used">Ticket bereits eingelöst</string>
     <string name="scan_result_questions">Infos benötigt</string>
     <string name="scan_result_invalid">Ticket ungültig</string>
-    <string name="scan_result_product">Ungültiges Produkt</string>
+    <string name="scan_result_product">Ticket-Typ hier nicht gültig</string>
     <string name="scan_result_unpaid">Ticket nicht bezahlt</string>
     <string name="scan_result_canceled">Ticket storniert</string>
     <string name="error_sync_in_background">Eine Synchronisation läuft bereits im Hintergrund.</string>

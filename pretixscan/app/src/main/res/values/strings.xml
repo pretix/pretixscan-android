@@ -117,7 +117,7 @@
     <string name="scan_result_used">Ticket already used</string>
     <string name="scan_result_questions">Information required</string>
     <string name="scan_result_invalid">Invalid ticket</string>
-    <string name="scan_result_product">Invalid product</string>
+    <string name="scan_result_product">Ticket type not valid here</string>
     <string name="scan_result_unpaid">Ticket not paid</string>
     <string name="scan_result_rules">Entry not allowed</string>
     <string name="scan_result_revoked">Ticket code revoked/changed</string>
