@@ -1,10 +1,7 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -21,8 +18,8 @@ import eu.pretix.libpretixsync.setup.SetupBadRequestException
 import eu.pretix.libpretixsync.setup.SetupBadResponseException
 import eu.pretix.libpretixsync.setup.SetupManager
 import eu.pretix.libpretixsync.setup.SetupServerErrorException
-import eu.pretix.pretixscan.HardwareScanner
-import eu.pretix.pretixscan.ScanReceiver
+import eu.pretix.libpretixui.android.scanning.HardwareScanner
+import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_setup.*

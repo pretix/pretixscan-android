@@ -50,9 +50,10 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.*
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.libpretixui.android.covid.SAMPLE_SETTINGS
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
-import eu.pretix.pretixscan.HardwareScanner
-import eu.pretix.pretixscan.ScanReceiver
+import eu.pretix.libpretixui.android.scanning.HardwareScanner
+import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
@@ -850,9 +851,18 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 values[it.question] = it.currentValue!!
             }
         }
-        return eu.pretix.libpretixui.android.questions.showQuestionsDialog(this, questions, values, null) { answers ->
-            retryHandler(secret, answers, ignore_unpaid)
+        val attendeeName = res.position?.optString("attendee_name")
+        var attendeeDOB: String? = null
+        val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
+        for (i in 0 until qlen) {
+            val answ = res.position!!.getJSONArray("answers")!!.getJSONObject(i)
+            if (answ.getString("question_identifier") == "dob") {
+                attendeeDOB = answ.getString("answer")
+            }
         }
+        return eu.pretix.libpretixui.android.questions.showQuestionsDialog(this, questions, values, null, null, { answers ->
+            retryHandler(secret, answers, ignore_unpaid)
+        }, null, SAMPLE_SETTINGS, attendeeName, attendeeDOB, !conf.useCamera)
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {

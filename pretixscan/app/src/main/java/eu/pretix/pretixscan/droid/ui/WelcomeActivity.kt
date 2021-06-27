@@ -3,19 +3,16 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import eu.pretix.pretixscan.defaultToScanner
+import eu.pretix.libpretixui.android.scanning.defaultToScanner
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityWelcomeBinding
-import kotlinx.android.synthetic.main.activity_setup.*
 import kotlinx.android.synthetic.main.activity_welcome.*
-import java.io.IOException
 
 class WelcomeActivity : AppCompatActivity() {
 
