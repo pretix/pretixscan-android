@@ -1,5 +1,6 @@
 package eu.pretix.pretixscan.droid
 
+import android.app.Application
 import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
@@ -7,6 +8,9 @@ import androidx.multidex.MultiDexApplication
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.soloader.SoLoader
+import de.rki.covpass.sdk.cert.toTrustedCerts
+import de.rki.covpass.sdk.dependencies.SdkDependencies
+import de.rki.covpass.sdk.dependencies.sdkDeps
 import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -21,6 +25,7 @@ import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
 import io.sentry.android.core.SentryAndroid
+import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -81,6 +86,13 @@ class PretixScan : MultiDexApplication() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
+
+        sdkDeps = object : SdkDependencies() {
+            override val application: Application = this@PretixScan
+        }
+
+        sdkDeps.validator.updateTrustedCerts(sdkDeps.dscRepository.dscList.value.toTrustedCerts())
+        // CommonApplication.kt - dscListWorker
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
