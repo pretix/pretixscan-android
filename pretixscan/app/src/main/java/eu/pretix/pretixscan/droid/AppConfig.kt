@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import eu.pretix.pretixscan.utils.KeystoreHelper
+import java.lang.RuntimeException
 
 
 class AppConfig(ctx: Context) : ConfigStore {
@@ -215,7 +216,21 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     var deviceRegistered: Boolean = false
-        get() = prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)
+        get() {
+            if (prefs.contains(PREFS_KEY_DEVICE_SERIAL) && prefs.contains(PREFS_KEY_API_KEY)) {
+                try {
+                    return apiKey.isNotBlank()
+                } catch (e: RuntimeException) {
+                    // This seems to happen if the app config is restored from a backup: api key
+                    // is set, but encrypted with the key of a different device. Oops, better
+                    // start from scratch.
+                    resetDeviceConfig()
+                    return false
+                }
+            } else {
+                return false
+            }
+        }
 
     var useCamera: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
