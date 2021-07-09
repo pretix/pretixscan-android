@@ -165,7 +165,7 @@ dependencies {
     }
 
     // libpretixsync
-    annotationProcessor 'io.requery:requery-processor:1.6.0'
+    kapt 'io.requery:requery-processor:1.6.0'
     implementation(project(':libpretixsync')) {
         transitive = false
     }
