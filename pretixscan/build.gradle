@@ -32,6 +32,9 @@ allprojects {
                 properties.load(project.rootProject.file('local.properties').newDataInputStream())
                 value = "Bearer ${properties.getProperty("github.token") as String}"
             }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
         }
     }
 }
