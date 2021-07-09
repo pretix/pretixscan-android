@@ -1,27 +1,19 @@
 package eu.pretix.pretixscan.droid
 
-import android.app.Application
 import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.soloader.SoLoader
-import de.rki.covpass.sdk.cert.toTrustedCerts
-import de.rki.covpass.sdk.dependencies.SdkDependencies
-import de.rki.covpass.sdk.dependencies.sdkDeps
-import de.rki.covpass.sdk.utils.DSC_UPDATE_INTERVAL_HOURS
-import de.rki.covpass.sdk.utils.DscListUpdater
 import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
+import eu.pretix.libpretixui.android.covid.DGC
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
@@ -30,8 +22,6 @@ import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
 import io.sentry.android.core.SentryAndroid
-import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -93,21 +83,7 @@ class PretixScan : MultiDexApplication() {
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
 
-        sdkDeps = object : SdkDependencies() {
-            override val application: Application = this@PretixScan
-        }
-
-        sdkDeps.validator.updateTrustedCerts(sdkDeps.dscRepository.dscList.value.toTrustedCerts())
-        val tag = "dscListWorker"
-        val dscListWorker: PeriodicWorkRequest =
-            PeriodicWorkRequest.Builder(DscListUpdater::class.java, DSC_UPDATE_INTERVAL_HOURS, TimeUnit.HOURS)
-                .addTag(tag)
-                .build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            tag,
-            ExistingPeriodicWorkPolicy.KEEP,
-            dscListWorker,
-        )
+        DGC().init(this@PretixScan)
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
