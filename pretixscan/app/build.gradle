@@ -118,7 +118,6 @@ android {
 repositories {
     mavenCentral()
     jcenter()
-    //    maven { url 'https://jitpack.io' }
     maven {
         url "https://maven.pkg.github.com/Digitaler-Impfnachweis/covpass-android"
         credentials(HttpHeaderCredentials) {
@@ -182,8 +181,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.apg-mobile:android-round-textview:v1.0.0'
 
-    //implementation 'com.github.Digitaler-Impfnachweis:covpass-android:v-1.38.0'
-    implementation 'com.ibm.health.de.rki.covpass:covpass-sdk:1.38.0'
+    debugImplementation 'com.ibm.health.de.rki.covpass:covpass-sdk-demo:1.38.0'
+    releaseImplementation 'com.ibm.health.de.rki.covpass:covpass-sdk:1.38.0'
 }
 kapt {
     generateStubs = true

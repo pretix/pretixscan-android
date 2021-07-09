@@ -5,12 +5,17 @@ import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.soloader.SoLoader
 import de.rki.covpass.sdk.cert.toTrustedCerts
 import de.rki.covpass.sdk.dependencies.SdkDependencies
 import de.rki.covpass.sdk.dependencies.sdkDeps
+import de.rki.covpass.sdk.utils.DSC_UPDATE_INTERVAL_HOURS
+import de.rki.covpass.sdk.utils.DscListUpdater
 import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -26,6 +31,7 @@ import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
 import io.sentry.android.core.SentryAndroid
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -92,7 +98,16 @@ class PretixScan : MultiDexApplication() {
         }
 
         sdkDeps.validator.updateTrustedCerts(sdkDeps.dscRepository.dscList.value.toTrustedCerts())
-        // CommonApplication.kt - dscListWorker
+        val tag = "dscListWorker"
+        val dscListWorker: PeriodicWorkRequest =
+            PeriodicWorkRequest.Builder(DscListUpdater::class.java, DSC_UPDATE_INTERVAL_HOURS, TimeUnit.HOURS)
+                .addTag(tag)
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            tag,
+            ExistingPeriodicWorkPolicy.KEEP,
+            dscListWorker,
+        )
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
