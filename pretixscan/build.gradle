@@ -24,5 +24,14 @@ allprojects {
         jcenter()
         google()
         maven { url "https://jitpack.io" }
+        maven {
+            url "https://maven.pkg.github.com/Digitaler-Impfnachweis/covpass-android"
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                Properties properties = new Properties()
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                value = "Bearer ${properties.getProperty("github.token") as String}"
+            }
+        }
     }
 }
