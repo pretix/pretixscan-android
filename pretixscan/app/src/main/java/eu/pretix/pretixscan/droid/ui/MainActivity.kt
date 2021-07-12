@@ -912,6 +912,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.result_state.set(ResultState.DIALOG)
             dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
+                hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -920,6 +921,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
             view_data.result_state.set(ResultState.DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
+                hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
