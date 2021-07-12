@@ -324,7 +324,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 return
             }
             else -> {
-                // Ignore all other requests.
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }

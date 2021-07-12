@@ -50,6 +50,7 @@ class WelcomeActivity : AppCompatActivity() {
                 return
             }
             else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }

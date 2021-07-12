@@ -123,6 +123,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             }
             else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }
