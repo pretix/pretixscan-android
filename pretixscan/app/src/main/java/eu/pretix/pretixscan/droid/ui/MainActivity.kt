@@ -870,18 +870,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             settings.covid_certificates_allow_vaccinated,
             settings.covid_certificates_allow_vaccinated_min,
             settings.covid_certificates_allow_vaccinated_max,
+            settings.covid_certificates_record_proof_vaccinated,
             settings.covid_certificates_allow_cured,
             settings.covid_certificates_allow_cured_min,
             settings.covid_certificates_allow_cured_max,
+            settings.covid_certificates_record_proof_cured,
             settings.covid_certificates_allow_tested_pcr,
             settings.covid_certificates_allow_tested_pcr_min,
             settings.covid_certificates_allow_tested_pcr_max,
+            settings.covid_certificates_record_proof_tested_pcr,
             settings.covid_certificates_allow_tested_antigen_unknown,
             settings.covid_certificates_allow_tested_antigen_unknown_min,
             settings.covid_certificates_allow_tested_antigen_unknown_max,
+            settings.covid_certificates_record_proof_tested_antigen_unknown,
             settings.covid_certificates_accept_eudgc,
             settings.covid_certificates_accept_manual,
-            settings.covid_certificates_record_proof
         )
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(this, questions, values, null, null, { answers ->
             retryHandler(secret, answers, ignore_unpaid)
