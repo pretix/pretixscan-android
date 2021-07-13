@@ -273,7 +273,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SEARCH_DISABLE, value).apply()
 
     var kioskMode: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_MODE, false)
+        get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_MODE, false) && default_prefs.getBoolean("pref_pin_enable", false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_KIOSK_MODE, value).apply()
 
     var unpaidAsk: Boolean
