@@ -12,6 +12,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: local.properties pretixscan
+      run: echo "github.token=${{ secrets.GITHUB_TOKEN }}" > local.properties
+      working-directory: ./pretixscan
     - name: set up JDK 1.8
       uses: actions/setup-java@v1
       with:

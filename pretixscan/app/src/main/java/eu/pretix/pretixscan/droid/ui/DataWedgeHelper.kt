@@ -12,6 +12,7 @@ import java.io.*
 
 
 class DataWedgeHelper(private val ctx: Context) {
+    val dwprofileVersion = 1
 
     val isInstalled: Boolean
         get() {
@@ -92,7 +93,7 @@ class DataWedgeHelper(private val ctx: Context) {
     @Throws(IOException::class)
     fun install() {
         val stgfile = File(stagingDirectory, "dwprofile_pretix.db")
-        if (stgfile.exists() && ctx.defaultSharedPreferences.contains("__dwprofile_installed")) {
+        if (stgfile.exists() && ctx.defaultSharedPreferences.getInt("__dwprofile_installed_version", 0) >= dwprofileVersion) {
             return
         }
         val stgout = FileOutputStream(stgfile)
@@ -111,6 +112,6 @@ class DataWedgeHelper(private val ctx: Context) {
         importIntent.putExtra("com.symbol.datawedge.api.IMPORT_CONFIG", importBundle)
         ctx.sendBroadcast(importIntent)
 
-        ctx.defaultSharedPreferences.edit().putBoolean("__dwprofile_installed", true).apply()
+        ctx.defaultSharedPreferences.edit().putInt("__dwprofile_installed_version", dwprofileVersion).apply()
     }
 }

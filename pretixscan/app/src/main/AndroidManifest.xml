@@ -22,6 +22,7 @@
         android:logo="@drawable/ic_logo"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:replace="android:allowBackup">
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"

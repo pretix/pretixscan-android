@@ -32,6 +32,9 @@ android {
 		javaMaxHeapSize "3g"
 	}
 
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+    }
 
     lintOptions {
         disable 'InvalidPackage' // problem with jetty and bouncycastle
@@ -124,7 +127,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'org.jetbrains.anko:anko:0.10.6'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -163,9 +166,10 @@ dependencies {
     implementation(project(':libpretixui-android')) {
         transitive = true
     }
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     // libpretixsync
-    annotationProcessor 'io.requery:requery-processor:1.6.0'
+    kapt 'io.requery:requery-processor:1.6.0'
     implementation(project(':libpretixsync')) {
         transitive = false
     }

@@ -13,6 +13,7 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
+import eu.pretix.libpretixui.android.covid.DGC
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
@@ -81,6 +82,8 @@ class PretixScan : MultiDexApplication() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
+
+        DGC().init(this@PretixScan)
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
