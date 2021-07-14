@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class j$.time.*
+-keep class j$.time.zone.** { *; }
+-keep class net.sqlcipher.** { *; }
+-keep class net.sqlcipher.database.* { *; }

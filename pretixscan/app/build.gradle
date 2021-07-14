@@ -18,8 +18,8 @@ android {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 46
-        versionName "1.11.0"
+        versionCode 48
+        versionName "1.11.1"
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
@@ -73,7 +73,7 @@ android {
 		}
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "SENTRY_DSN", sentry_dsn
         }
