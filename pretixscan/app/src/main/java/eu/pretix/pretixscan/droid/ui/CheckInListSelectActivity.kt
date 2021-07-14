@@ -38,7 +38,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,
                 Build.MODEL,
-                "pretixSCAN",
+                "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
                 null
         )

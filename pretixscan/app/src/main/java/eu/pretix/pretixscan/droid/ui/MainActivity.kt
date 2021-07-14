@@ -472,7 +472,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 BuildConfig.VERSION_CODE,
                 Build.BRAND,
                 Build.MODEL,
-                "pretixSCAN",
+                "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
                 (application as PretixScan).connectivityHelper
         )
