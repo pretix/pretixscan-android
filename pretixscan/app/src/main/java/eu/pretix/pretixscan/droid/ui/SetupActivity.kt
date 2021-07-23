@@ -188,6 +188,8 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 if (init.security_profile == "pretixscan_online_kiosk") {
                     conf!!.syncOrders = false
                     conf!!.searchDisabled = true
+                } else if (init.security_profile == "pretixscan_online_noorders") {
+                    conf!!.syncOrders = false
                 }
                 runOnUiThread {
                     if (isDestroyed) {
