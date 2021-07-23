@@ -394,7 +394,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
     }
 
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         conf = AppConfig(this)
