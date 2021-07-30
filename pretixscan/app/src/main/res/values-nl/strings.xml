@@ -1,2 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="tutorial_setup">Om te starten, maak een nieuw apparaat aan in het Apparaten onderdeel van je organisator account in de Pretix controlepaneel. Daar vind je een qr code die je kan scannen om de juiste configuratie te downloaden.</string>
+    <string name="ok">OK</string>
+    <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
+    <string name="first_scanned">Eerst gescanned: %s</string>
+    <string name="short_datetime_format">dd.MM. HH:mm</string>
+    <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
+    <plurals name="sync_status_pending">
+        <item quantity="one">%d wachtende upload</item>
+        <item quantity="other">%d wachtende uploads</item>
+    </plurals>
+    <string name="sync_status_now">daarnet gesynchroniseerd</string>
+    <string name="sync_status_progress">synchronisatie is bezig</string>
+    <string name="sync_status_never">nog niet gesynchroniseerd</string>
+    <string name="sync_status_last_failed">Laatste mislukte synchronisatie:</string>
+    <string name="sync_status_last">Laatste gelukte synchronisatie:</string>
+    <string name="sync_status">Synchronisatie status</string>
+    <plurals name="sync_status_time_days">
+        <item quantity="one">%d Dag geleden gesynchroniseerd</item>
+        <item quantity="other">%d Dagen geleden gesynchroniseerd</item>
+    </plurals>
+    <plurals name="sync_status_time_hours">
+        <item quantity="one">%d Uur geleden gesynchroniseerd</item>
+        <item quantity="other">%d Uren geleden gesynchroniseerd</item>
+    </plurals>
+    <plurals name="sync_status_time_minutes">
+        <item quantity="one">%d Minuut geleden gesynchroniseerd</item>
+        <item quantity="other">%d Minuten geleden gesynchroniseerd</item>
+    </plurals>
+    <string name="settings_label_auto_switch">Selecteer het evenement autmatisch</string>
+    <string name="settings_summary_orders_sync">Zonder deze optie zal pretixSCAN niet de bestellingen kunnen downloaden en niet in staat zijn om met de standaard instellingen offline tickets te scannen.</string>
+    <string name="settings_label_orders_sync">Bestellingen downloaden</string>
+    <string name="settings_label_auto_sync">Automatische Synchronisatie</string>
+    <string name="operation_select_checkinlist">Selecteer Check-in lijst</string>
+    <string name="operation_select_event">Kies evenement</string>
+    <string name="action_manual">Handmatig instellen</string>
+    <string name="action_search">Zoeken</string>
+    <string name="debug_info_device">Apparaat: %1$s</string>
+    <string name="debug_info_gate">Poort: %1$s</string>
+    <string name="debug_info_list">Lijst: %1$s</string>
+    <string name="debug_info_subevent">Datum: %1$s (%2$s)</string>
+    <string name="debug_info_event">Evenent: %1$s</string>
+    <string name="checktype_proxy">Basisstation verificatie</string>
+    <string name="checktype_offline">Offline verificatie</string>
+    <string name="checktype_online">Online verificatie</string>
+    <string name="scantype_exit_kiosk">Scan je ticket om uit te checken</string>
+    <string name="scantype_entry_kiosk">Scan je ticket om in te checken</string>
+    <string name="scantype_exit">Uitgang</string>
+    <string name="scantype_entry">Inkom</string>
+    <string name="action_label_scantype_entry">Overschakelen naar scannen voor de inkom</string>
+    <string name="action_label_scantype_exit">Overschakelen naar scanning voor de uitgang</string>
+    <string name="action_label_statistics">Statistieken</string>
+    <string name="action_label_settings">Instellingen</string>
+    <string name="error_not_synchronized">Uw apparaat is nog niet volledig gesynchroniseerd met de server</string>
+    <string name="error_unknown_exception">Een onbekende fout heeft zich voorgedaan</string>
+    <string name="progress_registering">Dit apparaat wordt geregistreerd met de server…</string>
+    <string name="progress_processing">Verwerken…</string>
+    <string name="progress_syncing">Synchroniseren met de server…</string>
+    <string name="progress_syncing_first">Evenement instellingen worden afgehaald…</string>
+    <string name="action_sync">Nu syncroniseren</string>
+    <string name="headline_setup">Welkom bij pretixSCAN!</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="app_name">pretixSCAN</string>
+</resources>
