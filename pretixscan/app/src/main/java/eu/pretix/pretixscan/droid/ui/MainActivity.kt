@@ -971,8 +971,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail1.set(null)
         }
-        if (result.orderCode != null) {
-            view_data.detail2.set(result.orderCode)
+        if (result.orderCodeAndPositionId() != null) {
+            view_data.detail2.set(result.orderCodeAndPositionId())
         } else {
             view_data.detail2.set(null)
         }
