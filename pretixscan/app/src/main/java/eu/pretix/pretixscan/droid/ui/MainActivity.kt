@@ -861,33 +861,53 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
 
         val settings = (application as PretixScan).data.select(Settings::class.java)
-            .where(Settings.SLUG.eq(conf.eventSlug))
-            .get()
-            .firstOrNull()
+                .where(Settings.SLUG.eq(conf.eventSlug))
+                .get()
+                .firstOrNull()
 
         val covidchecksettings = CovidCheckSettings(
-            settings.covid_certificates_allow_vaccinated,
-            settings.covid_certificates_allow_vaccinated_min,
-            settings.covid_certificates_allow_vaccinated_max,
-            settings.covid_certificates_record_proof_vaccinated,
-            settings.covid_certificates_allow_cured,
-            settings.covid_certificates_allow_cured_min,
-            settings.covid_certificates_allow_cured_max,
-            settings.covid_certificates_record_proof_cured,
-            settings.covid_certificates_allow_tested_pcr,
-            settings.covid_certificates_allow_tested_pcr_min,
-            settings.covid_certificates_allow_tested_pcr_max,
-            settings.covid_certificates_record_proof_tested_pcr,
-            settings.covid_certificates_allow_tested_antigen_unknown,
-            settings.covid_certificates_allow_tested_antigen_unknown_min,
-            settings.covid_certificates_allow_tested_antigen_unknown_max,
-            settings.covid_certificates_record_proof_tested_antigen_unknown,
-            settings.covid_certificates_accept_eudgc,
-            settings.covid_certificates_accept_manual,
+                settings.covid_certificates_allow_vaccinated,
+                settings.covid_certificates_allow_vaccinated_min,
+                settings.covid_certificates_allow_vaccinated_max,
+                settings.covid_certificates_record_proof_vaccinated,
+                settings.covid_certificates_allow_cured,
+                settings.covid_certificates_allow_cured_min,
+                settings.covid_certificates_allow_cured_max,
+                settings.covid_certificates_record_proof_cured,
+                settings.covid_certificates_allow_tested_pcr,
+                settings.covid_certificates_allow_tested_pcr_min,
+                settings.covid_certificates_allow_tested_pcr_max,
+                settings.covid_certificates_record_proof_tested_pcr,
+                settings.covid_certificates_allow_tested_antigen_unknown,
+                settings.covid_certificates_allow_tested_antigen_unknown_min,
+                settings.covid_certificates_allow_tested_antigen_unknown_max,
+                settings.covid_certificates_record_proof_tested_antigen_unknown,
+                settings.covid_certificates_accept_eudgc,
+                settings.covid_certificates_accept_manual,
         )
-        return eu.pretix.libpretixui.android.questions.showQuestionsDialog(this, questions, values, null, null, { answers ->
-            retryHandler(secret, answers, ignore_unpaid)
-        }, null, covidchecksettings, attendeeName, attendeeDOB, !conf.useCamera)
+        return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
+                this,
+                questions,
+                values,
+                null,
+                null,
+                { answers -> retryHandler(secret, answers, ignore_unpaid) },
+                null,
+                covidchecksettings,
+                attendeeName,
+                attendeeDOB,
+                res.orderCodeAndPositionId(),
+                if (res.ticket != null) {
+                    if (res.variation != null) {
+                        res.ticket + " – " + res.variation
+                    } else {
+                        res.ticket
+                    }
+                } else {
+                    null
+                },
+                !conf.useCamera
+        )
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
