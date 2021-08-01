@@ -1100,6 +1100,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 if (keyboardBuffer.isEmpty()) {
                     false
                 }
+                lastScanTime = System.currentTimeMillis()
+                lastScanCode = keyboardBuffer
                 handleScan(keyboardBuffer, null, !conf.unpaidAsk)
                 keyboardBuffer = ""
                 true
