@@ -20,6 +20,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.Menu
@@ -65,7 +66,10 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import java.io.IOException
+import java.nio.charset.Charset
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 interface ReloadableActivity {
@@ -800,11 +804,35 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
     }
 
-    fun handleScan(result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
-        if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(result)) {
+    fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
+        if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
             return
         }
+
+        val result = if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.toUpperCase(Locale.getDefault()))) {
+            /*
+             * This is a bit of a hack. pretixSCAN 1.11+ supports checking digital COVID vaccination
+             * certificates. When scanning them at the correct time, we have a high level of privacy
+             * since we do not store any personal data contained in the certificate. However, if you
+             * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
+             * error log will cause the verbatim vaccination certificate to be stored on the server.
+             * Not really our fault, but also not really nice to store that sensitive health info.
+             * However, it's still helpful for debugging to see how often an invalid code was scanned.
+             * So if we encounter something that looks like an EU DGC, we'll just transform it into
+             * a hashed version.
+             *
+             * This hack is safe for pretix' default signature schemes, as they would never generate
+             * a QR code starting with ``HC1:``, but it could theoretically be unsafe for third-party
+             * plugins.
+             */
+            val md = MessageDigest.getInstance("SHA-256")
+            md.update(raw_result.toByteArray(Charset.defaultCharset()))
+            "HC1:hashed:" + Base64.encodeToString(md.digest(), Base64.URL_SAFE)
+        } else {
+            raw_result
+        }
+
         showLoadingCard()
         hideSearchCard()
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
