@@ -14,10 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.Result
-import eu.pretix.libpretixsync.setup.SetupBadRequestException
-import eu.pretix.libpretixsync.setup.SetupBadResponseException
-import eu.pretix.libpretixsync.setup.SetupManager
-import eu.pretix.libpretixsync.setup.SetupServerErrorException
+import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
@@ -248,6 +245,15 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     }
                     resume()
                     alert(Appcompat, R.string.setup_error_response).show()
+                }
+            } catch (e: SetupException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    if (isDestroyed) {
+                        return@runOnUiThread
+                    }
+                    resume()
+                    alert(Appcompat, e.message ?: "Unknown error").show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
