@@ -578,6 +578,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun scheduleSync() {
+        handler.removeCallbacks(syncRunnable)
         handler.postDelayed(syncRunnable, 1000)
     }
 
@@ -680,6 +681,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             supportActionBar?.show()
         }
+
+        scheduleSync()
 
         hardwareScanner.start(this)
 
