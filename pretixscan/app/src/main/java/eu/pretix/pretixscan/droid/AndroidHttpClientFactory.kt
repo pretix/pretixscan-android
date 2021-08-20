@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid
 import android.app.Application
 import android.content.Context
 import eu.pretix.libpretixsync.api.HttpClientFactory
+import eu.pretix.libpretixsync.api.RateLimitInterceptor
 import okhttp3.OkHttpClient
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
@@ -18,6 +19,8 @@ class AndroidHttpClientFactory(val app: PretixScan) : HttpClientFactory {
         if (app.flipperInit?.interceptor != null) {
             builder.addNetworkInterceptor(app.flipperInit!!.interceptor!!)
         }
+
+        builder.addNetworkInterceptor(RateLimitInterceptor())
 
         builder.connectTimeout(30, TimeUnit.SECONDS)
         builder.readTimeout(30, TimeUnit.SECONDS)
