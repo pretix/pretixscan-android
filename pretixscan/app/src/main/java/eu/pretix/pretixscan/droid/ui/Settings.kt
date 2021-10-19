@@ -160,7 +160,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         setupActionBar()
 
         val c = AppConfig(this)
-        if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(intent.getStringExtra("pin")))) {
+        if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
             finish();
             return

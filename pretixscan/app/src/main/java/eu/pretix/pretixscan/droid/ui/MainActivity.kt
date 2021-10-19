@@ -803,7 +803,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (Build.VERSION.SDK_INT >= 21 && networkCallback != null) {
             val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.unregisterNetworkCallback(networkCallback)
+            connectivityManager.unregisterNetworkCallback(networkCallback!!)
         }
     }
 
