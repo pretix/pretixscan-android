@@ -80,6 +80,8 @@
     </string-array>
     <string name="settings_summary_scan_offline">Wenn Sie offline scannen, gleicht die App alle Eingaben mit ihrer internen Datenbank statt mit dem Server ab und synchronisiert ihre Datenbank gelegentlich. Dies ist zuverlässiger, aber ermöglicht, dass ein Ticket auf verschiedenen Geräten ggf. mehrfach gescannt werden kann.</string>
     <string name="settings_label_sounds">Signaltöne abspielen</string>
+    <string name="settings_label_hide_names">Verstecke Namen und andere Personendaten</string>
+    <string name="settings_label_hide_names_summary">Wirkt sich nicht auf die Suche aus, nützlich z.B. in Verbindung mit dem Kiosk-Modus</string>
     <string name="question_validation_error">Teile der Eingabe waren ungültig.</string>
     <string name="question_input_required">Diese Frage muss beantwortet werden.</string>
     <string name="question_input_invalid">Die eingegebene Antwort ist nicht gültig.</string>

@@ -239,6 +239,9 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
 
+    val hideNames: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_HIDE_NAMES, false)
+
     var sounds: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_SOUNDS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SOUNDS, value).apply()
@@ -324,6 +327,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
         val PREFS_KEY_SOUNDS = "pref_sounds"
+        val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
     }
