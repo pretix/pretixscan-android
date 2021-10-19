@@ -27,6 +27,10 @@
 -keep class net.sqlcipher.** { *; }
 -keep class net.sqlcipher.database.* { *; }
 
+# Don't remove stuff that breaks other stuff
+-keep class org.bouncycastle.** { *; }
+-keep class org.conscript.* { *; }
+
 # Don't remove our own stuff
 # This prevents us from listing everything on its own but obviously limits the optimization
 # Previous stuff that failed:
