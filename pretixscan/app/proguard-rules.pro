@@ -29,7 +29,7 @@
 
 # Don't remove stuff that breaks other stuff
 -keep class org.bouncycastle.** { *; }
--keep class org.conscript.* { *; }
+-keep class org.conscript.** { *; }
 
 # Don't remove our own stuff
 # This prevents us from listing everything on its own but obviously limits the optimization
