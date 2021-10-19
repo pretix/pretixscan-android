@@ -915,6 +915,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 settings.covid_certificates_record_proof_tested_antigen_unknown,
                 settings.covid_certificates_allow_other,
                 settings.covid_certificates_record_proof_other,
+                settings.covid_certificates_record_validity_time,
                 settings.covid_certificates_accept_eudgc,
                 settings.covid_certificates_accept_manual,
         )
