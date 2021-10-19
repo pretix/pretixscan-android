@@ -61,8 +61,21 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("pref_scan_offline")?.isEnabled = !conf.proxyMode
         findPreference("version")?.summary = BuildConfig.VERSION_NAME
         findPreference("full_resync")?.setOnPreferenceClickListener {
-            (activity!!.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get().value();
-            conf.lastCleanup = 0
+            // First, delete ResourceSyncStatus. This way the system forgets which data was already
+            // pulled and will pull all lists completely instead of using If-Modified-Since or
+            // ?modified_since= mechanisms
+            (activity.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get().value();
+
+            // To make sync faster, we only update records in the local database if their `json_data`
+            // column is different than what we received from the server. However, if there was a
+            // bug in deriving the local database content from the `json_data` field this is a problem
+            // since the code path that might fix it will  never run. Therefore we include a `syncCycleId`
+            // in every JSON body to artificially trigger a change. In a similar way, the database schema
+            // version number is also included to trigger a change if we change the database schema.
+            conf.syncCycleId = System.currentTimeMillis().toString()
+
+            conf.lastSync = 0
+            conf.lastDownload = 0
             toast("OK")
             return@setOnPreferenceClickListener true
         }

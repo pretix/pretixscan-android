@@ -60,6 +60,9 @@ class AppConfig(ctx: Context) : ConfigStore {
     override fun getEventSlug(): String? = prefs.getString(PREFS_KEY_EVENT_SLUG, null)
     fun setEventSlug(value: String?) = prefs.edit().putString(PREFS_KEY_EVENT_SLUG, value).apply()
 
+    override fun getSyncCycleId(): String? = prefs.getString(PREFS_KEY_SYNC_CYCLE_ID, "0")
+    fun setSyncCycleId(value: String?) = prefs.edit().putString(PREFS_KEY_SYNC_CYCLE_ID, value).apply()
+
     var subeventId: Long?
         get() = if (prefs.contains(PREFS_KEY_SUBEVENT_ID)) {
             prefs.getLong(PREFS_KEY_SUBEVENT_ID, -1)
@@ -289,6 +292,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_API_URL = "pretix_api_url"
         val PREFS_KEY_API_KEY = "pretix_api_key"
         val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+        val PREFS_KEY_SYNC_CYCLE_ID = "pretix_sync_cycle_id"
         val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
         val PREFS_KEY_EVENT_NAME = "event_name"
         val PREFS_KEY_CHECKINLIST_ID = "checkin_list_id"
