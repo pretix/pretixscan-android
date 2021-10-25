@@ -69,6 +69,7 @@ import java.io.IOException
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.time.ZoneId
 import java.util.*
 
 
@@ -838,6 +839,31 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         showLoadingCard()
         hideSearchCard()
+
+        if (conf.covidAutoCheckin && answers == null) {
+            val questions = (application as PretixScan).data.select(Question::class.java)
+                .where(Question.EVENT_SLUG.eq(conf.eventSlug))
+                .get()
+
+            for (q in questions) {
+                if (q.json.getString("identifier") == "pretix_covid_certificates_question") {
+                    val answers = mutableListOf<Answer>()
+                    val validityTime = java.time.LocalDate.now().atStartOfDay(ZoneId.systemDefault()).plusDays(1)
+                    answers.add(
+                        Answer(
+                            q,
+                            String.format(
+                                "provider: automatic, proof: withheld, expires: %s",
+                                validityTime.toOffsetDateTime().toString()
+                            )
+                        )
+                    )
+                    handleScan(raw_result, answers, ignore_unpaid)
+                    return
+                }
+            }
+        }
+
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
