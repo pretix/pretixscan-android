@@ -840,6 +840,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         showLoadingCard()
         hideSearchCard()
 
+        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
+            mediaPlayers[R.raw.beep]?.start()
+        }
+
         if (conf.covidAutoCheckin && answers == null) {
             val questions = (application as PretixScan).data.select(Question::class.java)
                 .where(Question.EVENT_SLUG.eq(conf.eventSlug))
@@ -864,9 +868,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
 
-        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
-            mediaPlayers[R.raw.beep]?.start()
-        }
         doAsync {
             var checkResult: TicketCheckProvider.CheckResult? = null
             val provider = (application as PretixScan).getCheckProvider(conf)
