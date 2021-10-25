@@ -73,6 +73,13 @@
             android:summary="@string/pref_unpaid_ask_summary"
             android:title="@string/pref_unpaid_ask" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_label_covid_check">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_covid_autocheckin"
+            android:summary="@string/pref_covid_autocheckin_summary"
+            android:title="@string/pref_covid_autocheckin" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
             android:key="version"
