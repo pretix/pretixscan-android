@@ -12,7 +12,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.lifecycle, androidx.camera.core, androidx.camera.camera2, com.serenegiant.usbcameracommon" />
+    <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.lifecycle, androidx.camera.core, androidx.camera.camera2, com.serenegiant.usbcameracommon, dgca.verifier.app.engine" />
 
     <application
         android:name="eu.pretix.pretixscan.droid.PretixScan"

@@ -56,7 +56,7 @@ class EventinfoActivity : AppCompatActivity() {
 
         this.config = AppConfig(this)
 
-        if (this.config!!.requiresPin("statistics") && (!intent.hasExtra("pin") || !this.config!!.verifyPin(intent.getStringExtra("pin")))) {
+        if (this.config!!.requiresPin("statistics") && (!intent.hasExtra("pin") || !this.config!!.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
             finish();
             return

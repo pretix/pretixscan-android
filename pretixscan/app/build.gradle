@@ -12,14 +12,14 @@ try {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 57
-        versionName "1.11.10"
+        versionCode 58
+        versionName "1.12.0"
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
@@ -34,6 +34,12 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
     }
 
     lintOptions {
@@ -112,12 +118,6 @@ android {
     }
 }
 
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
 repositories {
     mavenCentral()
     jcenter()

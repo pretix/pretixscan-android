@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.sentry:sentry-android-gradle-plugin:1.7.23'
         classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.11"
@@ -26,6 +26,18 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven {
             url "https://maven.pkg.github.com/Digitaler-Impfnachweis/covpass-android"
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                Properties properties = new Properties()
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                value = "Bearer ${properties.getProperty("github.token") as String}"
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+        maven {
+            url "https://maven.pkg.github.com/ehn-dcc-development/*"
             credentials(HttpHeaderCredentials) {
                 name = "Authorization"
                 Properties properties = new Properties()

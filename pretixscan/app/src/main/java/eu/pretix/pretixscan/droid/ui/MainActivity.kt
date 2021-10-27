@@ -803,7 +803,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (Build.VERSION.SDK_INT >= 21 && networkCallback != null) {
             val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.unregisterNetworkCallback(networkCallback)
+            connectivityManager.unregisterNetworkCallback(networkCallback!!)
         }
     }
 
@@ -881,13 +881,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 values[it.question] = it.currentValue!!
             }
         }
-        val attendeeName = res.position?.optString("attendee_name")
+        val attendeeName = if (conf.hideNames) "" else res.position?.optString("attendee_name")
         var attendeeDOB: String? = null
-        val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
-        for (i in 0 until qlen) {
-            val answ = res.position!!.getJSONArray("answers")!!.getJSONObject(i)
-            if (answ.getString("question_identifier") == "dob") {
-                attendeeDOB = answ.getString("answer")
+        if (!conf.hideNames) {
+            val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
+            for (i in 0 until qlen) {
+                val answ = res.position!!.getJSONArray("answers")!!.getJSONObject(i)
+                if (answ.getString("question_identifier") == "dob") {
+                    attendeeDOB = answ.getString("answer")
+                }
             }
         }
 
@@ -915,6 +917,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 settings.covid_certificates_record_proof_tested_antigen_unknown,
                 settings.covid_certificates_allow_other,
                 settings.covid_certificates_record_proof_other,
+                settings.covid_certificates_record_validity_time,
                 settings.covid_certificates_accept_eudgc,
                 settings.covid_certificates_accept_manual,
         )
@@ -1029,10 +1032,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail2.set(null)
         }
-        if (result.attendee_name != null) {
+        if (result.attendee_name != null && !conf.hideNames) {
             view_data.detail3.set(result.attendee_name)
         } else {
-            view_data.detail3.set(null)
+            view_data.detail3.set("")
         }
         if (result.seat != null) {
             view_data.detail4.set(result.seat)
