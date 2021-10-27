@@ -291,7 +291,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
 
     var covidAutoCheckin: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_COVID_AUTOCHECKIN, true)
+        get() = default_prefs.getBoolean(PREFS_KEY_COVID_AUTOCHECKIN, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_COVID_AUTOCHECKIN, value).apply()
 
     companion object {
