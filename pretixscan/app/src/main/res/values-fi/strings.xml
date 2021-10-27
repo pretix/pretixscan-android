@@ -2,4 +2,5 @@
 <resources>
     <string name="status_canceled">Peruttu</string>
     <string name="label_shop_active">Aktiivinen</string>
+    <string name="app_name">pretixSCAN</string>
 </resources>
