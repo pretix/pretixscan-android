@@ -8,6 +8,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <queries>
+        <package android:name="eu.pretix.pretixprint" />
+        <package android:name="eu.pretix.pretixprint.debug" />
+        <package android:name="de.silpion.bleuartcompanion" />
+        <package android:name="com.symbol.datawedge" />
+    </queries>
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
