@@ -833,6 +833,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val md = MessageDigest.getInstance("SHA-256")
             md.update(raw_result.toByteArray(Charset.defaultCharset()))
             "HC1:hashed:" + Base64.encodeToString(md.digest(), Base64.URL_SAFE)
+        } else if (raw_result.split("^").size == 15) {
+            // Workaround for long Swapcard barcodes to only check the registration ID
+            raw_result.split("^").last()
         } else {
             raw_result
         }
