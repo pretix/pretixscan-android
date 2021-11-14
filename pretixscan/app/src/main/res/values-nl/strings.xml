@@ -146,4 +146,9 @@
     <string name="settings_label_badges">Badges</string>
     <string name="settings_label_sounds">Speel geluiden</string>
     <string name="settings_summary_scan_offline">Als u offline scant zal uw apparaat alle invoer controleren aan de hand van de interne database en wanneer mogelijk deze informatie af en toe met de pretix-server synchroniseren. Dit is meer betrouwbaar dan online scannen, maar kan ervoor zorgen dat u een ticket ongewild twee keer accepteert als u meerdere apparaten gebruikt om te scannen.</string>
+    <string name="settings_label_hide_names">Verberg namen en andere persoonsgegevens</string>
+    <string name="settings_label_hide_names_summary">Dit heeft geen invloed op de zoekfunctie en kan bijvoorbeeld nuttig zijn in combinatie met de kioskmodus</string>
+    <string name="settings_label_covid_check">COVID-19-controle</string>
+    <string name="pref_covid_autocheckin">Markeer ticket automatisch als gecontroleerd</string>
+    <string name="pref_covid_autocheckin_summary" formatted="false">Als deze optie is ingeschakeld en de server om controle van COVID-19-toegangsbewijzen vraagt zullen tickets automatisch en zonder verdere invoer als gecontroleerd gemarkeerd worden. In 99% van de gevallen moet deze optie niet worden gebruikt!</string>
 </resources>
