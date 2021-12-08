@@ -173,7 +173,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         pdialog.setCancelable(false)
         doAsync {
             val setupm = SetupManager(
-                    Build.BRAND, Build.MODEL, "pretixSCAN", BuildConfig.VERSION_NAME,
+                    Build.BRAND, Build.MODEL, "pretixSCAN Android", BuildConfig.VERSION_NAME,
                     AndroidHttpClientFactory(application as PretixScan)
             )
             try {
