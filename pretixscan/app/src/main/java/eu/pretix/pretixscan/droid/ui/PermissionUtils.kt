@@ -6,7 +6,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 
-fun Activity.checkPermission(perm: String, requestCode: Int = 1337) {
+fun Activity.checkPermission(perm: String, requestCode: Int) {
     if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(this,
                 arrayOf(perm),

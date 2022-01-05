@@ -16,6 +16,10 @@ import kotlinx.android.synthetic.main.activity_welcome.*
 
 class WelcomeActivity : AppCompatActivity() {
 
+    companion object {
+        const val PERMISSIONS_REQUEST_CAMERA = 1337
+    }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityWelcomeBinding>(this, R.layout.activity_welcome)
@@ -26,7 +30,7 @@ class WelcomeActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                checkPermission(Manifest.permission.CAMERA)
+                checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
             }
         }
 
@@ -39,7 +43,7 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            1337 -> {
+            PERMISSIONS_REQUEST_CAMERA -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     val intent = Intent(this, SetupActivity::class.java)
                     startActivity(intent)

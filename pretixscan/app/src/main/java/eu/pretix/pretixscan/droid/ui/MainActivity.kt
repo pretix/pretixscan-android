@@ -29,6 +29,7 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
@@ -147,6 +148,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var syncMessage = ""
 
     companion object {
+        const val PERMISSIONS_REQUEST_CAMERA = 1337
         const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
     }
 
@@ -306,11 +308,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            1337 -> {
+            PERMISSIONS_REQUEST_CAMERA -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
-                    finish()
+                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
                 }
                 return
             }
@@ -324,7 +326,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         e.printStackTrace()
                     }
                 } else {
-                    finish()
+                    Toast.makeText(this, "Please grant storage permission for full functionality", Toast.LENGTH_SHORT).show();
                 }
                 return
             }
@@ -432,7 +434,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             syncNow()
         }
         scheduleSync()
-        checkPermission(Manifest.permission.CAMERA)
+        checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
 
         hideCard()
         hideSearchCard()
@@ -687,7 +689,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         hardwareScanner.start(this)
 
-        if (conf.useCamera) {
+        if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             scanner_view.setResultHandler(this)
             scanner_view.startCamera()
         }

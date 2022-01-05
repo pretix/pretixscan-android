@@ -37,6 +37,11 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     var conf: AppConfig? = null
     private val dataWedgeHelper = DataWedgeHelper(this)
 
+    companion object {
+        const val PERMISSIONS_REQUEST_CAMERA = 1337
+        const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
+    }
+
     private val hardwareScanner = HardwareScanner(object : ScanReceiver {
         override fun scanResult(result: String) {
             handleScan(result)
@@ -48,12 +53,12 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         setContentView(R.layout.activity_setup)
         conf = AppConfig(this)
 
-        checkPermission(Manifest.permission.CAMERA)
+        checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
         if (dataWedgeHelper.isInstalled) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        1338);
+                        PERMISSIONS_REQUEST_WRITE_STORAGE);
             } else {
                 try {
                     dataWedgeHelper.install()
@@ -98,19 +103,19 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            1337 -> {
+            PERMISSIONS_REQUEST_CAMERA -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     if (conf!!.useCamera) {
                         scanner_view.setResultHandler(this)
                         scanner_view.startCamera()
                     }
-                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1338)
+                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
                     Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
                 }
                 return
             }
-            1338 -> {
+            PERMISSIONS_REQUEST_WRITE_STORAGE -> {
                 try {
                     if (dataWedgeHelper.isInstalled) {
                         dataWedgeHelper.install()
