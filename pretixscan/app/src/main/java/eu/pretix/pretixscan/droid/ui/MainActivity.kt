@@ -947,6 +947,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 settings.covid_certificates_record_validity_time,
                 settings.covid_certificates_accept_eudgc,
                 settings.covid_certificates_accept_manual,
+                settings.covid_certificates_combination_rules,
         )
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
                 this,
