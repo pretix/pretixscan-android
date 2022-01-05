@@ -161,4 +161,6 @@
     <string name="settings_label_covid_check">COVID-19 Check</string>
     <string name="pref_covid_autocheckin">Mark ticket automatically as verified</string>
     <string name="pref_covid_autocheckin_summary" formatted="false">When this option is activated and the server has been setup to request COVID certificate validation, tickets will be marked automatically and without any input or scan as "validated". In 99% of all times, this option should not be activated!</string>
+    <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
+    <string name="event_select_calendar">Show calendar</string>
 </resources>

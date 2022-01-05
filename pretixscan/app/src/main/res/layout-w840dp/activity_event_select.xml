@@ -5,9 +5,9 @@
 
     <LinearLayout
         android:id="@+id/root"
+        android:background="@color/dialog_background_scrim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/dialog_background_scrim"
         android:gravity="center_horizontal">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +23,7 @@
             android:layout_marginBottom="32dp"
             android:background="?android:colorBackground"
             android:elevation="6dp"
-            android:maxWidth="@dimen/dialog_minwidth"
+            android:maxWidth="740dp"
             android:transitionName="morph_transition"
             tools:targetApi="lollipop">
 
@@ -45,28 +45,28 @@
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginEnd="24dp"
                 app:layout_constraintBottom_toTopOf="@+id/btnOk"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintEnd_toStartOf="@+id/calendarView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title">
 
-                <com.kizitonwose.calendarview.CalendarView
-                    android:id="@+id/calendarView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:cv_dayViewResource="@layout/event_select_calendar_day"
-                    app:cv_monthHeaderResource="@layout/event_select_calendar_header"
-                    app:cv_orientation="vertical"
-                    app:cv_scrollMode="continuous" />
-
-                <FrameLayout
-                    android:id="@+id/eventListContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <include layout="@layout/include_event_select_list" />
-                </FrameLayout>
+                <include layout="@layout/include_event_select_list" />
             </FrameLayout>
+
+            <com.kizitonwose.calendarview.CalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="320dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:cv_dayViewResource="@layout/event_select_calendar_day"
+                app:cv_monthHeaderResource="@layout/event_select_calendar_header"
+                app:cv_orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/btnOk"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
 
             <Button
                 android:id="@+id/btnOk"
@@ -77,19 +77,6 @@
                 android:text="@string/ok"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
-            <Button
-                android:id="@+id/btnCalendar"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/event_select_calendar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnOk"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
