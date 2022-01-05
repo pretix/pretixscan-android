@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 17
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 60
         versionName "1.12.2"
         vectorDrawables.useSupportLibrary = true
