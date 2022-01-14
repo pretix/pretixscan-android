@@ -44,6 +44,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrognito.pinlockview.IndicatorDots
 import com.andrognito.pinlockview.PinLockListener
 import com.andrognito.pinlockview.PinLockView
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
@@ -51,6 +54,10 @@ import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.*
+import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
+import eu.pretix.libpretixsync.serialization.JSONArraySerializer
+import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
+import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.libpretixui.android.covid.CovidCheckSettings
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
@@ -59,6 +66,7 @@ import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
+import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
@@ -66,6 +74,8 @@ import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
 import java.security.MessageDigest
@@ -112,10 +122,10 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            ResultState.DIALOG, ResultState.LOADING -> R.color.pretix_brand_lightgrey
-            ResultState.ERROR -> R.color.pretix_brand_red
-            ResultState.WARNING -> R.color.pretix_brand_orange
-            ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> R.color.pretix_brand_green
+            DIALOG, LOADING -> R.color.pretix_brand_lightgrey
+            ERROR -> R.color.pretix_brand_red
+            WARNING -> R.color.pretix_brand_orange
+            SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
         })
     }
 }
@@ -135,6 +145,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
+    private var lastIgnoreUnpaid: Boolean = false
+    private var lastScanResult: TicketCheckProvider.CheckResult? = null
     private var keyboardBuffer: String = ""
     private var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
@@ -156,6 +168,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         override fun scanResult(result: String) {
             lastScanTime = System.currentTimeMillis()
             lastScanCode = result
+            lastIgnoreUnpaid = false
+            lastScanResult = null
             handleScan(result, null, !conf.unpaidAsk)
         }
     })
@@ -217,7 +231,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private fun setSearchFilter(f: String) {
         card_search.visibility = View.VISIBLE
-        view_data.search_state.set(ResultState.LOADING)
+        view_data.search_state.set(LOADING)
 
         searchFilter = f
         doAsync {
@@ -232,6 +246,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
                         lastScanTime = System.currentTimeMillis()
                         lastScanCode = res.secret!!
+                        lastScanResult = null
+                        lastIgnoreUnpaid = false
                         hideSearchCard()
                         handleScan(res.secret!!, null, !conf.unpaidAsk)
                     }
@@ -239,9 +255,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 runOnUiThread {
                     recyclerView_search.adapter = searchAdapter
                     if (sr.size == 0) {
-                        view_data.search_state.set(ResultState.WARNING)
+                        view_data.search_state.set(WARNING)
                     } else {
-                        view_data.search_state.set(ResultState.SUCCESS)
+                        view_data.search_state.set(SUCCESS)
                     }
                 }
             } catch (e: CheckException) {
@@ -407,7 +423,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         getRestrictions(this)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        view_data.result_state.set(ResultState.ERROR)
+        view_data.result_state.set(ERROR)
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
@@ -732,14 +748,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_state = ResultCardState.HIDDEN
         card_result.clearAnimation()
         card_result.visibility = View.GONE
-        view_data.result_state.set(ResultState.ERROR)
+        view_data.result_state.set(ERROR)
         view_data.result_text.set(null)
     }
 
     fun showLoadingCard() {
         hideHandler.removeCallbacks(hideRunnable)
         card_result.clearAnimation()
-        view_data.result_state.set(ResultState.LOADING)
+        view_data.result_state.set(LOADING)
         view_data.result_text.set(null)
         view_data.detail1.set(null)
         view_data.detail2.set(null)
@@ -848,21 +864,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (conf.covidAutoCheckin && answers == null) {
             val questions = (application as PretixScan).data.select(Question::class.java)
-                .where(Question.EVENT_SLUG.eq(conf.eventSlug))
-                .get()
+                    .where(Question.EVENT_SLUG.eq(conf.eventSlug))
+                    .get()
 
             for (q in questions) {
                 if (q.json.getString("identifier") == "pretix_covid_certificates_question") {
                     val answers = mutableListOf<Answer>()
                     val validityTime = java.time.LocalDate.now().atStartOfDay(ZoneId.systemDefault()).plusDays(1)
                     answers.add(
-                        Answer(
-                            q,
-                            String.format(
-                                "provider: automatic, proof: withheld, expires: %s",
-                                validityTime.toOffsetDateTime().toString()
+                            Answer(
+                                    q,
+                                    String.format(
+                                            "provider: automatic, proof: withheld, expires: %s",
+                                            validityTime.toOffsetDateTime().toString()
+                                    )
                             )
-                        )
                     )
                     handleScan(raw_result, answers, ignore_unpaid)
                     return
@@ -902,13 +918,19 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
+                            values: Map<QuestionLike, String>?, isResumed: Boolean,
                             retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question }
-        val values = mutableMapOf<QuestionLike, String>()
-        res.requiredAnswers!!.forEach {
-            if (!it.currentValue.isNullOrBlank()) {
-                values[it.question] = it.currentValue!!
+        val values_ = if (values == null) {
+            val v = mutableMapOf<QuestionLike, String>()
+            res.requiredAnswers!!.forEach {
+                if (!it.currentValue.isNullOrBlank()) {
+                    v[it.question] = it.currentValue!!
+                }
             }
+            v
+        } else {
+            values
         }
         val attendeeName = if (conf.hideNames) "" else res.position?.optString("attendee_name")
         var attendeeDOB: String? = null
@@ -954,7 +976,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
                 this,
                 questions,
-                values,
+                values_,
                 null,
                 null,
                 { answers -> retryHandler(secret, answers, ignore_unpaid) },
@@ -972,11 +994,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 } else {
                     null
                 },
-                !conf.useCamera
+                !conf.useCamera,
+                isResumed
         )
     }
 
     fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
+        lastScanResult = result
+        lastIgnoreUnpaid = ignore_unpaid
+
         if (conf.sounds)
             when (result.type) {
                 TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
@@ -998,8 +1024,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         hideHandler.removeCallbacks(hideRunnable)
         hideHandler.postDelayed(hideRunnable, 30000)
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-            view_data.result_state.set(ResultState.DIALOG)
-            dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid) { secret, answers, ignore_unpaid ->
+            view_data.result_state.set(DIALOG)
+            dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
                 hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
             }
@@ -1007,7 +1033,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.result_state.set(ResultState.DIALOG)
+            view_data.result_state.set(DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
                 hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
@@ -1032,21 +1058,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         view_data.result_text.set(result.message)
         view_data.result_state.set(when (result.type!!) {
-            TicketCheckProvider.CheckResult.Type.INVALID -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.INVALID -> ERROR
             TicketCheckProvider.CheckResult.Type.VALID -> {
                 when (result.scanType) {
-                    TicketCheckProvider.CheckInType.EXIT -> ResultState.SUCCESS_EXIT
-                    TicketCheckProvider.CheckInType.ENTRY -> ResultState.SUCCESS
+                    TicketCheckProvider.CheckInType.EXIT -> SUCCESS_EXIT
+                    TicketCheckProvider.CheckInType.ENTRY -> SUCCESS
                 }
             }
-            TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
-            TicketCheckProvider.CheckResult.Type.ERROR -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.RULES -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.REVOKED -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.UNPAID -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.CANCELED -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.PRODUCT -> ResultState.ERROR
-            TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.ERROR
+            TicketCheckProvider.CheckResult.Type.USED -> WARNING
+            TicketCheckProvider.CheckResult.Type.ERROR -> ERROR
+            TicketCheckProvider.CheckResult.Type.RULES -> ERROR
+            TicketCheckProvider.CheckResult.Type.REVOKED -> ERROR
+            TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR
+            TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
+            TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
+            TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
         })
         if (result.ticket != null) {
             if (result.variation != null) {
@@ -1116,7 +1142,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun handleResult(rawResult: Result) {
         scanner_view.resumeCameraPreview(this@MainActivity)
 
-        if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == ResultState.LOADING) {
+        if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == LOADING) {
             return
         }
 
@@ -1126,6 +1152,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
+        lastScanResult = null
+        lastIgnoreUnpaid = false
         handleScan(s, null, !conf.unpaidAsk)
     }
 
@@ -1140,6 +1168,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = keyboardBuffer
+                lastScanResult = null
+                lastIgnoreUnpaid = false
                 handleScan(keyboardBuffer, null, !conf.unpaidAsk)
                 keyboardBuffer = ""
                 true
@@ -1315,6 +1345,65 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun onConnectivityChanged() {
         runOnUiThread {
             reload()
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        if (savedInstanceState.getString("result_state", "") == "DIALOG") {
+            val module = SimpleModule()
+            module.addDeserializer(JSONObject::class.java, JSONObjectDeserializer())
+            module.addDeserializer(JSONArray::class.java, JSONArrayDeserializer())
+            val om = ObjectMapper()
+            om.registerModule(module)
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+            view_data.result_state.set(DIALOG)
+            lastScanCode = savedInstanceState.getString("lastScanCode", null)
+            lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
+            lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
+
+            val answers = savedInstanceState.getBundle("answers")!!
+            val values = mutableMapOf<QuestionLike, String>()
+            lastScanResult!!.requiredAnswers!!.forEach {
+                val v = answers.getString(it.question.identifier, "")
+                if (v.isNotBlank()) {
+                    values[it.question] = v
+                }
+            }
+
+            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastIgnoreUnpaid, values, true) { secret, answers, ignore_unpaid ->
+                hideHandler.removeCallbacks(hideRunnable)
+                handleScan(secret, answers, ignore_unpaid)
+            }
+            dialog!!.onRestoreInstanceState(answers)
+            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        // Currently, in most cases we don't need to care if Android kills MainActivity, since it
+        // does not carry much state when you don't actively use it. The prominent exception is
+        // if the questions dialog starts sub-activities, e.g. for taking photos or checking covid
+        // passes. In these case, we try to serialize all state required to re-create the dialog
+        // if the user returns.
+
+        if (view_data.result_state.get() == DIALOG && dialog != null && lastScanResult != null) {
+            val module = SimpleModule()
+            module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
+            module.addSerializer(JSONArray::class.java, JSONArraySerializer())
+            val om = ObjectMapper()
+            om.registerModule(module)
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+            outState.putString("result_state", "DIALOG")
+            outState.putString("lastScanCode", lastScanCode)
+            outState.putBoolean("ignore_unpaid", lastIgnoreUnpaid)
+            outState.putBundle("answers", dialog!!.onSaveInstanceState())
+            outState.putString("result", om.writeValueAsString(lastScanResult))
         }
     }
 }
