@@ -51,7 +51,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         if (conf.subeventId != null && conf.subeventId!! > 0) {
             lists = lists.and(CheckInList.SUBEVENT_ID.eq(conf.subeventId).or(CheckInList.SUBEVENT_ID.eq(0)))
         }
-        return lists.get().toList()
+        return lists.orderBy(CheckInList.SUBEVENT_ID.asc(), CheckInList.NAME.asc()).get().toList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
