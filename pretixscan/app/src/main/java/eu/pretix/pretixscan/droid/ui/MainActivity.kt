@@ -60,6 +60,8 @@ import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
 import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.libpretixui.android.covid.CovidCheckSettings
+import eu.pretix.libpretixui.android.covid.DGC
+import eu.pretix.libpretixui.android.covid.SAMPLE_SETTINGS
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
@@ -557,6 +559,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             try {
                 if (defaultSharedPreferences.getBoolean("pref_sync_auto", true)) {
+                    DGC().backgroundDscListUpdater.update()
                     val result = sm.sync(false, conf.checkinListId) {
                         runOnUiThread {
                             syncMessage = it
@@ -950,9 +953,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 .firstOrNull()
 
         val covidchecksettings = CovidCheckSettings(
+                settings.covid_certificates_record_proof ?: true,
                 settings.covid_certificates_allow_vaccinated,
                 settings.covid_certificates_allow_vaccinated_min,
                 settings.covid_certificates_allow_vaccinated_max,
+                settings.covid_certificates_allow_vaccinated_products?.split(",")?.toSet() ?: SAMPLE_SETTINGS.allow_vaccinated_products,
                 settings.covid_certificates_record_proof_vaccinated,
                 settings.covid_certificates_allow_cured,
                 settings.covid_certificates_allow_cured_min,
