@@ -477,7 +477,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun setupApi() {
-        if (event.text != conf.eventName) {
+        if (event != null && event.text != conf.eventName) {  // can be null if search bar is open
             event.text = conf.eventName
             (event.parent as View?)?.forceLayout()
         }
