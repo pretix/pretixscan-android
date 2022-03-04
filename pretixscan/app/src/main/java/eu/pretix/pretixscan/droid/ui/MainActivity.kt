@@ -517,7 +517,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, event, "morph_transition")
             val intent = intentFor<EventSelectActivity>()
-            startWithPIN(intent, "statistics", REQ_EVENT, options.toBundle())
+            startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
         } else {
             startActivityForResult(intentFor<EventSelectActivity>(), REQ_EVENT)
         }
