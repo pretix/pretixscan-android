@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="action_label_settings">Uzstādījumi</string>
+    <string name="action_label_statistics">Statistika</string>
+    <string name="scan_result_revoked">Biļetes kods atsaukts/izmainīts</string>
+    <string name="scan_result_canceled">Pasūtījums ir atcelts</string>
+    <string name="scan_result_unpaid">Biļete nav apmaksāta</string>
+    <string name="scan_result_rules">Ieeja nav atļauta</string>
+    <string name="scan_result_valid">Derīga biļete</string>
+    <string name="scan_result_used">Šī biļete jau ir izmantota</string>
+    <string name="scan_result_questions">Nepieciešama informācija</string>
+    <string name="scan_result_invalid">Nederīga biļete</string>
+    <string name="cancel">Atcelt</string>
+    <string name="yes">Jā</string>
+    <string name="status_unpaid">Neapmaksāts</string>
+    <string name="status_canceled">Atcelts</string>
+    <string name="status_valid">Derīgs</string>
+    <string name="action_search">Meklēt</string>
+    <string name="operation_select_event">Izvēlēties pasākumu</string>
+    <string name="progress_processing">Apstrādā…</string>
+    <string name="app_name">pretixSCAN</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">Sveicināti pretixSCAN!</string>
+</resources>
