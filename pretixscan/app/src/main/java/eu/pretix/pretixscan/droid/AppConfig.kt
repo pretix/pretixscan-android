@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import eu.pretix.pretixscan.utils.KeystoreHelper
+import org.json.JSONObject
 import java.lang.RuntimeException
 
 
@@ -44,6 +45,7 @@ class AppConfig(ctx: Context) : ConfigStore {
                 .remove(PREFS_KEY_LAST_SYNC)
                 .remove(PREFS_KEY_LAST_FAILED_SYNC)
                 .remove(PREFS_KEY_LAST_STATUS_DATA)
+                .remove(PREFS_KEY_DEVICE_KNOWN_INFO)
                 .apply()
     }
 
@@ -185,6 +187,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         prefs.edit().putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value).apply()
     }
 
+    override fun setDeviceKnownInfo(value: JSONObject) {
+        prefs.edit().putString(PREFS_KEY_DEVICE_KNOWN_INFO, value.toString()).apply()
+    }
+
+    override fun getDeviceKnownInfo(): JSONObject {
+        return JSONObject(prefs.getString(PREFS_KEY_DEVICE_KNOWN_INFO, "{}") ?: "{}")
+    }
+
     override fun setKnownPretixVersion(value: Long) {
         prefs.edit().putLong(PREFS_KEY_KNOWN_PRETIX_VERSION, value).apply()
     }
@@ -316,6 +326,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_KNOWN_NAME = "device_pos_known_name"
         val PREFS_KEY_DEVICE_KNOWN_GATE_NAME = "device_pos_known_gate_name"
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
+        val PREFS_KEY_DEVICE_KNOWN_INFO = "device_pos_known_info"
         val PREFS_KEY_KNOWN_PRETIX_VERSION = "known_pretix_version"
         val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
         val PREFS_KEY_SCAN_FLASH = "scan_flash"

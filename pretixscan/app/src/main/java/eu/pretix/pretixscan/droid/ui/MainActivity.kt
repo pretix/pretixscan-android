@@ -494,6 +494,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 if (conf.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,
                 conf.printBadges,
                 BuildConfig.VERSION_CODE,
+                JSONObject(),
                 Build.BRAND,
                 Build.MODEL,
                 "pretixSCAN Android",

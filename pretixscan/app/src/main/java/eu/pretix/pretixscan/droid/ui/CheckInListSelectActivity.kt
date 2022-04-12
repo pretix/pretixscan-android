@@ -14,6 +14,7 @@ import eu.pretix.pretixscan.droid.*
 import kotlinx.android.synthetic.main.activity_checkinlist_select.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import org.json.JSONObject
 
 
 class CheckInListSelectActivity : MorphingDialogActivity() {
@@ -36,6 +37,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 SyncManager.Profile.PRETIXSCAN,
                 conf.printBadges,
                 BuildConfig.VERSION_CODE,
+                JSONObject(),
                 Build.BRAND,
                 Build.MODEL,
                 "pretixSCAN Android",
