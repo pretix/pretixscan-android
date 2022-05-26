@@ -90,6 +90,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_troubleshooting">
         <Preference
+            android:key="datawedge_install"
+            android:title="@string/settings_label_datawedge" />
+        <Preference
             android:key="full_resync"
             android:summary="@string/force_full_resync_help"
             android:title="@string/force_full_resync" />

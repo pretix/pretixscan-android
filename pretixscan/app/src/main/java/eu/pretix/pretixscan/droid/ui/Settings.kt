@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
@@ -124,6 +125,14 @@ class SettingsFragment : PreferenceFragment() {
             }
             return@setOnPreferenceChangeListener true
         }
+
+        findPreference("datawedge_install")?.isEnabled = DataWedgeHelper(activity).isInstalled || Build.BRAND == "Zebra"
+        findPreference("datawedge_install")?.setOnPreferenceClickListener {
+            DataWedgeHelper(activity).install(true)
+            toast("OK").show()
+            true
+        }
+
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {

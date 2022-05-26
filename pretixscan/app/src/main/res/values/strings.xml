@@ -140,6 +140,7 @@
     <string name="hardware_scanner">Please press the hardware scan buttons of your device to scan.</string>
     <string name="hardware_scanner_switch_to_camera">Use camera instead</string>
     <string name="force_full_resync">Force a full synchronization</string>
+    <string name="settings_label_datawedge">Install DataWedge profile</string>
     <string name="settings_label_version">Version</string>
     <string name="settings_label_troubleshooting">Troubleshooting</string>
     <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only changed data.</string>
