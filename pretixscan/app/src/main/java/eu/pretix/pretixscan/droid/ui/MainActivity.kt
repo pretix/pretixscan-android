@@ -80,6 +80,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
+import java.security.Key
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.ZoneId
@@ -1164,7 +1165,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action != KeyEvent.ACTION_DOWN || (currentFocus is TextView && currentFocus !is AppCompatButton)) {
+        if ((event.action != KeyEvent.ACTION_DOWN && event.action != KeyEvent.ACTION_MULTIPLE) || (currentFocus is TextView && currentFocus !is AppCompatButton)) {
             return super.dispatchKeyEvent(event)
         }
         return when (event.keyCode) {
@@ -1178,6 +1179,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 lastIgnoreUnpaid = false
                 handleScan(keyboardBuffer, null, !conf.unpaidAsk)
                 keyboardBuffer = ""
+                true
+            }
+            KeyEvent.KEYCODE_UNKNOWN -> {
+                keyboardBuffer += event.characters
                 true
             }
             else -> {
