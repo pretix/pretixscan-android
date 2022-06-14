@@ -79,6 +79,7 @@ import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.lang.Integer.max
 import java.nio.charset.Charset
 import java.security.Key
 import java.security.MessageDigest
@@ -1188,7 +1189,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             else -> {
                 val codepoint = event.keyCharacterMap.get(event.keyCode, 0)
                 if (codepoint > 0) {
-                    keyboardBuffer += codepoint.toChar().toString().repeat(event.repeatCount)
+                    keyboardBuffer += codepoint.toChar().toString().repeat(max(event.repeatCount, 1))
                     true
                 } else {
                     super.dispatchKeyEvent(event)
