@@ -35,7 +35,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     var lastScanTime = 0L
     var lastScanValue = ""
     var conf: AppConfig? = null
+    private var ongoing_setup = false
     private val dataWedgeHelper = DataWedgeHelper(this)
+    private val LOG_TAG = this::class.java.name
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
@@ -167,11 +169,18 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     }
 
     private fun initialize(url: String, token: String) {
+        if (ongoing_setup) {
+            Log.w(LOG_TAG, "Ongoing setup. Discarding initialize with {url} / {token}.")
+            return;
+        }
+        ongoing_setup = true
+
         val pdialog = indeterminateProgressDialog(R.string.setup_progress)
 
         fun resume() {
             pdialog.dismiss()
             scanner_view.resumeCameraPreview(this)
+            ongoing_setup = false
         }
 
         pdialog.setCanceledOnTouchOutside(false)
