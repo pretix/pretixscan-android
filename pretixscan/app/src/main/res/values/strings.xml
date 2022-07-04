@@ -125,6 +125,7 @@
     <string name="scan_result_product">Ticket type not valid here</string>
     <string name="scan_result_unpaid">Ticket not paid</string>
     <string name="scan_result_rules">Entry not allowed</string>
+    <string name="scan_result_ambiguous">Ticket code is ambiguous on list</string>
     <string name="scan_result_revoked">Ticket code revoked/changed</string>
     <string name="scan_result_canceled">Order canceled</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>

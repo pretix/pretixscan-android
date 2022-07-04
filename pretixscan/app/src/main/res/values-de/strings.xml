@@ -126,6 +126,7 @@
     <string name="label_shop_inactive">Shop deaktiviert</string>
     <string name="settings_label_details">Details</string>
     <string name="scan_result_rules">Eintritt nicht erlaubt</string>
+    <string name="scan_result_ambiguous">Ticket-Code auf Liste nicht eindeutig</string>
     <string name="scan_result_revoked">Ticket-Code gesperrt/geändert</string>
     <string name="action_label_scantype_exit">Zum Ausgangs-Modus wechseln</string>
     <string name="action_label_scantype_entry">Zum Eingangs-Modus wechseln</string>
