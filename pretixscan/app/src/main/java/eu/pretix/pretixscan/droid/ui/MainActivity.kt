@@ -1023,6 +1023,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.REVOKED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
                 else -> {
@@ -1057,6 +1058,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
                 }
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
+                TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
                 TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
@@ -1076,6 +1078,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.USED -> WARNING
             TicketCheckProvider.CheckResult.Type.ERROR -> ERROR
             TicketCheckProvider.CheckResult.Type.RULES -> ERROR
+            TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> ERROR
             TicketCheckProvider.CheckResult.Type.REVOKED -> ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
