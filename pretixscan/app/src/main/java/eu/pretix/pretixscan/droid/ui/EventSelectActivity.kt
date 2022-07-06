@@ -196,7 +196,7 @@ class EventSelectActivity : MorphingDialogActivity() {
             val events: List<RemoteEvent>
             try {
                 val selectedAsJodaTime = LocalDateTime(selectedDate.atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()).toDateTime(DateTimeZone.getDefault())
-                events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null)
+                events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null)
             } catch (e: Exception) {
                 swipe_container.isRefreshing = false
                 uiThread {
