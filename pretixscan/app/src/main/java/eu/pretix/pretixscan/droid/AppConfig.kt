@@ -59,10 +59,26 @@ class AppConfig(ctx: Context) : ConfigStore {
         return prefs.getInt(PREFS_KEY_API_VERSION, PretixApi.SUPPORTED_API_VERSION)
     }
 
-    override fun getEventSlug(): String? = prefs.getString(PREFS_KEY_EVENT_SLUG, null)
+    fun getEventSlug(): String? = prefs.getString(PREFS_KEY_EVENT_SLUG, null)
     fun setEventSlug(value: String?) = prefs.edit().putString(PREFS_KEY_EVENT_SLUG, value).apply()
 
     override fun getSyncCycleId(): String? = prefs.getString(PREFS_KEY_SYNC_CYCLE_ID, "0")
+
+    override fun getSynchronizedEvents(): List<String> {
+        val eventSlug = getEventSlug()
+        return if (eventSlug != null) listOf(eventSlug) else emptyList()
+    }
+
+    override fun getSelectedSubeventForEvent(event: String): Long? {
+        if (event != getEventSlug()) return null
+        return subeventId
+    }
+
+    override fun getSelectedCheckinListForEvent(event: String): Long? {
+        if (event != getEventSlug()) return null
+        return checkinListId
+    }
+
     fun setSyncCycleId(value: String?) = prefs.edit().putString(PREFS_KEY_SYNC_CYCLE_ID, value).apply()
 
     var subeventId: Long?
@@ -74,10 +90,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         } else {
             prefs.edit().remove(PREFS_KEY_SUBEVENT_ID).apply()
         }
-
-    override fun getSubEventId(): Long? {
-        return subeventId
-    }
 
     var eventName: String?
         get() = prefs.getString(PREFS_KEY_EVENT_NAME, null)

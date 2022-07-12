@@ -68,7 +68,7 @@ class EventSelectActivity : MorphingDialogActivity() {
             val selectedEvent = eventsAdapter.selectedEvent
             if (selectedEvent != null) {
 
-                conf.eventSlug = selectedEvent.slug
+                conf.setEventSlug(selectedEvent.slug)
                 conf.subeventId = selectedEvent.subevent_id
                 conf.eventName = selectedEvent.name
                 conf.checkinListId = 0
@@ -210,7 +210,7 @@ class EventSelectActivity : MorphingDialogActivity() {
             uiThread {
                 progressBar.visibility = View.GONE
                 noEventsMessage.visibility = if (events.isEmpty()) { View.VISIBLE } else { View.GONE }
-                eventsAdapter.selectedEvent = events.find { it.slug == conf.eventSlug && it.subevent_id == conf.subeventId }
+                eventsAdapter.selectedEvent = events.find { it.slug == conf.getEventSlug() && it.subevent_id == conf.subeventId }
                 eventsAdapter.submitList(events)
                 events_list.adapter = eventsAdapter
 
@@ -225,7 +225,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     }
 
     override fun onBackPressed() {
-        if (conf.eventSlug != null) {
+        if (conf.getEventSlug() != null) {
             super.onBackPressed()
         }
     }

@@ -79,7 +79,7 @@ class EventinfoActivity : AppCompatActivity() {
          */
         override fun doInBackground(vararg params: String): TicketCheckProvider.StatusResult? {
             try {
-                return this@EventinfoActivity.checkProvider.status()
+                return this@EventinfoActivity.checkProvider.status(config!!.getEventSlug()!!, config!!.checkinListId)
             } catch (e: CheckException) {
                 e.printStackTrace()
                 this.e = e
