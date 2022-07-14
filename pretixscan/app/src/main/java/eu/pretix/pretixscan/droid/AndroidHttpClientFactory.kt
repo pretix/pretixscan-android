@@ -1,7 +1,5 @@
 package eu.pretix.pretixscan.droid
 
-import android.app.Application
-import android.content.Context
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import eu.pretix.libpretixsync.api.RateLimitInterceptor
 import okhttp3.OkHttpClient
@@ -15,6 +13,7 @@ import javax.security.cert.CertificateException
 class AndroidHttpClientFactory(val app: PretixScan) : HttpClientFactory {
     override fun buildClient(ignore_ssl: Boolean): OkHttpClient {
         val builder = OkHttpClient.Builder()
+        builder.addNetworkInterceptor(AndroidUserAgentInterceptor())
 
         if (app.flipperInit?.interceptor != null) {
             builder.addNetworkInterceptor(app.flipperInit!!.interceptor!!)
