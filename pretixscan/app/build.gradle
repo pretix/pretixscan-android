@@ -149,6 +149,7 @@ dependencies {
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.3'
     implementation "com.fasterxml.jackson.core:jackson-databind:2.13.0"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.13.0"
     implementation 'net.i2p.crypto:eddsa:0.3.0'
     implementation 'com.google.protobuf:protobuf-lite:3.0.1'
 

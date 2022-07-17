@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -35,7 +36,6 @@ import org.joda.time.LocalDateTime
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
-import java.util.*
 
 
 class EventSelectActivity : MorphingDialogActivity() {
@@ -48,6 +48,14 @@ class EventSelectActivity : MorphingDialogActivity() {
     private val today = LocalDate.now()
     private var selectedDate: LocalDate = today
 
+    companion object {
+        const val EVENT_SLUG = "event_slug"
+        const val EVENT_NAME = "event_name"
+        const val EVENT_DATE_FROM = "event_date_from"
+        const val EVENT_DATE_TO = "event_date_to"
+        const val SUBEVENT_ID = "subevent_id"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_select)
@@ -55,7 +63,7 @@ class EventSelectActivity : MorphingDialogActivity() {
         conf = AppConfig(this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
-            finish();
+            finish()
             return
         }
 
@@ -67,13 +75,13 @@ class EventSelectActivity : MorphingDialogActivity() {
         btnOk.setOnClickListener {
             val selectedEvent = eventsAdapter.selectedEvent
             if (selectedEvent != null) {
-
-                conf.setEventSlug(selectedEvent.slug)
-                conf.subeventId = selectedEvent.subevent_id
-                conf.eventName = selectedEvent.name
-                conf.checkinListId = 0
-
-                setResult(Activity.RESULT_OK)
+                val i = Intent()
+                i.putExtra(EVENT_SLUG, selectedEvent.slug)
+                i.putExtra(EVENT_NAME, selectedEvent.name)
+                i.putExtra(EVENT_DATE_FROM, selectedEvent.date_from)
+                i.putExtra(EVENT_DATE_TO, selectedEvent.date_to)
+                i.putExtra(SUBEVENT_ID, selectedEvent.subevent_id)
+                setResult(Activity.RESULT_OK, i)
                 supportFinishAfterTransition()
             }
         }
@@ -210,7 +218,13 @@ class EventSelectActivity : MorphingDialogActivity() {
             uiThread {
                 progressBar.visibility = View.GONE
                 noEventsMessage.visibility = if (events.isEmpty()) { View.VISIBLE } else { View.GONE }
-                eventsAdapter.selectedEvent = events.find { it.slug == conf.getEventSlug() && it.subevent_id == conf.subeventId }
+
+                if (intent.extras?.containsKey(EVENT_SLUG) == true) {
+                    eventsAdapter.selectedEvent = events.find {
+                        it.slug == intent.extras!!.getString(EVENT_SLUG) && (it.subevent_id == intent.extras!!.getLong(SUBEVENT_ID, 0L) || it.subevent_id == null && intent.extras!!.getLong(SUBEVENT_ID, 0) < 1)
+                    }
+                }
+
                 eventsAdapter.submitList(events)
                 events_list.adapter = eventsAdapter
 
@@ -225,7 +239,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     }
 
     override fun onBackPressed() {
-        if (conf.getEventSlug() != null) {
+        if (!conf.synchronizedEvents.isEmpty()) {
             super.onBackPressed()
         }
     }

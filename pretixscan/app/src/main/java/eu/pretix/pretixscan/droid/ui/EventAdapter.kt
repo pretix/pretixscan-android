@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixscan.droid.databinding.ItemEventBinding
 
-class TaskDiffCallback : DiffUtil.ItemCallback<RemoteEvent>() {
+class RemoteEventDiffCallback : DiffUtil.ItemCallback<RemoteEvent>() {
     override fun areItemsTheSame(oldItem: RemoteEvent, newItem: RemoteEvent): Boolean {
         return oldItem.slug == newItem.slug
     }
@@ -20,7 +20,7 @@ class TaskDiffCallback : DiffUtil.ItemCallback<RemoteEvent>() {
 }
 
 internal class EventAdapter(var selectedEvent: RemoteEvent?) :
-        ListAdapter<RemoteEvent, BindingHolder<ItemEventBinding>>(TaskDiffCallback()),
+        ListAdapter<RemoteEvent, BindingHolder<ItemEventBinding>>(RemoteEventDiffCallback()),
         View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     var list: List<RemoteEvent>? = null
     private val CHECKED_CHANGE = 1

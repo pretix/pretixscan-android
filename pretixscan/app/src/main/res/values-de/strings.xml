@@ -14,7 +14,10 @@
     <string name="action_label_statistics">Statistiken</string>
     <string name="action_search">Suchen</string>
     <string name="action_manual">Manuelles Setup</string>
+    <string name="action_multievent_enable">Experten-Modus (mehrere Events auswählbar)</string>
     <string name="operation_select_event">Veranstaltung auswählen</string>
+    <string name="operation_select_events">Veranstaltungen auswählen</string>
+    <string name="events_selected">%s Veranstaltungen ausgewählt</string>
     <string name="operation_select_checkinlist">Check-In-Liste auswählen</string>
     <string name="settings_label_auto_sync">Automatische Synchronisierung</string>
     <plurals name="sync_status_time_minutes">

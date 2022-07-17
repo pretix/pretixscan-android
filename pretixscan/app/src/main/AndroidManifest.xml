@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="eu.pretix.pretixscan.droid">
 
+    <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.lifecycle, androidx.camera.core, androidx.camera.camera2, com.serenegiant.usbcameracommon, dgca.verifier.app.engine" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,32 +21,32 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.lifecycle, androidx.camera.core, androidx.camera.camera2, com.serenegiant.usbcameracommon, dgca.verifier.app.engine" />
-
     <application
         android:name="eu.pretix.pretixscan.droid.PretixScan"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:logo="@drawable/ic_logo"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:replace="android:allowBackup">
+
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"
             android:resource="@xml/app_restrictions" />
-        <meta-data android:name="io.sentry.auto-init" android:value="false" />
+        <meta-data
+            android:name="io.sentry.auto-init"
+            android:value="false" />
 
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -58,25 +60,29 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.WelcomeActivity"
-            android:label="@string/headline_setup"></activity>
+            android:name=".ui.WelcomeActivity"
+            android:label="@string/headline_setup" />
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.SetupActivity"
-            android:label="@string/headline_setup"></activity>
+            android:name=".ui.SetupActivity"
+            android:label="@string/headline_setup" />
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.info.EventinfoActivity"
+            android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"
-            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/action_label_settings"
-            android:parentActivityName="eu.pretix.pretixscan.droid.ui.MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.EventSelectActivity"
+            android:name=".ui.EventConfigActivity"
+            android:exported="false"
+            android:label="@string/operation_select_events" />
+        <activity
+            android:name=".ui.EventSelectActivity"
             android:label="@string/operation_select_event"
             android:theme="@style/AppTheme.Dialog.Animated" />
         <activity
-            android:name="eu.pretix.pretixscan.droid.ui.CheckInListSelectActivity"
+            android:name=".ui.CheckInListSelectActivity"
             android:label="@string/operation_select_event"
             android:theme="@style/AppTheme.Dialog.Animated" />
 

@@ -137,7 +137,6 @@ class ViewDataHolder(private val ctx: Context) {
 class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
 
     private val REQ_EVENT = 1
-    private val REQ_CHECKINLIST = 2
 
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
@@ -182,43 +181,46 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         reloadSyncStatus()
 
         var confdetails = ""
-        if (!conf.getEventSlug().isNullOrBlank()) {
-            val event = (application as PretixScan).data.select(Event::class.java)
-                    .where(Event.SLUG.eq(conf.getEventSlug()))
-                    .get().firstOrNull()
-            if (event != null) {
+        if (conf.deviceKnownGateName.isNotBlank()) {
+            confdetails += getString(R.string.debug_info_gate, conf.deviceKnownGateName)
+            confdetails += "\n"
+        }
+        if (!conf.kioskMode) {
+            confdetails += getString(R.string.debug_info_device, conf.deviceKnownName)
+            confdetails += "\n"
+        }
+        if (conf.synchronizedEvents.isNotEmpty()) {
+            val events = (application as PretixScan).data.select(Event::class.java)
+                    .where(Event.SLUG.`in`(conf.synchronizedEvents))
+                    .get().toList()
+            for (event in events) {
                 confdetails += getString(R.string.debug_info_event, event.name)
+                confdetails += "\n"
 
-                if (conf.subeventId != null && conf.subeventId!! > 0) {
+                val subeventId = conf.getSelectedSubeventForEvent(event.slug)
+                if (subeventId != null && subeventId > 0) {
                     val subevent = (application as PretixScan).data.select(SubEvent::class.java)
-                            .where(SubEvent.SERVER_ID.eq(conf.subeventId))
+                            .where(SubEvent.SERVER_ID.eq(subeventId))
                             .get().firstOrNull()
                     if (subevent != null) {
-                        confdetails += "\n"
                         val df = SimpleDateFormat(getString(R.string.short_datetime_format))
                         confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.date_from))
+                        confdetails += "\n"
                     }
                 }
 
-                if (conf.checkinListId > 0) {
+                val checkinListId = conf.getSelectedCheckinListForEvent(event.slug)
+                if (checkinListId != null && checkinListId > 0) {
                     val cl = (application as PretixScan).data.select(CheckInList::class.java)
-                            .where(CheckInList.SERVER_ID.eq(conf.checkinListId))
+                            .where(CheckInList.SERVER_ID.eq(checkinListId))
                             .get().firstOrNull()
                     if (cl != null) {
-                        confdetails += "\n"
                         confdetails += getString(R.string.debug_info_list, cl.name)
+                        confdetails += "\n"
                     }
-                }
-
-                if (!conf.deviceKnownGateName.isNullOrBlank()) {
-                    confdetails += "\n"
-                    confdetails += getString(R.string.debug_info_gate, conf.deviceKnownGateName)
                 }
             }
             if (!conf.kioskMode) {
-                confdetails += "\n"
-                confdetails += getString(R.string.debug_info_device, conf.deviceKnownName)
-                confdetails += "\n"
                 if (conf.proxyMode) {
                     confdetails += getString(R.string.checktype_proxy)
                 } else if (conf.offlineMode) {
@@ -226,10 +228,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 } else {
                     confdetails += getString(R.string.checktype_online)
                 }
+                confdetails += "\n"
             }
 
         }
-        view_data.configDetails.set(confdetails)
+        view_data.configDetails.set(confdetails.trim())
         view_data.isOffline.set(conf.offlineMode)
     }
 
@@ -241,7 +244,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         doAsync {
             val provider = (application as PretixScan).getCheckProvider(conf)
             try {
-                val sr = provider.search(mapOf(conf.getEventSlug()!! to conf.checkinListId), f, 1)
+                val sr = provider.search(conf.eventSelectionToMap(), f, 1)
                 if (f != searchFilter) {
                     // we lost a race! Abort this.
                     return@doAsync
@@ -286,9 +289,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun reloadSyncStatus() {
         if (conf.lastFailedSync > conf.lastSync || System.currentTimeMillis() - conf.lastDownload > 5 * 60 * 1000) {
-            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red));
+            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red))
         } else {
-            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green));
+            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green))
         }
         textView_status.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
         var text = ""
@@ -446,10 +449,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         setupApi()
         setUpEventListeners()
 
-        if (conf.eventName == null || conf.getEventSlug() == null) {
+        if (conf.synchronizedEvents.isEmpty()) {
             selectEvent()
-        } else if (conf.checkinListId == 0L) {
-            selectCheckInList()
         } else if (conf.lastDownload < 1) {
             syncNow()
         }
@@ -478,9 +479,19 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         recyclerView_search.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(recyclerView_search.context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
     }
 
+    private fun eventButtonText(): String {
+        val s = conf.eventSelection
+        if (s.size == 1) {
+            return s[0].eventName
+        } else {
+            return getString(R.string.events_selected, s.size.toString())
+        }
+    }
+
     private fun setupApi() {
-        if (event != null && event.text != conf.eventName) {  // can be null if search bar is open
-            event.text = conf.eventName
+        val ebt = eventButtonText()
+        if (event != null && event.text != ebt) {  // can be null if search bar is open
+            event.text = ebt
             (event.parent as View?)?.forceLayout()
         }
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
@@ -505,24 +516,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         )
     }
 
-    private fun selectCheckInList() {
-        if (event != null && ViewCompat.isLaidOut(event)) {
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this@MainActivity, event, "morph_transition")
-            startActivityForResult(intentFor<CheckInListSelectActivity>(), REQ_CHECKINLIST, options.toBundle())
-        } else {
-            startActivityForResult(intentFor<CheckInListSelectActivity>(), REQ_CHECKINLIST)
-        }
-    }
-
     private fun selectEvent() {
         if (event != null && ViewCompat.isLaidOut(event)) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, event, "morph_transition")
-            val intent = intentFor<EventSelectActivity>()
+            val intent = intentFor<EventConfigActivity>()
             startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
         } else {
-            startActivityForResult(intentFor<EventSelectActivity>(), REQ_EVENT)
+            startActivityForResult(intentFor<EventConfigActivity>(), REQ_EVENT)
         }
     }
 
@@ -581,12 +582,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             } catch (e: SyncManager.EventSwitchRequested) {
                 runOnUiThread {
-                    conf.setEventSlug(e.eventSlug)
-                    conf.subeventId = e.subeventId
-                    conf.eventName = e.eventName
-                    conf.checkinListId = e.checkinlistId
+                    conf.eventSelection = listOf(EventSelection(
+                            eventSlug = e.eventSlug,
+                            eventName = e.eventName,
+                            subEventId = e.subeventId,
+                            checkInList = e.checkinlistId,
+                            dateFrom = null,
+                            dateTo = null
+                    ))
                     setupApi()
-                    syncNow(!(e.checkinlistId > 0))
+                    syncNow()
                     reload()
                 }
             } catch (e: Exception) {
@@ -607,10 +612,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         handler.postDelayed(syncRunnable, 1000)
     }
 
-    fun syncNow(selectList: Boolean = false) {
+    fun syncNow() {
         if (isDestroyed) return
         syncMessage = ""
-        pdialog = indeterminateProgressDialog(title = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing, message = if (selectList) R.string.progress_syncing_first else R.string.progress_syncing)
+        pdialog = indeterminateProgressDialog(title = R.string.progress_syncing, message = R.string.progress_syncing)
         (pdialog as ProgressDialog).setCanceledOnTouchOutside(false)
         (pdialog as ProgressDialog).setCancelable(false)
         doAsync {
@@ -622,27 +627,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 return@doAsync
             }
             try {
-                if (selectList) {
-                    sm.syncMinimalEventSet { current_action ->
-                        runOnUiThread {
-                            if (isDestroyed) {
-                                return@runOnUiThread
-                            }
-                            reloadSyncStatus()
-                            syncMessage = current_action
-                            (pdialog as ProgressDialog).setMessage(current_action)
+                sm.sync(true) { current_action ->
+                    runOnUiThread {
+                        if (isDestroyed) {
+                            return@runOnUiThread
                         }
-                    }
-                } else {
-                    sm.sync(true) { current_action ->
-                        runOnUiThread {
-                            if (isDestroyed) {
-                                return@runOnUiThread
-                            }
-                            reloadSyncStatus()
-                            syncMessage = current_action
-                            (pdialog as ProgressDialog).setMessage(current_action)
-                        }
+                        reloadSyncStatus()
+                        syncMessage = current_action
+                        (pdialog as ProgressDialog).setMessage(current_action)
                     }
                 }
                 runOnUiThread {
@@ -650,9 +642,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         return@runOnUiThread
                     }
                     reload()
-                    if (selectList) {
-                        selectCheckInList()
-                    }
                     (pdialog as ProgressDialog).dismiss()
                     if (conf.lastFailedSync > 0) {
                         alert(Appcompat, conf.lastFailedSyncMsg).show()
@@ -664,12 +653,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         return@runOnUiThread
                     }
                     (pdialog as ProgressDialog).dismiss()
-                    conf.setEventSlug(e.eventSlug)
-                    conf.subeventId = e.subeventId
-                    conf.eventName = e.eventName
-                    conf.checkinListId = e.checkinlistId
+                    conf.eventSelection = listOf(EventSelection(
+                            eventSlug = e.eventSlug,
+                            eventName = e.eventName,
+                            subEventId = e.subeventId,
+                            checkInList = e.checkinlistId,
+                            dateFrom = null,
+                            dateTo = null
+                    ))
                     setupApi()
-                    syncNow(!(e.checkinlistId > 0))
+                    syncNow()
                     reload()
                 }
             } catch (e: Exception) {
@@ -870,7 +863,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (conf.covidAutoCheckin && answers == null) {
             val questions = (application as PretixScan).data.select(Question::class.java)
-                    .where(Question.EVENT_SLUG.eq(conf.getEventSlug()))
+                    .where(Question.EVENT_SLUG.`in`(conf.synchronizedEvents))  // todo: check if this is ok
                     .get()
 
             for (q in questions) {
@@ -897,7 +890,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
             try {
-                checkResult = provider.check(mapOf(conf.getEventSlug()!! to conf.checkinListId), result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                checkResult = provider.check(conf.eventSelectionToMap(), result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                     "exit" -> TicketCheckProvider.CheckInType.EXIT
                     else -> TicketCheckProvider.CheckInType.ENTRY
                 })
@@ -951,7 +944,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
 
         val settings = (application as PretixScan).data.select(Settings::class.java)
-                .where(Settings.SLUG.eq(conf.getEventSlug()))
+                .where(Settings.SLUG.eq(res.eventSlug))
                 .get()
                 .firstOrNull()
 
@@ -960,7 +953,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 settings.covid_certificates_allow_vaccinated,
                 settings.covid_certificates_allow_vaccinated_min,
                 settings.covid_certificates_allow_vaccinated_max,
-                settings.covid_certificates_allow_vaccinated_products?.split(",")?.toSet() ?: SAMPLE_SETTINGS.allow_vaccinated_products,
+                settings.covid_certificates_allow_vaccinated_products?.split(",")?.toSet()
+                        ?: SAMPLE_SETTINGS.allow_vaccinated_products,
                 settings.covid_certificates_record_proof_vaccinated,
                 settings.covid_certificates_allow_cured,
                 settings.covid_certificates_allow_cured_min,
@@ -1125,12 +1119,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (result.scanType != TicketCheckProvider.CheckInType.EXIT) {
             if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-                printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.getEventSlug()!!, null)
+                printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
             }
             if (result.position != null && conf.printBadges) {
-                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, conf.getEventSlug()!!) != null)
+                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
                 ibPrint.setOnClickListener {
-                    printBadge(this@MainActivity, application as PretixScan, result.position!!, conf.getEventSlug()!!, null)
+                    printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
                 }
             } else {
                 view_data.show_print.set(false)
@@ -1205,13 +1199,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (requestCode == REQ_EVENT) {
             if (resultCode == RESULT_OK) {
                 setupApi()
-                syncNow(true)
-                reload()
-            }
-        } else if (requestCode == REQ_CHECKINLIST) {
-            if (resultCode == RESULT_OK) {
-                reload()
                 scheduleSync()
+                reload()
             }
         } else if (dialog?.handleActivityResult(requestCode, resultCode, data) == true) {
             return
