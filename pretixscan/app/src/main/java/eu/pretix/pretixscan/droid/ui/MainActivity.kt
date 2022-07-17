@@ -111,6 +111,7 @@ class ViewDataHolder(private val ctx: Context) {
     val search_state = ObservableField<ResultState>()
     val result_text = ObservableField<String>()
     val show_print = ObservableField<Boolean>()
+    val event_name = ObservableField<String>()
     val detail1 = ObservableField<String>()
     val detail2 = ObservableField<String>()
     val detail3 = ObservableField<String>()
@@ -756,6 +757,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_result.clearAnimation()
         view_data.result_state.set(LOADING)
         view_data.result_text.set(null)
+        view_data.event_name.set(null)
         view_data.detail1.set(null)
         view_data.detail2.set(null)
         view_data.detail3.set(null)
@@ -1113,6 +1115,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.detail5.set(result.reasonExplanation)
         } else {
             view_data.detail5.set(null)
+        }
+        if (result.eventSlug != null && conf.eventSelection.size > 1) {
+            val event = (application as PretixScan).data.select(Event::class.java)
+                    .where(Event.SLUG.eq(result.eventSlug))
+                    .get().firstOrNull()
+            view_data.event_name.set(event?.name)
         }
 
         view_data.attention.set(result.isRequireAttention)

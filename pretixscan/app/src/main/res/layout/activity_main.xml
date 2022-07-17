@@ -214,6 +214,23 @@
                                 android:minHeight="@dimen/card_result_min_height"
                                 android:paddingBottom="@dimen/card_result_padding_bottom">
 
+                                <TextView
+                                    android:id="@+id/textView1"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="left"
+                                    android:text="@{data.event_name}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/card_result_test_size_medium"
+                                    android:visibility="@{data.event_name != null ? View.VISIBLE : View.GONE}"
+                                    app:layout_constraintEnd_toStartOf="@+id/ibPrint"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
                                 <ImageButton
                                     android:id="@+id/ibPrint"
                                     android:layout_width="wrap_content"
@@ -235,7 +252,7 @@
                                     android:padding="@dimen/card_result_icon_padding"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent">
+                                    app:layout_constraintTop_toBottomOf="@id/textView1">
 
                                     <ImageView
                                         android:id="@+id/ivStatusIconSuccess"

@@ -85,10 +85,12 @@ class EventConfigActivity : AppCompatActivity() {
             }
             checkinListSelectLauncher.launch(i)
         } else {
-            if (conf.synchronizedEvents.isNotEmpty()) {
-                supportFinishAfterTransition()
-            } else {
-                startAddEvent()
+            if (!conf.multiEventMode) {
+                if (conf.synchronizedEvents.isNotEmpty()) {
+                    supportFinishAfterTransition()
+                } else {
+                    startAddEvent()
+                }
             }
         }
     }
