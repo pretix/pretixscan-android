@@ -68,11 +68,11 @@
         <activity
             android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/action_label_settings"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.EventConfigActivity"
             android:exported="false"
