@@ -75,6 +75,7 @@
             android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.EventConfigActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:label="@string/operation_select_events" />
         <activity
