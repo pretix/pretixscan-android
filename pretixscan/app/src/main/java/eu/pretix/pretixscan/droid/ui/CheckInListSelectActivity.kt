@@ -146,6 +146,11 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         }
         checkInListAdapter.submitList(listOfLists)
         checkinlists_list.adapter = checkInListAdapter
+        if (conf.multiEventMode || conf.knownPretixVersion < 40120001001) { // 4.12.0.dev1
+            cbMultievent.visibility = View.GONE
+        } else {
+            cbMultievent.visibility = View.VISIBLE
+        }
     }
 
     override fun onBackPressed() {
