@@ -27,6 +27,7 @@ import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.utils.Material3
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.noButton
@@ -88,7 +89,7 @@ class SettingsFragment : PreferenceFragment() {
             true
         }
         findPreference("full_delete")?.setOnPreferenceClickListener {
-            alert(Appcompat, R.string.full_delete_confirm) {
+            alert(Material3, R.string.full_delete_confirm) {
                 yesButton {
                     val conf = AppConfig(activity)
                     conf.resetDeviceConfig()
@@ -113,7 +114,7 @@ class SettingsFragment : PreferenceFragment() {
                 if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager)
                         && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
                         && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)) {
-                    alert(Appcompat, R.string.preference_badgeprint_install_pretixprint) {
+                    alert(Material3, R.string.preference_badgeprint_install_pretixprint) {
                         yesButton {
                             try {
                                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eu.pretix.pretixprint")))

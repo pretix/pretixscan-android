@@ -188,7 +188,8 @@
                         app:layout_constraintEnd_toStartOf="@id/fab_focus"
                         app:srcCompat="@drawable/ic_lightbulb_white_24dp" />
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
+                        style="?attr/materialCardViewElevatedStyle"
                         android:id="@+id/card_result"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -231,7 +232,8 @@
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
-                                <ImageButton
+                                <Button
+                                    style="@style/Widget.Material3.Button.IconButton"
                                     android:id="@+id/ibPrint"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -243,7 +245,7 @@
                                     app:layout_constraintHorizontal_bias="1.0"
                                     app:layout_constraintStart_toEndOf="@+id/frameLayout"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/ic_print_black_24dp" />
+                                    app:icon="@drawable/ic_print_black_24dp" />
 
                                 <FrameLayout
                                     android:id="@+id/frameLayout"
@@ -455,9 +457,10 @@
                                     app:layout_constraintTop_toTopOf="parent" />
                             </androidx.constraintlayout.widget.ConstraintLayout>
                         </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
+                        style="?attr/materialCardViewElevatedStyle"
                         android:id="@+id/card_search"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -521,7 +524,7 @@
                             </androidx.constraintlayout.widget.ConstraintLayout>
                         </FrameLayout>
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -18,6 +18,7 @@ import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
+import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
@@ -144,24 +145,24 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         try {
             val jd = JSONObject(res)
             if (jd.has("version")) {
-                alert(Appcompat, R.string.setup_error_legacy_qr_code).show()
+                alert(Material3, R.string.setup_error_legacy_qr_code).show()
                 return
             }
             if (!jd.has("handshake_version")) {
-                alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
+                alert(Material3, R.string.setup_error_invalid_qr_code).show()
                 return
             }
             if (jd.getInt("handshake_version") > 1) {
-                alert(Appcompat, R.string.setup_error_version_too_high).show()
+                alert(Material3, R.string.setup_error_version_too_high).show()
                 return
             }
             if (!jd.has("url") || !jd.has("token")) {
-                alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
+                alert(Material3, R.string.setup_error_invalid_qr_code).show()
                 return
             }
             initialize(jd.getString("url"), jd.getString("token"))
         } catch (e: JSONException) {
-            alert(Appcompat, R.string.setup_error_invalid_qr_code).show()
+            alert(Material3, R.string.setup_error_invalid_qr_code).show()
             return
         }
     }
@@ -215,7 +216,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, R.string.setup_error_request).show()
+                    alert(Material3, R.string.setup_error_request).show()
                 }
                 return@doAsync
             } catch (e: SSLException) {
@@ -225,7 +226,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, R.string.setup_error_ssl).show()
+                    alert(Material3, R.string.setup_error_ssl).show()
                 }
                 return@doAsync
             } catch (e: IOException) {
@@ -235,7 +236,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, R.string.setup_error_io).show()
+                    alert(Material3, R.string.setup_error_io).show()
                 }
                 return@doAsync
             } catch (e: SetupServerErrorException) {
@@ -244,7 +245,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, R.string.setup_error_server).show()
+                    alert(Material3, R.string.setup_error_server).show()
                 }
             } catch (e: SetupBadResponseException) {
                 e.printStackTrace()
@@ -253,7 +254,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, R.string.setup_error_response).show()
+                    alert(Material3, R.string.setup_error_response).show()
                 }
             } catch (e: SetupException) {
                 e.printStackTrace()
@@ -262,7 +263,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, e.message ?: "Unknown error").show()
+                    alert(Material3, e.message ?: "Unknown error").show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -272,7 +273,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Appcompat, e.message ?: "Unknown error").show()
+                    alert(Material3, e.message ?: "Unknown error").show()
                 }
             }
         }
@@ -289,7 +290,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_manual -> {
-                alert(Appcompat, "") {
+                alert(Material3, "") {
                     val view = layoutInflater.inflate(R.layout.dialog_setup_manual, null)
                     val inputUri = view.findViewById<EditText>(R.id.input_uri)
                     if (BuildConfig.APPLICATION_ID.contains("eu.pretix")) {
