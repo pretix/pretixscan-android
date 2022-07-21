@@ -865,8 +865,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (conf.covidAutoCheckin && answers == null) {
             val questions = (application as PretixScan).data.select(Question::class.java)
-                    .where(Question.EVENT_SLUG.`in`(conf.synchronizedEvents))  // todo: check if this is ok
+                    .where(Question.EVENT_SLUG.`in`(conf.synchronizedEvents))
                     .get()
+            // This gets a little too many answers but it does not seem to hurt
 
             for (q in questions) {
                 if (q.json.getString("identifier") == "pretix_covid_certificates_question") {
