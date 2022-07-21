@@ -29,7 +29,7 @@ class EventSelectionDiffCallback : DiffUtil.ItemCallback<EventSelection>() {
     }
 
     override fun areContentsTheSame(oldItem: EventSelection, newItem: EventSelection): Boolean {
-        return oldItem == newItem
+        return oldItem.eventSlug == newItem.eventSlug && oldItem.checkInList == newItem.checkInList && oldItem.subEventId == newItem.subEventId
     }
 }
 
@@ -43,12 +43,9 @@ internal class EventSelectionAdapter(private val store: BlockingEntityStore<Pers
         holder.binding.checkinListName = store.select(CheckInList.NAME).from(CheckInList::class.java).where(CheckInList.SERVER_ID.eq(event.checkInList)).get().firstOrNull()?.get(0)
                 ?: "list ${event.checkInList}"
         holder.binding.deleteButton.setOnClickListener {
-            val index = list?.indexOf(event)
             config.removeEvent(event.eventSlug)
             refresh()
-            if (index != null) {
-                notifyItemRemoved(index)
-            }
+            notifyDataSetChanged()
         }
     }
 
