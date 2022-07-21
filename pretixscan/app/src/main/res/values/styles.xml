@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/pretix_brand_light</item>
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>
@@ -8,7 +8,7 @@
         <item name="android:windowActionBarOverlay">true</item>
     </style>
 
-    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="AppTheme.Dialog" parent="Theme.Material3.Light.Dialog">
         <item name="colorPrimary">@color/pretix_brand_light</item>
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>
@@ -17,13 +17,13 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/pretix_brand_light</item>
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>
     </style>
 
-    <style name="AppTheme.Dialog.Animated" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Dialog.Animated" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/pretix_brand_light</item>
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>

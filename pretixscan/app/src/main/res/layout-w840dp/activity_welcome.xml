@@ -12,9 +12,9 @@
         android:id="@+id/activity_welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/pretix_brand_dark">
+        android:background="@color/pretix_brand_lightgrey">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="560dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="16dp"
@@ -83,6 +83,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/checkBox" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </ScrollView>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 </layout>

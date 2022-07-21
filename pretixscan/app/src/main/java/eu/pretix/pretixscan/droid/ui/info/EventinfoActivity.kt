@@ -47,7 +47,7 @@ class EventinfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_eventinfo)
 
         mListView = findViewById(R.id.eventinfo_list)
-        mAdapter = EventItemAdapter(baseContext)
+        mAdapter = EventItemAdapter(this)
         mListView.adapter = mAdapter
 
         mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
@@ -137,7 +137,7 @@ class EventinfoActivity : AppCompatActivity() {
         val mInflater: LayoutInflater
 
         init {
-            mInflater = LayoutInflater.from(ctx)
+            mInflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         }
 
         fun addItem(item: EventinfoListItem) {

@@ -70,6 +70,7 @@ import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
+import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_main_toolbar.*
@@ -622,7 +623,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         doAsync {
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
-                    alert(Appcompat, getString(R.string.error_sync_in_background)).show()
+                    alert(Material3, getString(R.string.error_sync_in_background)).show()
                     (pdialog as ProgressDialog).dismiss()
                 }
                 return@doAsync
@@ -645,7 +646,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     reload()
                     (pdialog as ProgressDialog).dismiss()
                     if (conf.lastFailedSync > 0) {
-                        alert(Appcompat, conf.lastFailedSyncMsg).show()
+                        alert(Material3, conf.lastFailedSyncMsg).show()
                     }
                 }
             } catch (e: SyncManager.EventSwitchRequested) {
@@ -676,7 +677,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         Sentry.captureException(e)
                     }
                     (pdialog as ProgressDialog).dismiss()
-                    alert(Appcompat, e.message
+                    alert(Material3, e.message
                             ?: getString(R.string.error_unknown_exception)).show()
                 }
             } finally {
