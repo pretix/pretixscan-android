@@ -142,7 +142,7 @@ class EventConfigActivity : AppCompatActivity() {
             startAddEvent()
         }
 
-        if (!conf.multiEventMode) {
+        if (!conf.multiEventMode || conf.eventSelection.isEmpty()) {
             startAddEvent()
         } else {
             eventSelectionAdapter.refresh()
@@ -169,7 +169,9 @@ class EventConfigActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_ok -> {
-                supportFinishAfterTransition()
+                if (conf.synchronizedEvents.isNotEmpty()) {
+                    supportFinishAfterTransition()
+                }
                 return true
             }
         }
