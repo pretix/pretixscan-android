@@ -98,7 +98,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         }
         refresh()
 
-        if (conf.multiEventMode || conf.knownPretixVersion < 40120001001) {  // 4.112.0.dev1
+        if (conf.multiEventMode || conf.knownPretixVersion < 40120001001) { // 4.12.0.dev1
             cbMultievent.visibility = View.GONE
         }
 
@@ -117,6 +117,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
             }
             if (!conf.multiEventMode && cbMultievent.isChecked) {
                 conf.multiEventMode = true
+                conf.autoSwitchRequested = false
             }
         }
 

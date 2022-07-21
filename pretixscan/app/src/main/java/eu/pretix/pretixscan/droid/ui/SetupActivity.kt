@@ -187,6 +187,10 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 conf!!.deviceKnownName = init.device_name
                 conf!!.deviceKnownGateName = init.gate_name ?: ""
                 conf!!.proxyMode = token.startsWith("proxy=")
+                if (conf!!.proxyMode) {
+                    conf!!.autoSwitchRequested = false
+                    conf!!.syncOrders = false
+                }
                 if (init.security_profile == "pretixscan_online_kiosk") {
                     conf!!.syncOrders = false
                     conf!!.searchDisabled = true

@@ -266,6 +266,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         return default_prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false);
     }
 
+    fun setAutoSwitchRequested(value: Boolean) {
+        return default_prefs.edit().putBoolean(PREFS_KEY_AUTO_SWITCH, value).apply()
+    }
+
     fun getPinLength(): Int {
         return default_prefs.getString("pref_pin", "")!!.length
     }
