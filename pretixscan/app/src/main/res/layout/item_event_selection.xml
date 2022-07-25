@@ -22,17 +22,19 @@
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@{eventSelection.eventName}"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintEnd_toStartOf="@+id/editButton"
             app:layout_constraintStart_toEndOf="@+id/ivIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Demo-Konferenz mit langem Namen, der sogar über ganze drei Zeilen reicht" />
@@ -43,11 +45,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@{BindingConversionsKt.formatDateTimeRange(eventSelection.dateFrom, eventSelection.dateTo)}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="?android:attr/textColorSecondary"
-            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintEnd_toStartOf="@+id/editButton"
             app:layout_constraintStart_toEndOf="@+id/ivIcon"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             tools:text="01.09.2019 – 03.02.2019" />
@@ -57,10 +59,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@{eventSelection.eventSlug}"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintEnd_toStartOf="@+id/editButton"
             app:layout_constraintStart_toStartOf="@+id/tvDate"
             app:layout_constraintTop_toBottomOf="@+id/tvDate"
             tools:text="democon" />
@@ -71,11 +73,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@{checkinListName}"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="?android:attr/textColorPrimary"
-            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintEnd_toStartOf="@+id/editButton"
             app:layout_constraintStart_toEndOf="@+id/ivListIcon"
             app:layout_constraintTop_toBottomOf="@+id/tvSlug"
             tools:text="democon" />
@@ -89,6 +91,19 @@
             app:layout_constraintTop_toBottomOf="@+id/tvSlug"
             app:srcCompat="@drawable/ic_check_circle_outline_24"
             app:tint="?android:attr/textColorSecondary" />
+
+        <Button
+            android:id="@+id/editButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:icon="@drawable/ic_edit_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/deleteButton"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <Button
             android:id="@+id/deleteButton"

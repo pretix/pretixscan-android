@@ -117,8 +117,13 @@ class AppConfig(ctx: Context) : ConfigStore {
 
     fun addOrReplaceEvent(event: EventSelection) {
         val s = eventSelection.toMutableList()
+        val idx = s.indexOfFirst { it.eventSlug == event.eventSlug }
         s.removeIf { it.eventSlug == event.eventSlug }
-        s.add(event)
+        if (idx >= 0) {
+            s.add(idx, event)
+        } else {
+            s.add(event)
+        }
         eventSelection = s
     }
 

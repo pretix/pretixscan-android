@@ -33,7 +33,7 @@ class EventSelectionDiffCallback : DiffUtil.ItemCallback<EventSelection>() {
     }
 }
 
-internal class EventSelectionAdapter(private val store: BlockingEntityStore<Persistable>, private val config: AppConfig) :
+internal class EventSelectionAdapter(private val store: BlockingEntityStore<Persistable>, private val config: AppConfig, private val activity: EventConfigActivity) :
         ListAdapter<EventSelection, BindingHolder<ItemEventSelectionBinding>>(EventSelectionDiffCallback()) {
     var list: List<EventSelection>? = null
 
@@ -46,6 +46,9 @@ internal class EventSelectionAdapter(private val store: BlockingEntityStore<Pers
             config.removeEvent(event.eventSlug)
             refresh()
             notifyDataSetChanged()
+        }
+        holder.binding.editButton.setOnClickListener {
+            activity.changeListForEvent(event)
         }
     }
 
@@ -122,11 +125,26 @@ class EventConfigActivity : AppCompatActivity() {
         }
     }
 
+    fun changeListForEvent(event: EventSelection) {
+        val intent = Intent()
+        intent.putExtra(EventSelectActivity.EVENT_SLUG, event.eventSlug)
+        intent.putExtra(EventSelectActivity.EVENT_NAME, event.eventName)
+        intent.putExtra(EventSelectActivity.EVENT_DATE_TO, event.dateTo)
+        intent.putExtra(EventSelectActivity.EVENT_DATE_FROM, event.dateFrom)
+        intent.putExtra(EventSelectActivity.SUBEVENT_ID, event.subEventId)
+        eventSelectResult = ActivityResult(Activity.RESULT_OK, intent)
+        val i = intentFor<CheckInListSelectActivity>()
+        i.putExtra(CheckInListSelectActivity.EVENT_SLUG, event.eventSlug)
+        i.putExtra(CheckInListSelectActivity.SUBEVENT_ID, event.subEventId)
+        i.putExtra(CheckInListSelectActivity.LIST_ID, event.checkInList)
+        checkinListSelectLauncher.launch(i)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_config)
         conf = AppConfig(this)
-        eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).data, conf)
+        eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).data, conf, this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
             finish()
