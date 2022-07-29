@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -170,8 +171,8 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     private fun initialize(url: String, token: String) {
         if (ongoing_setup) {
-            Log.w(LOG_TAG, "Ongoing setup. Discarding initialize with {url} / {token}.")
-            return;
+            Log.w(LOG_TAG, "Ongoing setup. Discarding initialize with ${url} / ${token}.")
+            return
         }
         ongoing_setup = true
 
