@@ -5,12 +5,40 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.preference.PreferenceManager
-
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.SingletonSupport
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import eu.pretix.pretixscan.utils.KeystoreHelper
+import org.joda.time.DateTime
 import org.json.JSONObject
-import java.lang.RuntimeException
+
+data class EventSelection(
+        val eventSlug: String,
+        val eventName: String,
+        val subEventId: Long?,
+        val checkInList: Long,
+        val dateFrom: DateTime?,
+        val dateTo: DateTime?,
+)
+
+val om = ObjectMapper().apply {
+    registerModule(JodaModule())
+    registerModule(KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.SingletonSupport, true)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build())
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+}
 
 
 class AppConfig(ctx: Context) : ConfigStore {
@@ -31,7 +59,7 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
-        val ckey = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        val ckey = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             KeystoreHelper.secureValue(key, true)
         else key
         prefs.edit()
@@ -59,33 +87,60 @@ class AppConfig(ctx: Context) : ConfigStore {
         return prefs.getInt(PREFS_KEY_API_VERSION, PretixApi.SUPPORTED_API_VERSION)
     }
 
-    override fun getEventSlug(): String? = prefs.getString(PREFS_KEY_EVENT_SLUG, null)
-    fun setEventSlug(value: String?) = prefs.edit().putString(PREFS_KEY_EVENT_SLUG, value).apply()
-
     override fun getSyncCycleId(): String? = prefs.getString(PREFS_KEY_SYNC_CYCLE_ID, "0")
-    fun setSyncCycleId(value: String?) = prefs.edit().putString(PREFS_KEY_SYNC_CYCLE_ID, value).apply()
 
-    var subeventId: Long?
-        get() = if (prefs.contains(PREFS_KEY_SUBEVENT_ID)) {
-            prefs.getLong(PREFS_KEY_SUBEVENT_ID, -1)
-        } else null
-        set(value) = if (value != null) {
-            prefs.edit().putLong(PREFS_KEY_SUBEVENT_ID, value).apply()
-        } else {
-            prefs.edit().remove(PREFS_KEY_SUBEVENT_ID).apply()
+    var eventSelection: List<EventSelection>
+        get() {
+            val s = prefs.getString(PREFS_KEY_EVENT_SELECTION, null)
+            if (s == null) {
+                if (prefs.contains(LEGACY_PREFS_KEY_EVENT_SLUG) && prefs.getLong(LEGACY_PREFS_KEY_CHECKINLIST_ID, 0L) > 0) {
+                    return listOf(EventSelection(
+                            prefs.getString(LEGACY_PREFS_KEY_EVENT_SLUG, "")!!,
+                            prefs.getString(LEGACY_PREFS_KEY_EVENT_NAME, "")!!,
+                            prefs.getLong(LEGACY_PREFS_KEY_SUBEVENT_ID, -1),
+                            prefs.getLong(LEGACY_PREFS_KEY_CHECKINLIST_ID, -1),
+                            null, null
+                    ))
+                } else {
+                    return emptyList()
+                }
+            }
+            return om.readValue(s, object : TypeReference<List<EventSelection>>() {})
+        }
+        set (value) {
+            prefs.edit().putString(PREFS_KEY_EVENT_SELECTION, om.writeValueAsString(value)).apply()
         }
 
-    override fun getSubEventId(): Long? {
-        return subeventId
+    fun eventSelectionToMap(): Map<String, Long> {
+        return eventSelection.map { it.eventSlug to it.checkInList }.toMap()
     }
 
-    var eventName: String?
-        get() = prefs.getString(PREFS_KEY_EVENT_NAME, null)
-        set(value) = prefs.edit().putString(PREFS_KEY_EVENT_NAME, value).apply()
+    fun addOrReplaceEvent(event: EventSelection) {
+        val s = eventSelection.toMutableList()
+        s.removeIf { it.eventSlug == event.eventSlug }
+        s.add(event)
+        eventSelection = s
+    }
 
-    var checkinListId: Long
-        get() = prefs.getLong(PREFS_KEY_CHECKINLIST_ID, 0L)
-        set(value) = prefs.edit().putLong(PREFS_KEY_CHECKINLIST_ID, value).apply()
+    fun removeEvent(eventSlug: String) {
+        val s = eventSelection.toMutableList()
+        s.removeIf { it.eventSlug == eventSlug }
+        eventSelection = s
+    }
+
+    override fun getSynchronizedEvents(): List<String> {
+        return eventSelection.map { it.eventSlug }
+    }
+
+    override fun getSelectedSubeventForEvent(event: String): Long? {
+        return eventSelection.find { it.eventSlug == event }?.subEventId
+    }
+
+    override fun getSelectedCheckinListForEvent(event: String): Long? {
+        return eventSelection.find { it.eventSlug == event }?.checkInList
+    }
+
+    fun setSyncCycleId(value: String?) = prefs.edit().putString(PREFS_KEY_SYNC_CYCLE_ID, value).apply()
 
     override fun getOrganizerSlug(): String {
         return prefs.getString(PREFS_KEY_ORGANIZER_SLUG, "") ?: ""
@@ -96,8 +151,8 @@ class AppConfig(ctx: Context) : ConfigStore {
     }
 
     override fun getApiKey(): String {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, "") ?: "", false)!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return KeystoreHelper.secureValue(prefs.getString(PREFS_KEY_API_KEY, "") ?: "", false)
         } else {
             return prefs.getString(PREFS_KEY_API_KEY, "") ?: ""
         }
@@ -163,6 +218,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_SCAN_AUTOFOCUS, true)
         set(value) = prefs.edit().putBoolean(PREFS_KEY_SCAN_AUTOFOCUS, value).apply()
 
+    var multiEventMode: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_MULTI_EVENT_MODE, false)
+        set(value) = prefs.edit().putBoolean(PREFS_KEY_MULTI_EVENT_MODE, value).apply()
+
     override fun getDeviceKnownName(): String {
         return prefs.getString(PREFS_KEY_DEVICE_KNOWN_NAME, "")!!
     }
@@ -205,6 +264,10 @@ class AppConfig(ctx: Context) : ConfigStore {
 
     override fun getAutoSwitchRequested(): Boolean {
         return default_prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false);
+    }
+
+    fun setAutoSwitchRequested(value: Boolean) {
+        return default_prefs.edit().putBoolean(PREFS_KEY_AUTO_SWITCH, value).apply()
     }
 
     fun getPinLength(): Int {
@@ -308,11 +371,12 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
         val PREFS_KEY_API_KEY = "pretix_api_key"
-        val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+        val LEGACY_PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+        val LEGACY_PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
+        val LEGACY_PREFS_KEY_CHECKINLIST_ID = "checkin_list_id"
+        val LEGACY_PREFS_KEY_EVENT_NAME = "event_name"
+        val PREFS_KEY_EVENT_SELECTION = "event_selection"
         val PREFS_KEY_SYNC_CYCLE_ID = "pretix_sync_cycle_id"
-        val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
-        val PREFS_KEY_EVENT_NAME = "event_name"
-        val PREFS_KEY_CHECKINLIST_ID = "checkin_list_id"
         val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
         val PREFS_KEY_API_VERSION = "pretix_api_version"
         val PREFS_KEY_LAST_SYNC = "last_sync"
@@ -346,5 +410,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_COVID_AUTOCHECKIN = "pref_covid_autocheckin"
+        val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
     }
 }

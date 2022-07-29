@@ -60,6 +60,9 @@ class SettingsFragment : PreferenceFragment() {
         }
         val conf = AppConfig(activity)
         findPreference("pref_scan_offline")?.isEnabled = !conf.proxyMode
+        findPreference("pref_auto_offline")?.isEnabled = !conf.proxyMode
+        findPreference("pref_auto_switch")?.isEnabled = conf.eventSelection.size == 1
+        findPreference("pref_sync_orders")?.isEnabled = !conf.proxyMode
         findPreference("version")?.summary = BuildConfig.VERSION_NAME
         findPreference("full_resync")?.setOnPreferenceClickListener {
             // First, delete ResourceSyncStatus. This way the system forgets which data was already

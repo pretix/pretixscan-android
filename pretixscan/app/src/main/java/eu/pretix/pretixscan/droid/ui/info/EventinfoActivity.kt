@@ -30,17 +30,16 @@ import eu.pretix.pretixscan.droid.R
  * @author jfwiebe
  */
 class EventinfoActivity : AppCompatActivity() {
-    private var config: AppConfig? = null
-
+    private lateinit var config: AppConfig
     private lateinit var mListView: ListView
     private lateinit var mAdapter: EventItemAdapter
     private lateinit var checkProvider: TicketCheckProvider
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
     companion object {
-        public val TYPE_EVENTCARD = 0
-        public val TYPE_EVENTITEMCARD = 1
-        public val MAX_TYPES = 2
+        val TYPE_EVENTCARD = 0
+        val TYPE_EVENTITEMCARD = 1
+        val MAX_TYPES = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,23 +50,23 @@ class EventinfoActivity : AppCompatActivity() {
         mAdapter = EventItemAdapter(baseContext)
         mListView.adapter = mAdapter
 
-        this.mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
-        this.mSwipeRefreshLayout.setOnRefreshListener { StatusTask().execute() }
+        mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        mSwipeRefreshLayout.setOnRefreshListener { StatusTask().execute() }
 
-        this.config = AppConfig(this)
+        config = AppConfig(this)
 
-        if (this.config!!.requiresPin("statistics") && (!intent.hasExtra("pin") || !this.config!!.verifyPin(intent.getStringExtra("pin")!!))) {
+        if (config.requiresPin("statistics") && (!intent.hasExtra("pin") || !this.config.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
-            finish();
+            finish()
             return
         }
 
-        this.checkProvider = (application as PretixScan).getCheckProvider(config!!)
+        this.checkProvider = (application as PretixScan).getCheckProvider(config)
 
         StatusTask().execute()
     }
 
-    inner class StatusTask : AsyncTask<String, Int, TicketCheckProvider.StatusResult>() {
+    inner class StatusTask : AsyncTask<String, Int, List<TicketCheckProvider.StatusResult>>() {
 
         internal var e: Exception? = null
 
@@ -77,9 +76,14 @@ class EventinfoActivity : AppCompatActivity() {
          * @param params are ignored
          * @return the associated json object recieved from the pretix-endpoint or null if the request was not successful
          */
-        override fun doInBackground(vararg params: String): TicketCheckProvider.StatusResult? {
+        override fun doInBackground(vararg params: String): List<TicketCheckProvider.StatusResult>? {
             try {
-                return this@EventinfoActivity.checkProvider.status()
+                val res = mutableListOf<TicketCheckProvider.StatusResult>()
+                for (e in config.synchronizedEvents) {
+                    res.add(checkProvider.status(e, config.getSelectedCheckinListForEvent(e) ?: 0)
+                            ?: return null)
+                }
+                return res
             } catch (e: CheckException) {
                 e.printStackTrace()
                 this.e = e
@@ -93,9 +97,9 @@ class EventinfoActivity : AppCompatActivity() {
          *
          * @param result the answer of the pretix status endpoint
          */
-        override fun onPostExecute(result: TicketCheckProvider.StatusResult?) {
+        override fun onPostExecute(results: List<TicketCheckProvider.StatusResult>?) {
             this@EventinfoActivity.mSwipeRefreshLayout.isRefreshing = false
-            if (this.e != null || result == null) {
+            if (this.e != null || results == null) {
                 Toast.makeText(this@EventinfoActivity, R.string.error_unknown_exception, Toast.LENGTH_LONG).show()
                 finish()
                 return
@@ -105,13 +109,15 @@ class EventinfoActivity : AppCompatActivity() {
             val eia = this@EventinfoActivity.mAdapter
             eia.clear()
             try {
-                val ici = EventCardItem(result)
-                eia.addItem(ici)
+                for (result in results) {
+                    val ici = EventCardItem(result)
+                    eia.addItem(ici)
 
-                val items = result.items
-                for (item in items!!) {
-                    val eici = EventItemCardItem(item)
-                    eia.addItem(eici)
+                    val items = result.items
+                    for (item in items!!) {
+                        val eici = EventItemCardItem(item)
+                        eia.addItem(eici)
+                    }
                 }
             } catch (e: JSONException) {
                 Toast.makeText(this@EventinfoActivity, R.string.error_unknown_exception, Toast.LENGTH_LONG).show()

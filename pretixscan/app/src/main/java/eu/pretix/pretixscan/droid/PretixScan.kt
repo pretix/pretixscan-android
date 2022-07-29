@@ -40,9 +40,9 @@ class PretixScan : MultiDexApplication() {
                     val source = DatabaseSource(this, Models.DEFAULT, Migrations.CURRENT_VERSION)
                     source.setLoggingEnabled(BuildConfig.DEBUG)
                     val configuration = source.configuration
-                    dataStore = EntityDataStore<Persistable>(configuration)
+                    dataStore = EntityDataStore(configuration)
                 } else {
-                    val dbPass = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
+                    val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
                     else KEYSTORE_PASSWORD
 
                     var source = SqlCipherDatabaseSource(this,
@@ -60,7 +60,7 @@ class PretixScan : MultiDexApplication() {
                     }
 
                     val configuration = source.configuration
-                    dataStore = EntityDataStore<Persistable>(configuration)
+                    dataStore = EntityDataStore(configuration)
                 }
             }
             return dataStore!!
@@ -88,11 +88,11 @@ class PretixScan : MultiDexApplication() {
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
         if (conf.proxyMode) {
-            return ProxyCheckProvider(conf, AndroidHttpClientFactory(this), data, conf.checkinListId)
+            return ProxyCheckProvider(conf, AndroidHttpClientFactory(this))
         } else if (conf.offlineMode) {
-            return AsyncCheckProvider(conf, conf.eventSlug!!, data, conf.checkinListId)
+            return AsyncCheckProvider(conf, data)
         } else {
-            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, fileStorage, conf.checkinListId)
+            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, fileStorage)
         }
     }
 

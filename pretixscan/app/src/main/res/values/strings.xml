@@ -9,10 +9,12 @@
     <string name="progress_registering">Registering device with server…</string>
     <string name="error_unknown_exception">An unknown error has occurred</string>
     <string name="error_not_synchronized">Your device has not been properly synchronized with the server</string>
+    <string name="action_label_ok">OK</string>
     <string name="action_label_settings">Settings</string>
     <string name="action_label_statistics">Statistics</string>
     <string name="action_label_scantype_entry">Switch to entry scanning</string>
     <string name="action_label_scantype_exit">Switch to exit scanning</string>
+    <string name="action_multievent_enable">Expert mode (select multiple events)</string>
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
     <string name="scantype_entry_kiosk">Scan your ticket to check in</string>
@@ -28,6 +30,8 @@
     <string name="action_search">Search</string>
     <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
+    <string name="operation_select_events">Select Events</string>
+    <string name="events_selected">%s events selected</string>
     <string name="operation_select_checkinlist">Select Check-in list</string>
     <string name="settings_label_auto_sync">Automatic Synchronization</string>
     <string name="settings_label_orders_sync">Download orders</string>
