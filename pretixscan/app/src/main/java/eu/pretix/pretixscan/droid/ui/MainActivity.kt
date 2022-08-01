@@ -525,7 +525,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val intent = intentFor<EventConfigActivity>()
             startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
         } else {
-            startActivityForResult(intentFor<EventConfigActivity>(), REQ_EVENT)
+            startWithPIN(intentFor<EventConfigActivity>(), "switch_event", REQ_EVENT, null)
         }
     }
 

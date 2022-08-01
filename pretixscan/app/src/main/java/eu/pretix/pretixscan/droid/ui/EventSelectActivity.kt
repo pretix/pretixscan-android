@@ -61,11 +61,6 @@ class EventSelectActivity : MorphingDialogActivity() {
         setContentView(R.layout.activity_event_select)
 
         conf = AppConfig(this)
-        if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
-            // Protect against external calls
-            finish()
-            return
-        }
 
         eventsLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         events_list.apply {
@@ -239,7 +234,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     }
 
     override fun onBackPressed() {
-        if (!conf.synchronizedEvents.isEmpty()) {
+        if (conf.synchronizedEvents.isNotEmpty()) {
             super.onBackPressed()
         }
     }

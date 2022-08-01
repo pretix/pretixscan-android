@@ -12,9 +12,10 @@
         android:id="@+id/activity_welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/pretix_brand_lightgrey">
+        android:background="@color/pretix_brand_background">
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="560dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="16dp"
