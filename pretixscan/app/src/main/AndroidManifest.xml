@@ -61,7 +61,8 @@
         </activity>
         <activity
             android:name=".ui.WelcomeActivity"
-            android:label="@string/headline_setup" />
+            android:label="@string/headline_setup"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.SetupActivity"
             android:label="@string/headline_setup" />

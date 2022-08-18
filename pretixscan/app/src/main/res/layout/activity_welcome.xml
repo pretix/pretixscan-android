@@ -10,7 +10,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/pretix_brand_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_welcome"
