@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -11,7 +10,6 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:background="@color/pretix_brand_dark"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,7 +27,6 @@
                 android:gravity="center"
                 android:text="@string/headline_setup"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +40,6 @@
                 android:layout_marginEnd="16dp"
                 android:text="@string/welcome_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toStartOf="parent"
@@ -56,10 +52,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/white"
-                android:buttonTint="@color/white"
-                android:text="@string/welcome_disclaimer1"
                 android:checked="@={disclaimer1}"
+                android:text="@string/welcome_disclaimer1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView22" />
@@ -70,9 +64,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/cont"
-                android:enabled="@{disclaimer1}"
                 android:backgroundTint="@color/pretix_brand_green"
+                android:enabled="@{disclaimer1}"
+                android:text="@string/cont"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/checkBox" />
         </androidx.constraintlayout.widget.ConstraintLayout>
