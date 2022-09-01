@@ -125,7 +125,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
                     android:keepScreenOn="true">
 
                     <ImageView
@@ -137,7 +137,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_entry_gray_24dp" />
-                    />
 
                     <ImageView
                         android:layout_width="48dp"
@@ -148,7 +147,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_exit_orange_24dp" />
-                    />
 
                     <TextView
                         android:id="@+id/textView_status"
