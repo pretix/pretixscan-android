@@ -151,4 +151,12 @@
     <string name="settings_label_covid_check">COVID-19-controle</string>
     <string name="pref_covid_autocheckin">Markeer ticket automatisch als gecontroleerd</string>
     <string name="pref_covid_autocheckin_summary" formatted="false">Als deze optie is ingeschakeld en de server om controle van COVID-19-toegangsbewijzen vraagt zullen tickets automatisch en zonder verdere invoer als gecontroleerd gemarkeerd worden. In 99% van de gevallen moet deze optie niet worden gebruikt!</string>
+    <string name="error_no_available_events">Er kon geen huidig of toekomstig evenement gevonden worden. Gelieve de data en toegangsrechten van uw events te controlleren.</string>
+    <string name="event_select_calendar">Toon kalender</string>
+    <string name="action_label_ok">OK</string>
+    <string name="action_multievent_enable">Expert modus (selecteer meerdere events)</string>
+    <string name="operation_select_events">Selecteer events</string>
+    <string name="events_selected">%s events geselecteerd</string>
+    <string name="scan_result_ambiguous">Ticket-code op de lijst is niet eenduidig</string>
+    <string name="settings_label_datawedge">DataWedge-profiel installeren</string>
 </resources>
