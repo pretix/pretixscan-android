@@ -1,11 +1,9 @@
 package eu.pretix.pretixscan.droid.ui
 
 
-import android.app.AlarmManager
-import android.app.Fragment
-import android.app.FragmentTransaction
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -91,18 +89,20 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("full_delete")?.setOnPreferenceClickListener {
             alert(Material3, R.string.full_delete_confirm) {
                 yesButton {
-                    val conf = AppConfig(activity)
-                    conf.resetDeviceConfig()
-
-                    activity.deleteDatabase(Models.DEFAULT.name)
-
-                    val mStartActivity = Intent(activity, WelcomeActivity::class.java)
-                    val mPendingIntentId = 123456
-                    val mPendingIntent = PendingIntent.getActivity(activity, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
-                    val mgr = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent)
-                    System.exit(0)
-
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        val am = activity?.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+                        am.clearApplicationUserData()
+                    } else {
+                        activity.deleteDatabase(Models.DEFAULT.name)
+                        val conf = AppConfig(activity)
+                        conf.resetDeviceConfig()
+                        val mStartActivity = Intent(activity, WelcomeActivity::class.java)
+                        val mPendingIntentId = 123456
+                        val mPendingIntent = PendingIntent.getActivity(activity, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
+                        val mgr = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent)
+                        System.exit(0)
+                    }
                 }
                 noButton { }
             }.show()
