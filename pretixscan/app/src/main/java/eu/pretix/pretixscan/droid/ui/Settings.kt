@@ -91,18 +91,7 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("full_delete")?.setOnPreferenceClickListener {
             alert(Material3, R.string.full_delete_confirm) {
                 yesButton {
-                    val conf = AppConfig(activity)
-                    conf.resetDeviceConfig()
-
-                    activity.deleteDatabase(Models.DEFAULT.name)
-
-                    val mStartActivity = Intent(activity, WelcomeActivity::class.java)
-                    val mPendingIntentId = 123456
-                    val mPendingIntent = PendingIntent.getActivity(activity, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
-                    val mgr = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent)
-                    System.exit(0)
-
+                    wipeApp(activity!!)
                 }
                 noButton { }
             }.show()

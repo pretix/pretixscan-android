@@ -8,6 +8,7 @@
     <string name="progress_syncing">Synchronisiere mit dem Server…</string>
     <string name="progress_processing">Aktion wird verarbeitet…</string>
     <string name="progress_registering">Gerät beim Server registrieren…</string>
+    <string name="error_access_revoked">Der Gerätezugriff wurde entfernt, Sie müssen das Gerät am Server neu registrieren.</string>
     <string name="error_unknown_exception">Ein unbekannter Fehler ist aufgetreten</string>
     <string name="error_not_synchronized">Ihr Gerät ist nicht korrekt mit dem Server synchronisiert</string>
     <string name="action_label_settings">Einstellungen</string>

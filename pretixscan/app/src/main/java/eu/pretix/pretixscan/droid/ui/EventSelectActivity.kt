@@ -16,6 +16,7 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
+import eu.pretix.libpretixsync.api.DeviceAccessRevokedException
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.setup.RemoteEvent
@@ -26,11 +27,11 @@ import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarDayBinding
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarHeaderBinding
+import eu.pretix.pretixscan.utils.Material3
 import eu.pretix.pretixscan.utils.daysOfWeekFromLocale
 import kotlinx.android.synthetic.main.activity_event_select.*
 import kotlinx.android.synthetic.main.include_event_select_list.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDateTime
 import java.time.LocalDate
@@ -200,6 +201,15 @@ class EventSelectActivity : MorphingDialogActivity() {
             try {
                 val selectedAsJodaTime = LocalDateTime(selectedDate.atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()).toDateTime(DateTimeZone.getDefault())
                 events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null)
+            } catch (e: DeviceAccessRevokedException) {
+                runOnUiThread {
+                    alert(Material3, R.string.error_access_revoked) {
+                        okButton {
+                            wipeApp(this@EventSelectActivity)
+                        }
+                    }.show()
+                }
+                return@doAsync
             } catch (e: Exception) {
                 swipe_container.isRefreshing = false
                 uiThread {

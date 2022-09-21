@@ -7,6 +7,7 @@
     <string name="progress_syncing">Synchronizing with server…</string>
     <string name="progress_processing">Processing…</string>
     <string name="progress_registering">Registering device with server…</string>
+    <string name="error_access_revoked">Device access has been revoked, you need to register the device with the server again.</string>
     <string name="error_unknown_exception">An unknown error has occurred</string>
     <string name="error_not_synchronized">Your device has not been properly synchronized with the server</string>
     <string name="action_label_ok">OK</string>
