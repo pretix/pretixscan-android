@@ -62,15 +62,13 @@ android {
     }
 
     buildTypes {
-		def sentry_dsn = "null"
+		def sentry_dsn = ""
 		try {
 			Properties properties = new Properties()
 			properties.load(project.rootProject.file('local.properties').newDataInputStream())
             sentry_dsn = properties.getProperty('sentry.dsn')
             if (sentry_dsn == null) {
-                sentry_dsn = "null"
-            } else {
-                sentry_dsn = "\"" + sentry_dsn + "\""
+                sentry_dsn = ""
             }
 		} catch (ignore) {
 		}
@@ -78,13 +76,14 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "SENTRY_DSN", sentry_dsn
+            multiDexKeepProguard file('multidex-config.pro')
+            manifestPlaceholders["SENTRY_DSN"] = sentry_dsn
         }
         debug {
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
-            buildConfigField "String", "SENTRY_DSN", "null"
+            manifestPlaceholders["SENTRY_DSN"] = sentry_dsn
         }
     }
 
@@ -136,7 +135,7 @@ dependencies {
     implementation 'com.github.kizitonwose:CalendarView:1.0.4'
 
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation 'io.sentry:sentry-android:4.3.0'
+    implementation 'io.sentry:sentry-android:6.3.0'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation 'joda-time:joda-time:2.10.10'
     implementation 'io.requery:requery:1.6.0'
