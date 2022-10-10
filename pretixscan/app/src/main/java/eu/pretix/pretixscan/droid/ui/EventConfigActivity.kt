@@ -78,7 +78,7 @@ class EventConfigActivity : AppCompatActivity() {
             eventSelectResult = result
             val i = intentFor<CheckInListSelectActivity>()
             i.putExtra(CheckInListSelectActivity.EVENT_SLUG, result.data!!.getStringExtra(EventSelectActivity.EVENT_SLUG))
-            i.putExtra(CheckInListSelectActivity.SUBEVENT_ID, result.data!!.getStringExtra(EventSelectActivity.SUBEVENT_ID))
+            i.putExtra(CheckInListSelectActivity.SUBEVENT_ID, result.data!!.getLongExtra(EventSelectActivity.SUBEVENT_ID, 0L))
             val cs = conf.eventSelection
             if (!conf.multiEventMode && cs.size == 1) {
                 i.putExtra(CheckInListSelectActivity.LIST_ID, cs.first().checkInList)
