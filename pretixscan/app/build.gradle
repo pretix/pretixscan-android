@@ -28,9 +28,6 @@ android {
     dataBinding {
         enabled = true
     }
-	dexOptions {
-		javaMaxHeapSize "3g"
-	}
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -173,7 +170,4 @@ dependencies {
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.apg-mobile:android-round-textview:v1.0.0'
-}
-kapt {
-    generateStubs = true
 }

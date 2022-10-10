@@ -35,9 +35,7 @@
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"
             android:resource="@xml/app_restrictions" />
-        <meta-data
-            android:name="io.sentry.auto-init"
-            android:value="false" />
+        <meta-data android:name="io.sentry.dsn" android:value="${SENTRY_DSN}" />
 
         <activity
             android:name=".ui.MainActivity"
@@ -63,18 +61,22 @@
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="@string/headline_setup"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="false" />
         <activity
             android:name=".ui.SetupActivity"
-            android:label="@string/headline_setup" />
+            android:label="@string/headline_setup"
+            android:exported="false" />
         <activity
             android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/action_label_settings"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.EventConfigActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -83,11 +85,13 @@
         <activity
             android:name=".ui.EventSelectActivity"
             android:label="@string/operation_select_event"
-            android:theme="@style/AppTheme.Dialog.Animated" />
+            android:theme="@style/AppTheme.Dialog.Animated"
+            android:exported="false" />
         <activity
             android:name=".ui.CheckInListSelectActivity"
             android:label="@string/operation_select_event"
-            android:theme="@style/AppTheme.Dialog.Animated" />
+            android:theme="@style/AppTheme.Dialog.Animated"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
