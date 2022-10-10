@@ -9,6 +9,7 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import okhttp3.Interceptor
 
 
@@ -22,6 +23,7 @@ object FlipperInitializer {
         client.addPlugin(CrashReporterPlugin.getInstance())
         client.addPlugin(DatabasesFlipperPlugin(context))
         client.addPlugin(NavigationFlipperPlugin.getInstance())
+        client.addPlugin(SharedPreferencesFlipperPlugin(context))
         client.start()
 
         return object : IntializationResult {
