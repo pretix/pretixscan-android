@@ -1,11 +1,8 @@
 package eu.pretix.pretixscan.droid.ui
 
 
-import android.app.AlarmManager
 import android.app.Fragment
 import android.app.FragmentTransaction
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -21,7 +18,6 @@ import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
-import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.db.ResourceSyncStatus
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
@@ -29,7 +25,6 @@ import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.utils.Material3
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
