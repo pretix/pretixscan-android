@@ -15,10 +15,10 @@ import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.EventSelection
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.databinding.ActivityEventConfigBinding
 import eu.pretix.pretixscan.droid.databinding.ItemEventSelectionBinding
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import kotlinx.android.synthetic.main.activity_event_config.*
 import org.jetbrains.anko.intentFor
 import org.joda.time.DateTime
 
@@ -69,6 +69,7 @@ internal class EventSelectionAdapter(private val store: BlockingEntityStore<Pers
 }
 
 class EventConfigActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityEventConfigBinding
     private lateinit var conf: AppConfig
     private lateinit var eventSelectionAdapter: EventSelectionAdapter
     private var eventSelectResult: ActivityResult? = null
@@ -142,7 +143,8 @@ class EventConfigActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_event_config)
+        binding = ActivityEventConfigBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         conf = AppConfig(this)
         eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).data, conf, this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
@@ -151,12 +153,12 @@ class EventConfigActivity : AppCompatActivity() {
             return
         }
 
-        rvEventList.apply {
+        binding.rvEventList.apply {
             layoutManager = LinearLayoutManager(this@EventConfigActivity)
             adapter = eventSelectionAdapter
         }
 
-        fabAdd.setOnClickListener {
+        binding.fabAdd.setOnClickListener {
             startAddEvent()
         }
 

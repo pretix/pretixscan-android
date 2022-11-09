@@ -12,7 +12,7 @@ import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixpos.anim.MorphingDialogActivity
 import eu.pretix.pretixscan.droid.*
-import kotlinx.android.synthetic.main.activity_checkinlist_select.*
+import eu.pretix.pretixscan.droid.databinding.ActivityCheckinlistSelectBinding
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.json.JSONObject
@@ -20,6 +20,7 @@ import kotlin.concurrent.withLock
 
 
 class CheckInListSelectActivity : MorphingDialogActivity() {
+    private lateinit var binding: ActivityCheckinlistSelectBinding
     private lateinit var checkInListAdapter: CheckInListAdapter
     private lateinit var listLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var conf: AppConfig
@@ -89,13 +90,14 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_checkinlist_select)
+        binding = ActivityCheckinlistSelectBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         mHandler = Handler()
-        swipe_container.setOnRefreshListener {
+        binding.swipeContainer.setOnRefreshListener {
             mRunnable = Runnable {
                 refresh(true)
-                swipe_container.isRefreshing = false
+                binding.swipeContainer.isRefreshing = false
             }
 
             mHandler.post(mRunnable)
@@ -103,15 +105,15 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         refresh()
 
         if (conf.multiEventMode || conf.knownPretixVersion < 40120001001) { // 4.12.0.dev1
-            cbMultievent.visibility = View.GONE
+            binding.cbMultievent.visibility = View.GONE
         }
 
         listLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        checkinlists_list.apply {
+        binding.checkinlistsList.apply {
             layoutManager = listLayoutManager
         }
 
-        btnOk.setOnClickListener {
+        binding.btnOk.setOnClickListener {
             val selectedList = checkInListAdapter.selectedList
             if (selectedList != null) {
                 val i = Intent()
@@ -119,7 +121,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                 setResult(Activity.RESULT_OK, i)
                 supportFinishAfterTransition()
             }
-            if (!conf.multiEventMode && cbMultievent.isChecked) {
+            if (!conf.multiEventMode && binding.cbMultievent.isChecked) {
                 conf.multiEventMode = true
                 conf.autoSwitchRequested = false
             }
@@ -131,7 +133,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     private fun refresh(forceSync: Boolean = false) {
         conf = AppConfig(this)
         checkInListAdapter = CheckInListAdapter(null)
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         val listOfLists = getAllLists()
         val subeventChanged = !conf.eventSelection.map { it.subEventId ?: 0 }.contains(intent!!.getLongExtra(SUBEVENT_ID, 0))
         if (forceSync || listOfLists.isEmpty() || subeventChanged) {
@@ -144,17 +146,17 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     }
 
     private fun refreshList(listOfLists: List<CheckInList>) {
-        progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         checkInListAdapter.selectedList = listOfLists.find { it.server_id == intent.getLongExtra(LIST_ID, 0) }
         if (checkInListAdapter.selectedList == null && listOfLists.size == 1) {
             checkInListAdapter.selectedList = listOfLists[0]
         }
         checkInListAdapter.submitList(listOfLists)
-        checkinlists_list.adapter = checkInListAdapter
+        binding.checkinlistsList.adapter = checkInListAdapter
         if (conf.multiEventMode || conf.knownPretixVersion < 40120001001) { // 4.12.0.dev1
-            cbMultievent.visibility = View.GONE
+            binding.cbMultievent.visibility = View.GONE
         } else {
-            cbMultievent.visibility = View.VISIBLE
+            binding.cbMultievent.visibility = View.VISIBLE
         }
     }
 

@@ -19,9 +19,9 @@ import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
+import eu.pretix.pretixscan.droid.databinding.ActivitySetupBinding
 import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
-import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
@@ -33,6 +33,7 @@ import java.lang.Exception
 import javax.net.ssl.SSLException
 
 class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
+    lateinit var binding: ActivitySetupBinding
     var lastScanTime = 0L
     var lastScanValue = ""
     var conf: AppConfig? = null
@@ -53,7 +54,8 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setup)
+        binding = ActivitySetupBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         conf = AppConfig(this)
 
         checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
@@ -70,13 +72,13 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             }
         }
-        btSwitchCamera.setOnClickListener {
+        binding.btSwitchCamera.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 hardwareScanner.stop(this)
                 conf!!.useCamera = true
-                scanner_view.setResultHandler(this)
-                scanner_view.startCamera()
-                llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
+                binding.scannerView.setResultHandler(this)
+                binding.scannerView.startCamera()
+                binding.llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
             }
         }
     }
@@ -85,11 +87,11 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         super.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             if (conf!!.useCamera) {
-                scanner_view.setResultHandler(this)
-                scanner_view.startCamera()
+                binding.scannerView.setResultHandler(this)
+                binding.scannerView.startCamera()
             }
         }
-        llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
+        binding.llHardwareScan.visibility = if (conf!!.useCamera) View.GONE else View.VISIBLE
         hardwareScanner.start(this)
     }
 
@@ -97,7 +99,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         super.onPause()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             if (conf!!.useCamera) {
-                scanner_view.stopCamera()
+                binding.scannerView.stopCamera()
             }
         }
         hardwareScanner.stop(this)
@@ -109,8 +111,8 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             PERMISSIONS_REQUEST_CAMERA -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     if (conf!!.useCamera) {
-                        scanner_view.setResultHandler(this)
-                        scanner_view.startCamera()
+                        binding.scannerView.setResultHandler(this)
+                        binding.scannerView.startCamera()
                     }
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
@@ -134,7 +136,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     }
 
     override fun handleResult(rawResult: Result) {
-        scanner_view.resumeCameraPreview(this)
+        binding.scannerView.resumeCameraPreview(this)
         if (lastScanValue == rawResult.text && lastScanTime > System.currentTimeMillis() - 3000) {
             return
         }
@@ -180,7 +182,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
         fun resume() {
             pdialog.dismiss()
-            scanner_view.resumeCameraPreview(this)
+            binding.scannerView.resumeCameraPreview(this)
             ongoing_setup = false
         }
 
