@@ -72,17 +72,13 @@ import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.include_main_toolbar.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Integer.max
 import java.nio.charset.Charset
-import java.security.Key
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.ZoneId
@@ -140,6 +136,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private val REQ_EVENT = 1
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
     private val handler = Handler()
@@ -239,7 +236,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun setSearchFilter(f: String) {
-        card_search.visibility = View.VISIBLE
+        binding.cardSearch.visibility = View.VISIBLE
         view_data.search_state.set(LOADING)
 
         searchFilter = f
@@ -262,7 +259,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     }
                 })
                 runOnUiThread {
-                    recyclerView_search.adapter = searchAdapter
+                    binding.recyclerViewSearch.adapter = searchAdapter
                     if (sr.size == 0) {
                         view_data.search_state.set(WARNING)
                     } else {
@@ -290,11 +287,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun reloadSyncStatus() {
         if (conf.lastFailedSync > conf.lastSync || System.currentTimeMillis() - conf.lastDownload > 5 * 60 * 1000) {
-            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red))
+            binding.textViewStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red))
         } else {
-            textView_status.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green))
+            binding.textViewStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green))
         }
-        textView_status.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
+        binding.textViewStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
         var text = ""
         val diff = System.currentTimeMillis() - conf.lastDownload
         if ((application as PretixScan).syncLock.isLocked) {
@@ -326,7 +323,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
         }
 
-        textView_status.setText(text)
+        binding.textViewStatus.setText(text)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -361,38 +358,38 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun setUpEventListeners() {
-        event.setOnClickListener {
+        binding.mainToolbar.event.setOnClickListener {
             selectEvent()
         }
 
-        fab_focus.setOnClickListener {
+        binding.fabFocus.setOnClickListener {
             conf.scanFocus = !conf.scanFocus
             reloadCameraState()
         }
 
-        fab_flash.setOnClickListener {
+        binding.fabFlash.setOnClickListener {
             conf.scanFlash = !conf.scanFlash
             reloadCameraState()
         }
 
-        card_result.setOnTouchListener(object : OnSwipeTouchListener(this) {
+        binding.cardResult.setOnTouchListener(object : OnSwipeTouchListener(this) {
             override fun onSwipeLeft() {
                 hideHandler.removeCallbacks(hideRunnable)
                 card_state = ResultCardState.HIDDEN
-                card_result.clearAnimation()
+                binding.cardResult.clearAnimation()
                 val displayMetrics = DisplayMetrics()
                 windowManager.defaultDisplay.getMetrics(displayMetrics)
-                card_result.animate().translationX(-(displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                binding.cardResult.animate().translationX(-(displayMetrics.widthPixels + binding.cardResult.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
                 hideHandler.postDelayed(hideRunnable, 250)
             }
 
             override fun onSwipeRight() {
                 hideHandler.removeCallbacks(hideRunnable)
                 card_state = ResultCardState.HIDDEN
-                card_result.clearAnimation()
+                binding.cardResult.clearAnimation()
                 val displayMetrics = DisplayMetrics()
                 windowManager.defaultDisplay.getMetrics(displayMetrics)
-                card_result.animate().translationX((displayMetrics.widthPixels + card_result.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
+                binding.cardResult.animate().translationX((displayMetrics.widthPixels + binding.cardResult.width) / 2f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(0f).start()
                 hideHandler.postDelayed(hideRunnable, 250)
             }
         })
@@ -430,13 +427,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         conf = AppConfig(this)
 
         getRestrictions(this)
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         view_data.result_state.set(ERROR)
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.mainToolbar.toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
@@ -460,7 +457,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         hideCard()
         hideSearchCard()
-        card_result.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        binding.cardResult.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
         if (dataWedgeHelper.isInstalled) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -476,8 +473,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
 
-        recyclerView_search.layoutManager = LinearLayoutManager(this)
-        recyclerView_search.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(recyclerView_search.context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
+        binding.recyclerViewSearch.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewSearch.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(binding.recyclerViewSearch.context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
     }
 
     private fun eventButtonText(): String {
@@ -491,9 +488,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private fun setupApi() {
         val ebt = eventButtonText()
-        if (event != null && event.text != ebt) {  // can be null if search bar is open
-            event.text = ebt
-            (event.parent as View?)?.forceLayout()
+        if (binding.mainToolbar.event != null && binding.mainToolbar.event.text != ebt) {  // can be null if search bar is open
+            binding.mainToolbar.event.text = ebt
+            (binding.mainToolbar.event.parent as View?)?.forceLayout()
         }
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
 
@@ -518,9 +515,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun selectEvent() {
-        if (event != null && ViewCompat.isLaidOut(event)) {
+        if (binding.mainToolbar.event != null && ViewCompat.isLaidOut(binding.mainToolbar.event)) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this@MainActivity, event, "morph_transition")
+                    this@MainActivity, binding.mainToolbar.event, "morph_transition")
             val intent = intentFor<EventConfigActivity>()
             startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
         } else {
@@ -704,8 +701,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         hardwareScanner.start(this)
 
         if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            scanner_view.setResultHandler(this)
-            scanner_view.startCamera()
+            binding.scannerView.setResultHandler(this)
+            binding.scannerView.startCamera()
         }
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
@@ -739,20 +736,20 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun hideSearchCard() {
-        card_search.visibility = View.GONE
+        binding.cardSearch.visibility = View.GONE
     }
 
     fun hideCard() {
         card_state = ResultCardState.HIDDEN
-        card_result.clearAnimation()
-        card_result.visibility = View.GONE
+        binding.cardResult.clearAnimation()
+        binding.cardResult.visibility = View.GONE
         view_data.result_state.set(ERROR)
         view_data.result_text.set(null)
     }
 
     fun showLoadingCard() {
         hideHandler.removeCallbacks(hideRunnable)
-        card_result.clearAnimation()
+        binding.cardResult.clearAnimation()
         view_data.result_state.set(LOADING)
         view_data.result_text.set(null)
         view_data.event_name.set(null)
@@ -767,43 +764,43 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             card_state = ResultCardState.SHOWN
             val displayMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-            card_result.translationX = (displayMetrics.widthPixels + card_result.width) / 2f
-            card_result.alpha = 0f
-            card_result.visibility = View.VISIBLE
-            card_result.animate().translationX(0f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(1f).start()
+            binding.cardResult.translationX = (displayMetrics.widthPixels + binding.cardResult.width) / 2f
+            binding.cardResult.alpha = 0f
+            binding.cardResult.visibility = View.VISIBLE
+            binding.cardResult.animate().translationX(0f).setDuration(250).setInterpolator(DecelerateInterpolator()).alpha(1f).start()
         } else {
             // bounce
-            card_result.alpha = 1f
-            card_result.translationX = 1f
-            ObjectAnimator.ofFloat(card_result, "translationX", 0f, 50f, -50f, 0f).apply {
+            binding.cardResult.alpha = 1f
+            binding.cardResult.translationX = 1f
+            ObjectAnimator.ofFloat(binding.cardResult, "translationX", 0f, 50f, -50f, 0f).apply {
                 duration = 250
                 interpolator = BounceInterpolator()
                 start()
             }
-            card_result.animate().start()
+            binding.cardResult.animate().start()
         }
     }
 
     fun reloadCameraState() {
         try {
-            scanner_view.flash = conf.scanFlash
+            binding.scannerView.flash = conf.scanFlash
             if (conf.scanFlash) {
-                fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+                binding.fabFlash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
             } else {
-                fab_flash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+                binding.fabFlash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
             }
-            scanner_view.setAutoFocus(conf.scanFocus)
+            binding.scannerView.setAutoFocus(conf.scanFocus)
             if (conf.scanFocus) {
-                fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
+                binding.fabFocus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
             } else {
-                fab_focus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
+                binding.fabFocus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
             }
             if (conf.useCamera) {
-                fab_focus.show()
-                fab_flash.show()
+                binding.fabFocus.show()
+                binding.fabFlash.show()
             } else {
-                fab_focus.hide()
-                fab_flash.hide()
+                binding.fabFocus.hide()
+                binding.fabFlash.hide()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -815,7 +812,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         (application as PretixScan).connectivityHelper.removeListener(this)
         super.onPause()
         if (conf.useCamera) {
-            scanner_view.stopCamera()
+            binding.scannerView.stopCamera()
         }
         hardwareScanner.stop(this)
 
@@ -1129,7 +1126,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             if (result.position != null && conf.printBadges) {
                 view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
-                ibPrint.setOnClickListener {
+                binding.ibPrint.setOnClickListener {
                     printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
                 }
             } else {
@@ -1139,10 +1136,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.show_print.set(false)
         }
 
-        card_result.clearAnimation()
+        binding.cardResult.clearAnimation()
         if (result.isRequireAttention) {
-            card_result.rotation = 0f
-            ObjectAnimator.ofFloat(card_result, "rotationY", 0f, 25f, 0f, -25f, 0f, 25f, 0f, -25f, 0f).apply {
+            binding.cardResult.rotation = 0f
+            ObjectAnimator.ofFloat(binding.cardResult, "rotationY", 0f, 25f, 0f, -25f, 0f, 25f, 0f, -25f, 0f).apply {
                 duration = 1500
                 start()
             }
@@ -1151,7 +1148,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     override fun handleResult(rawResult: Result) {
-        scanner_view.resumeCameraPreview(this@MainActivity)
+        binding.scannerView.resumeCameraPreview(this@MainActivity)
 
         if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == LOADING) {
             return

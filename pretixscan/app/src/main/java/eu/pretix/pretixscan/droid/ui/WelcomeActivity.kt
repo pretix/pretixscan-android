@@ -12,7 +12,6 @@ import eu.pretix.libpretixui.android.scanning.defaultToScanner
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityWelcomeBinding
-import kotlinx.android.synthetic.main.activity_welcome.*
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -24,7 +23,7 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityWelcomeBinding>(this, R.layout.activity_welcome)
 
-        button2.setOnClickListener {
+        binding.button2.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, SetupActivity::class.java)
                 startActivity(intent)

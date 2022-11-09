@@ -64,7 +64,7 @@
                     android:id="@+id/eventListContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-                    <include layout="@layout/include_event_select_list" />
+                    <include android:id="@+id/eventSelectList" layout="@layout/include_event_select_list" />
                 </FrameLayout>
             </FrameLayout>
 
