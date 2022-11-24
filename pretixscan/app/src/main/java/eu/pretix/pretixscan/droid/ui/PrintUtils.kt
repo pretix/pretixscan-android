@@ -26,29 +26,32 @@ fun getDefaultBadgeLayout(): BadgeLayout {
 }
 
 fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: String): BadgeLayout? {
-    val itemid = position.getLong("item")
+    val itemid_server = position.getLong("item")
+    val itemid_local = application.data.select(Item::class.java)
+        .where(Item.SERVER_ID.eq(itemid_server))
+        .get().firstOrNull().getId()
 
     val litem = application.data.select(BadgeLayoutItem::class.java)
-            .where(BadgeLayoutItem.ITEM_ID.eq(itemid))
+            .where(BadgeLayoutItem.ITEM_ID.eq(itemid_local))
             .get().firstOrNull()
     if (litem != null) {
-        if (litem.getLayout() == null) {
+        if (litem.getLayout() == null) { // "Do not print badges" is configured for this product
             return null
-        } else {
+        } else { // A non-default badge layout is set for this product
             return litem.getLayout()
         }
     }
 
     /* Legacy mechanism: Keep around until pretix 2.5 is end of life */
     val item = application.data.select(Item::class.java)
-            .where(Item.SERVER_ID.eq(itemid))
+            .where(Item.SERVER_ID.eq(itemid_server))
             .get().firstOrNull() ?: return getDefaultBadgeLayout()
     if (item.getBadge_layout_id() != null) {
         return application.data.select(BadgeLayout::class.java)
                 .where(BadgeLayout.SERVER_ID.eq(item.getBadge_layout_id()))
                 .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
                 .get().firstOrNull() ?: getDefaultBadgeLayout()
-    } else {
+    } else { // Also used for current pretix versions for obtaining the event's default badge layout
         return application.data.select(BadgeLayout::class.java)
                 .where(BadgeLayout.IS_DEFAULT.eq(true))
                 .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
