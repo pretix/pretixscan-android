@@ -372,6 +372,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_COVID_AUTOCHECKIN, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_COVID_AUTOCHECKIN, value).apply()
 
+    override fun getKnownLiveEventSlugs(): Set<String> {
+        return default_prefs.getStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, emptySet()) as Set<String>
+    }
+
+    override fun setKnownLiveEventSlugs(slugs: Set<String>) {
+        default_prefs.edit().putStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, slugs).apply()
+    }
+
     companion object {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
@@ -416,5 +424,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_COVID_AUTOCHECKIN = "pref_covid_autocheckin"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
+        private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
     }
 }

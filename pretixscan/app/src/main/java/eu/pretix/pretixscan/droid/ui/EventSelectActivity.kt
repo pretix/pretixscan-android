@@ -200,7 +200,7 @@ class EventSelectActivity : MorphingDialogActivity() {
             val events: List<RemoteEvent>
             try {
                 val selectedAsJodaTime = LocalDateTime(selectedDate.atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()).toDateTime(DateTimeZone.getDefault())
-                events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null)
+                events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null, null)
             } catch (e: DeviceAccessRevokedException) {
                 runOnUiThread {
                     alert(Material3, R.string.error_access_revoked) {
