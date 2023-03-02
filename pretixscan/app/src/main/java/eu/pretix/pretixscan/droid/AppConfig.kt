@@ -8,10 +8,10 @@ import android.preference.PreferenceManager
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.SingletonSupport
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import eu.pretix.pretixscan.utils.KeystoreHelper
@@ -38,6 +38,10 @@ val om = ObjectMapper().apply {
             .configure(KotlinFeature.StrictNullChecks, false)
             .build())
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    configure(SerializationFeature.WRITE_DATES_WITH_CONTEXT_TIME_ZONE, false)
+    configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
+    configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
 }
 
 
