@@ -102,7 +102,7 @@ class EventConfigActivity : AppCompatActivity() {
                             ?: return@registerForActivityResult,
                     eventName = eventSelectResult!!.data!!.getStringExtra(EventSelectActivity.EVENT_NAME)
                             ?: return@registerForActivityResult,
-                    subEventId = if (result.data!!.getLongExtra(CheckInListSelectActivity.SUBEVENT_ID, -1) < 1) null else result.data!!.getLongExtra(CheckInListSelectActivity.SUBEVENT_ID, -1),
+                    subEventId = if (eventSelectResult!!.data!!.getLongExtra(CheckInListSelectActivity.SUBEVENT_ID, -1) < 1) null else eventSelectResult!!.data!!.getLongExtra(CheckInListSelectActivity.SUBEVENT_ID, -1),
                     dateFrom = eventSelectResult!!.data!!.getSerializableExtra(EventSelectActivity.EVENT_DATE_FROM) as DateTime?,
                     dateTo = eventSelectResult!!.data!!.getStringExtra(EventSelectActivity.EVENT_DATE_TO) as DateTime?,
                     checkInList = result.data!!.getLongExtra(CheckInListSelectActivity.LIST_ID, -1),
