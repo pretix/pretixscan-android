@@ -405,7 +405,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     @SuppressWarnings("ResourceType")
     private fun buildMediaPlayer() {
-        val resourceIds = listOf(R.raw.enter, R.raw.exit, R.raw.error, R.raw.beep)
+        val resourceIds = listOf(R.raw.enter, R.raw.exit, R.raw.error, R.raw.beep, R.raw.attention)
         for (r in resourceIds) {
             val mediaPlayer = MediaPlayer()
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -1012,7 +1012,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (conf.sounds)
             when (result.type) {
                 TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
-                    TicketCheckProvider.CheckInType.ENTRY -> mediaPlayers[R.raw.enter]?.start()
+                    TicketCheckProvider.CheckInType.ENTRY ->
+                        if (result.isRequireAttention) {
+                            mediaPlayers[R.raw.attention]?.start()
+                        } else {
+                            mediaPlayers[R.raw.enter]?.start()
+                        }
                     TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
                 }
                 TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
