@@ -26,6 +26,13 @@ fun getDefaultBadgeLayout(): BadgeLayout {
 }
 
 fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: String): BadgeLayout? {
+    val event = application.data.select(Event::class.java)
+        .where(Event.SLUG.eq(eventSlug))
+        .get().firstOrNull()
+    if (!event.hasPlugin("pretix.plugins.badges")) {
+        return null
+    }
+
     val itemid_server = position.getLong("item")
     val itemid_local = application.data.select(Item::class.java)
         .where(Item.SERVER_ID.eq(itemid_server))

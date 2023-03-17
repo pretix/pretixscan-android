@@ -758,6 +758,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_result.clearAnimation()
         view_data.result_state.set(LOADING)
         view_data.result_text.set(null)
+        view_data.show_print.set(false)
         view_data.event_name.set(null)
         view_data.detail1.set(null)
         view_data.detail2.set(null)
