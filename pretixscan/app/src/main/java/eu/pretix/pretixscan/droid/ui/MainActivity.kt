@@ -924,6 +924,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                             values: Map<QuestionLike, String>?, isResumed: Boolean,
                             retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question }
+        for (q in questions) {
+            q.resolveDependency(questions)
+        }
         val values_ = if (values == null) {
             val v = mutableMapOf<QuestionLike, String>()
             res.requiredAnswers!!.forEach {

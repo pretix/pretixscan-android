@@ -1,6 +1,6 @@
-include ':app', ':libpretixsync', ':libpretixui-android', ':common', ':libuvccamera', ':usbCameraCommon'
+include ':app', ':libpretixsync', ':libpretixui-android', ':android-libserenegiantcommon', ':android-libusbcameracommon', ':android-libuvccamera'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
 project(':libpretixui-android').projectDir = new File('libpretixui-repo/libpretixui-android')
-project(':common').projectDir = new File('libpretixui-repo/common')
-project(':usbCameraCommon').projectDir = new File('libpretixui-repo/usbCameraCommon')
-project(':libuvccamera').projectDir = new File('libpretixui-repo/libuvccamera')
+project(':android-libserenegiantcommon').projectDir = new File('libpretixui-repo/android-libserenegiantcommon')
+project(':android-libusbcameracommon').projectDir = new File('libpretixui-repo/android-libusbcameracommon')
+project(':android-libuvccamera').projectDir = new File('libpretixui-repo/android-libuvccamera')
