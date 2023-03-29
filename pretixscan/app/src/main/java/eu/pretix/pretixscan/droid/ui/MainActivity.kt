@@ -895,7 +895,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
             try {
-                checkResult = provider.check(conf.eventSelectionToMap(), result, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                checkResult = provider.check(conf.eventSelectionToMap(), result, "barcode", answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                     "exit" -> TicketCheckProvider.CheckInType.EXIT
                     else -> TicketCheckProvider.CheckInType.ENTRY
                 })
