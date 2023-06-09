@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">pretixSCAN에 오신것을 환영합니다!</string>
+    <string name="action_sync">동기화하기</string>
+    <string name="progress_processing">처리중…</string>
+    <string name="progress_registering">서버에 기기를 등록하는 중…</string>
+    <string name="error_unknown_exception">알수없는 오류가 발생했습니다</string>
+    <string name="error_not_synchronized">서버와 동기화 중에 오류가 발생했습니다</string>
+    <string name="action_label_ok">확인</string>
+    <string name="action_label_settings">설정</string>
+    <string name="action_label_statistics">통계</string>
+    <string name="action_multievent_enable">고급(여러 이벤트 선택)</string>
+    <string name="scantype_entry">입장</string>
+    <string name="scantype_exit">퇴장</string>
+    <string name="scantype_entry_kiosk">체크인 : 티켓을 스캔해주세요</string>
+    <string name="scantype_exit_kiosk">체크아웃 : 티켓을 스캔해주세요</string>
+    <string name="checktype_online">온라인 승인</string>
+    <string name="checktype_offline">오프라인 승인</string>
+    <string name="debug_info_event">행사명 : %1$s</string>
+    <string name="debug_info_list">목록 : %1$s</string>
+    <string name="app_name">pretixSCAN</string>
+    <string name="progress_syncing_first">이벤트 설정을 다운로드 중…</string>
+    <string name="progress_syncing">서버와 동기화하는 중…</string>
+    <string name="error_access_revoked">디바이스 접근이 차단되었습니다. 서버에 디바이스를 다시 등록해주세요.</string>
+    <string name="action_label_scantype_entry">입장 스캔으로 전환</string>
+    <string name="action_label_scantype_exit">퇴장 스캔으로 전환</string>
+    <string name="checktype_proxy">베이스 스테이션 확인</string>
+    <string name="debug_info_subevent">날짜 : %1$s (%2$s)</string>
+</resources>

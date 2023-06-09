@@ -164,4 +164,6 @@
     <string name="full_delete_confirm">Voulez-vous vraiment réinitialiser l\'appareil \? Vous devrez le coupler à nouveau avec le système en ligne.</string>
     <string name="settings_summary_kioskmode">Le mode kiosque masque les menus qui ne sont pas censés être utilisés dans une installation en libre-service. Le mode kiosque n\'empêche pas les utilisateurs de quitter l\'application via les fonctionnalités du système. Pour accéder aux paramètres, vous devez scanner un QR code avec votre code PIN.</string>
     <string name="pref_covid_autocheckin_summary" formatted="false">Lorsque cette option est activée et que le serveur a été configuré pour demander la validation du certificat COVID, les billets seront marqués automatiquement, ceci sans aucune saisie ni analyse comme validés. Dans 99% des cas, cette option ne devrait pas être activée !</string>
+    <string name="scan_result_invalid_time">Le billet n\'est pas valable actuellement</string>
+    <string name="scan_result_blocked">Billet bloqué</string>
 </resources>
