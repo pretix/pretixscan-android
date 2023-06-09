@@ -1209,7 +1209,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 true
             }
             else -> {
-                val codepoint = event.keyCharacterMap.get(event.keyCode, 0)
+                val codepoint = event.keyCharacterMap.get(event.keyCode, event.metaState)
                 if (codepoint > 0) {
                     keyboardBuffer += codepoint.toChar().toString().repeat(max(event.repeatCount, 1))
                     true
