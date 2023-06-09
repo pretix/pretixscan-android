@@ -39,6 +39,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         doAsync {
             val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
             val event = intent!!.getStringExtra(EVENT_SLUG)
+            val subevent = intent!!.getLongExtra(SUBEVENT_ID, 0L)
             val sm = SyncManager(
                     conf,
                     api,
@@ -57,7 +58,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     BuildConfig.VERSION_NAME,
                     null
             )
-            sm.syncMinimalEventSet(event) { current_action ->
+            sm.syncMinimalEventSet(event, subevent) { current_action ->
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread
