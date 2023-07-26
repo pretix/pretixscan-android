@@ -512,8 +512,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 JSONObject(),
                 Build.BRAND,
                 Build.MODEL,
-                "pretixSCAN Android",
+                (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Build.VERSION.BASE_OS else "").ifEmpty { "Android" },
+                Build.VERSION.RELEASE,
+            "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
+                null,
                 (application as PretixScan).connectivityHelper
         )
     }

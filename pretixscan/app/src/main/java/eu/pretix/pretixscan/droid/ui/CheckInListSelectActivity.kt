@@ -54,8 +54,11 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     JSONObject(),
                     Build.BRAND,
                     Build.MODEL,
+                    (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Build.VERSION.BASE_OS else "").ifEmpty { "Android" },
+                    Build.VERSION.RELEASE,
                     "pretixSCAN Android",
                     BuildConfig.VERSION_NAME,
+                    null,
                     null
             )
             sm.syncMinimalEventSet(event, subevent) { current_action ->
