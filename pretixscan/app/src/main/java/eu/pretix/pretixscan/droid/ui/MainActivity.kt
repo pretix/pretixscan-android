@@ -111,6 +111,7 @@ class ViewDataHolder(private val ctx: Context) {
     val result_state = ObservableField<ResultState>()
     val search_state = ObservableField<ResultState>()
     val result_text = ObservableField<String>()
+    val result_offline = ObservableField<Boolean>()
     val show_print = ObservableField<Boolean>()
     val event_name = ObservableField<String>()
     val detail1 = ObservableField<String>()
@@ -754,6 +755,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_result.visibility = View.GONE
         view_data.result_state.set(ERROR)
         view_data.result_text.set(null)
+        view_data.result_offline.set(false)
     }
 
     fun showLoadingCard() {
@@ -761,6 +763,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_result.clearAnimation()
         view_data.result_state.set(LOADING)
         view_data.result_text.set(null)
+        view_data.result_offline.set(false)
         view_data.show_print.set(false)
         view_data.event_name.set(null)
         view_data.detail1.set(null)
@@ -1081,6 +1084,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
         view_data.result_text.set(result.message)
+        view_data.result_offline.set(result.offline)
         view_data.result_state.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ERROR
             TicketCheckProvider.CheckResult.Type.VALID -> {
