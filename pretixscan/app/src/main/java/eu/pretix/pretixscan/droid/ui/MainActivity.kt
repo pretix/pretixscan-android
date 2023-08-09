@@ -171,6 +171,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private val hardwareScanner = HardwareScanner(object : ScanReceiver {
         override fun scanResult(result: String) {
+            if (result == lastScanCode && System.currentTimeMillis() - lastScanTime < 2500) {
+                return
+            }
             lastScanTime = System.currentTimeMillis()
             lastScanCode = result
             lastIgnoreUnpaid = false
