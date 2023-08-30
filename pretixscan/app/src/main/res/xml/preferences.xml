@@ -7,7 +7,7 @@
             android:key="pref_scan_offline"
             android:summary="@string/settings_summary_scan_offline"
             android:title="@string/settings_label_scan_offline" />
-        <ListPreference
+        <eu.pretix.pretixscan.droid.ui.AutoOfflineListPreference
             android:defaultValue="off"
             android:entries="@array/settings_valuelabels_auto_offline"
             android:entryValues="@array/settings_values_auto_offline"

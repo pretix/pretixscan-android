@@ -92,7 +92,22 @@ class PretixScan : MultiDexApplication() {
         } else if (conf.offlineMode) {
             return AsyncCheckProvider(conf, data)
         } else {
-            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, fileStorage)
+            var fallback: TicketCheckProvider? = null
+            var fallbackTimeout = 30000
+            if (conf.autoOfflineMode != "off" && conf.autoOfflineMode != "errors") {
+                fallbackTimeout = when (conf.autoOfflineMode) {
+                    "1s" -> 1000
+                    "2s" -> 2000
+                    "3s" -> 3000
+                    "5s" -> 5000
+                    "10s" -> 10000
+                    "15s" -> 15000
+                    "20s" -> 20000
+                    else -> throw Exception("Unknown offline mode ")
+                }
+                fallback = AsyncCheckProvider(conf, data)
+            }
+            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, fileStorage, fallback, fallbackTimeout)
         }
     }
 
