@@ -3,18 +3,22 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.app.Fragment
 import android.app.FragmentTransaction
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.RawRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
@@ -24,10 +28,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.utils.Material3
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.yesButton
+import org.jetbrains.anko.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -40,6 +41,40 @@ class PinSettingsFragment : PreferenceFragment() {
 
         addPreferencesFromResource(R.xml.preferences_pin)
     }
+}
+
+
+class AutoOfflineListPreference : ListPreference {
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
+            super(context, attrs, defStyleAttr, defStyleRes)
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr)
+
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context?) : super(context)
+
+    override fun onClick() {
+        val view = context.layoutInflater.inflate(R.layout.dialog_auto_offline_preference, null)
+        val builder = AlertDialog.Builder(context)
+            .setSingleChoiceItems(entries, getValueIndex()) { dialog, index ->
+                if (callChangeListener(entryValues[index].toString())) {
+                    setValueIndex(index)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setTitle(title)
+            .setView(view)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun getValueIndex() = entryValues.indexOf(value)
 }
 
 
@@ -64,7 +99,8 @@ class SettingsFragment : PreferenceFragment() {
             // First, delete ResourceSyncStatus. This way the system forgets which data was already
             // pulled and will pull all lists completely instead of using If-Modified-Since or
             // ?modified_since= mechanisms
-            (activity.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get().value();
+            (activity.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get()
+                .value();
 
             // To make sync faster, we only update records in the local database if their `json_data`
             // column is different than what we received from the server. However, if there was a
@@ -96,14 +132,25 @@ class SettingsFragment : PreferenceFragment() {
         findPreference("pref_print_badges")?.setOnPreferenceChangeListener { preference, any ->
             if (any == true) {
                 if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager)
-                        && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
-                        && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)) {
+                    && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
+                    && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)
+                ) {
                     alert(Material3, R.string.preference_badgeprint_install_pretixprint) {
                         yesButton {
                             try {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=eu.pretix.pretixprint")))
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("market://details?id=eu.pretix.pretixprint")
+                                    )
+                                )
                             } catch (anfe: android.content.ActivityNotFoundException) {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=eu.pretix.pretixprint")))
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=eu.pretix.pretixprint")
+                                    )
+                                )
                             }
                         }
                         noButton {}
@@ -114,7 +161,8 @@ class SettingsFragment : PreferenceFragment() {
             return@setOnPreferenceChangeListener true
         }
 
-        findPreference("datawedge_install")?.isEnabled = DataWedgeHelper(activity).isInstalled || Build.BRAND == "Zebra"
+        findPreference("datawedge_install")?.isEnabled =
+            DataWedgeHelper(activity).isInstalled || Build.BRAND == "Zebra"
         findPreference("datawedge_install")?.setOnPreferenceClickListener {
             DataWedgeHelper(activity).install(true)
             toast("OK").show()
@@ -126,10 +174,10 @@ class SettingsFragment : PreferenceFragment() {
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {
         val view = LayoutInflater.from(activity).inflate(R.layout.dialog_about, null, false)
         val dialog = AlertDialog.Builder(activity)
-                .setTitle(title)
-                .setView(view)
-                .setPositiveButton(R.string.dismiss, null)
-                .create()
+            .setTitle(title)
+            .setView(view)
+            .setPositiveButton(R.string.dismiss, null)
+            .create()
 
         val textView = view.findViewById(R.id.aboutText) as TextView
 
@@ -170,7 +218,12 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         setupActionBar()
 
         val c = AppConfig(this)
-        if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(intent.getStringExtra("pin")!!))) {
+        if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(
+                intent.getStringExtra(
+                    "pin"
+                )!!
+            ))
+        ) {
             // Protect against external calls
             finish();
             return
@@ -178,8 +231,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         // Display the fragment as the main content.
         fragmentManager.beginTransaction()
-                .replace(android.R.id.content, SettingsFragment())
-                .commit()
+            .replace(android.R.id.content, SettingsFragment())
+            .commit()
     }
 
     /**
@@ -220,7 +273,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
     override fun onPreferenceStartFragment(caller: PreferenceFragment?, pref: Preference): Boolean {
         val f: Fragment = Fragment.instantiate(this, pref.fragment, pref.extras)
-        val transaction= fragmentManager.beginTransaction()
+        val transaction = fragmentManager.beginTransaction()
         transaction.replace(android.R.id.content, f)
         if (pref.titleRes != 0) {
             transaction.setBreadCrumbTitle(pref.titleRes)

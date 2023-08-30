@@ -71,16 +71,17 @@
     <string name="settings_label_device_camera">Geräte-Kamera benutzen</string>
     <string name="settings_label_scan_offline">Offline scannen</string>
     <string name="settings_label_auto_offline">Offline-Modus automatisch steuern</string>
+    <string name="settings_label_auto_offline_help">Wenn Sie eine der Zeitangaben unten auswählen, führt die App automatisch einen Offline-Scan durch, wenn der Online-Scan länger dauert als ausgewählt. Zusätzlich wird die App vollständig in den Offline-Modus wechseln, wenn mehrere Scans in Folge fehlgeschlagen sind oder zu lange gedauert haben. Wenn die Verbindung stabil wiederhergestellt ist, wechselt die App zurück.</string>
     <string-array name="settings_valuelabels_auto_offline">
-        <item>Manuelle Steuerung</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 1 Sekunde dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 2 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 3 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 5 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 10 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 15 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus bei Fehlern und wenn Scans im Schnitt länger als 20 Sekunden dauern</item>
-        <item>Wechsle zu Offline-Modus nur bei Fehlern und fehlender Verbindung</item>
+        <item>Manuelle Steuerung (aus)</item>
+        <item>1 Sekunde oder Fehler</item>
+        <item>2 Sekunden oder Fehler</item>
+        <item>3 Sekunden dauern oder Fehler</item>
+        <item>5 Sekunden dauern oder Fehler</item>
+        <item>10 Sekunden dauern oder Fehler</item>
+        <item>15 Sekunden dauern oder Fehler</item>
+        <item>20 Sekunden dauern oder Fehler</item>
+        <item>Nur bei Fehlern oder fehlender Verbindung</item>
     </string-array>
     <string name="settings_summary_scan_offline">Wenn Sie offline scannen, gleicht die App alle Eingaben mit ihrer internen Datenbank statt mit dem Server ab und synchronisiert ihre Datenbank gelegentlich. Dies ist zuverlässiger, aber ermöglicht, dass ein Ticket auf verschiedenen Geräten ggf. mehrfach gescannt werden kann.</string>
     <string name="settings_label_sounds">Signaltöne abspielen</string>
