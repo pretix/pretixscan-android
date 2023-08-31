@@ -1,6 +1,7 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,8 +14,9 @@ import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixpos.anim.MorphingDialogActivity
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityCheckinlistSelectBinding
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.indeterminateProgressDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import kotlin.concurrent.withLock
 
@@ -26,6 +28,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     private lateinit var conf: AppConfig
     private lateinit var mHandler: Handler
     private lateinit var mRunnable: Runnable
+    val bgScope = CoroutineScope(Dispatchers.IO)
 
     companion object {
         const val EVENT_SLUG = "event_slug"
@@ -34,10 +37,15 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     }
 
     private fun syncSync() {
-        val pdialog = indeterminateProgressDialog(title = R.string.progress_syncing_first, message = R.string.progress_syncing_first)
-        pdialog.setCanceledOnTouchOutside(false)
-        pdialog.setCancelable(false)
-        doAsync {
+        val pdialog = ProgressDialog(this).apply {
+            isIndeterminate = true
+            setMessage(getString(R.string.progress_syncing_first))
+            setTitle(R.string.progress_syncing_first)
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+            show()
+        }
+        bgScope.launch {
             val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
             val event = intent!!.getStringExtra(EVENT_SLUG)
             val subevent = intent!!.getLongExtra(SUBEVENT_ID, 0L)

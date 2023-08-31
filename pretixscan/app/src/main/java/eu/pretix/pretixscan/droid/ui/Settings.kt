@@ -22,18 +22,17 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NavUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.db.ResourceSyncStatus
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
-import eu.pretix.pretixscan.utils.Material3
-import org.jetbrains.anko.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-
+import splitties.toast.toast
 
 class PinSettingsFragment : PreferenceFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,17 +57,18 @@ class AutoOfflineListPreference : ListPreference {
     constructor(context: Context?) : super(context)
 
     override fun onClick() {
-        val view = context.layoutInflater.inflate(R.layout.dialog_auto_offline_preference, null)
-        val builder = AlertDialog.Builder(context)
-            .setSingleChoiceItems(entries, getValueIndex()) { dialog, index ->
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_auto_offline_preference, null)
+        val builder = MaterialAlertDialogBuilder(context).apply {
+            setSingleChoiceItems(entries, getValueIndex()) { dialog, index ->
                 if (callChangeListener(entryValues[index].toString())) {
                     setValueIndex(index)
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-            .setTitle(title)
-            .setView(view)
+            setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            setTitle(title)
+            setView(view)
+        }
 
         val dialog = builder.create()
         dialog.show()
@@ -120,12 +120,14 @@ class SettingsFragment : PreferenceFragment() {
             true
         }
         findPreference("full_delete")?.setOnPreferenceClickListener {
-            alert(Material3, R.string.full_delete_confirm) {
-                yesButton {
+            MaterialAlertDialogBuilder(activity).apply {
+                setMessage(R.string.full_delete_confirm)
+                setPositiveButton(R.string.yes) { dialog, _ ->
+                    dialog.dismiss()
                     wipeApp(activity!!)
                 }
-                noButton { }
-            }.show()
+                setNegativeButton(R.string.no) { dialog, _ -> dialog.cancel() }
+            }.create().show()
             return@setOnPreferenceClickListener true
         }
 
@@ -135,8 +137,10 @@ class SettingsFragment : PreferenceFragment() {
                     && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
                     && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)
                 ) {
-                    alert(Material3, R.string.preference_badgeprint_install_pretixprint) {
-                        yesButton {
+                    MaterialAlertDialogBuilder(activity).apply {
+                        setMessage(R.string.preference_badgeprint_install_pretixprint)
+                        setPositiveButton(R.string.yes) { dialog, _ ->
+                            dialog.dismiss()
                             try {
                                 startActivity(
                                     Intent(
@@ -153,8 +157,8 @@ class SettingsFragment : PreferenceFragment() {
                                 )
                             }
                         }
-                        noButton {}
-                    }.show()
+                        setNegativeButton(R.string.no) { dialog, _ -> dialog.cancel() }
+                    }.create().show()
                     return@setOnPreferenceChangeListener false
                 }
             }
@@ -165,7 +169,7 @@ class SettingsFragment : PreferenceFragment() {
             DataWedgeHelper(activity).isInstalled || Build.BRAND == "Zebra"
         findPreference("datawedge_install")?.setOnPreferenceClickListener {
             DataWedgeHelper(activity).install(true)
-            toast("OK").show()
+            toast("OK")
             true
         }
 

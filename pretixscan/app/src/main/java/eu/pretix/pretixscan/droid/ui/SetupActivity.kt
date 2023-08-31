@@ -14,18 +14,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivitySetupBinding
-import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.indeterminateProgressDialog
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -34,6 +36,7 @@ import javax.net.ssl.SSLException
 
 class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     lateinit var binding: ActivitySetupBinding
+    val bgScope = CoroutineScope(Dispatchers.IO)
     var lastScanTime = 0L
     var lastScanValue = ""
     var conf: AppConfig? = null
@@ -149,24 +152,24 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         try {
             val jd = JSONObject(res)
             if (jd.has("version")) {
-                alert(Material3, R.string.setup_error_legacy_qr_code).show()
+                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_legacy_qr_code).create().show()
                 return
             }
             if (!jd.has("handshake_version")) {
-                alert(Material3, R.string.setup_error_invalid_qr_code).show()
+                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
                 return
             }
             if (jd.getInt("handshake_version") > 1) {
-                alert(Material3, R.string.setup_error_version_too_high).show()
+                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_version_too_high).create().show()
                 return
             }
             if (!jd.has("url") || !jd.has("token")) {
-                alert(Material3, R.string.setup_error_invalid_qr_code).show()
+                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
                 return
             }
             initialize(jd.getString("url"), jd.getString("token"))
         } catch (e: JSONException) {
-            alert(Material3, R.string.setup_error_invalid_qr_code).show()
+            MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
             return
         }
     }
@@ -178,7 +181,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         }
         ongoing_setup = true
 
-        val pdialog = indeterminateProgressDialog(R.string.setup_progress)
+        val pdialog = Snackbar.make(binding.root, R.string.setup_progress, BaseTransientBottomBar.LENGTH_INDEFINITE)
 
         fun resume() {
             pdialog.dismiss()
@@ -186,9 +189,10 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             ongoing_setup = false
         }
 
-        pdialog.setCanceledOnTouchOutside(false)
-        pdialog.setCancelable(false)
-        doAsync {
+        pdialog.show()
+
+        val activity = this as SetupActivity
+        bgScope.launch {
             val setupm = SetupManager(
                     Build.BRAND, Build.MODEL,
                     (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Build.VERSION.BASE_OS else "").ifEmpty { "Android" },
@@ -231,9 +235,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, R.string.setup_error_request).show()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_request).create().show()
                 }
-                return@doAsync
+                return@launch
             } catch (e: SSLException) {
                 e.printStackTrace()
                 runOnUiThread {
@@ -241,9 +245,9 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, R.string.setup_error_ssl).show()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_ssl).create().show()
                 }
-                return@doAsync
+                return@launch
             } catch (e: IOException) {
                 e.printStackTrace()
                 runOnUiThread {
@@ -251,16 +255,16 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, R.string.setup_error_io).show()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_io).create().show()
                 }
-                return@doAsync
+                return@launch
             } catch (e: SetupServerErrorException) {
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, R.string.setup_error_server).show()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_server).create().show()
                 }
             } catch (e: SetupBadResponseException) {
                 e.printStackTrace()
@@ -269,7 +273,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, R.string.setup_error_response).show()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_response).create().show()
                 }
             } catch (e: SetupException) {
                 e.printStackTrace()
@@ -278,7 +282,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, e.message ?: "Unknown error").show()
+                    MaterialAlertDialogBuilder(activity).setMessage(e.message ?: "Unknown error").create().show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -288,7 +292,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    alert(Material3, e.message ?: "Unknown error").show()
+                    MaterialAlertDialogBuilder(activity).setMessage(e.message ?: "Unknown error").create().show()
                 }
             }
         }
@@ -305,22 +309,22 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_manual -> {
-                alert(Material3, "") {
+                MaterialAlertDialogBuilder(this).apply {
                     val view = layoutInflater.inflate(R.layout.dialog_setup_manual, null)
                     val inputUri = view.findViewById<EditText>(R.id.input_uri)
                     if (BuildConfig.APPLICATION_ID.contains("eu.pretix")) {
                         inputUri.setText("https://pretix.eu")
                     }
                     val inputToken = view.findViewById<EditText>(R.id.input_token)
-                    customView = view
-                    positiveButton(R.string.ok) {
-                        it.dismiss()
+                    setView(view)
+                    setPositiveButton(R.string.ok) { dialog, _ ->
+                        dialog.dismiss()
                         initialize(inputUri.text.toString(), inputToken.text.toString())
                     }
-                    negativeButton(android.R.string.cancel) {
-                        it.cancel()
+                    setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                        dialog.cancel()
                     }
-                }.show()
+                }.create().show()
                 return true
             }
         }

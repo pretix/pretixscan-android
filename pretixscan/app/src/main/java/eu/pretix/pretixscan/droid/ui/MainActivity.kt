@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrognito.pinlockview.IndicatorDots
 import com.andrognito.pinlockview.PinLockListener
@@ -47,6 +48,7 @@ import com.andrognito.pinlockview.PinLockView
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
@@ -70,10 +72,11 @@ import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
-import eu.pretix.pretixscan.utils.Material3
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
-import org.jetbrains.anko.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -83,6 +86,7 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
+import splitties.toast.toast
 
 
 interface ReloadableActivity {
@@ -140,6 +144,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private lateinit var binding: ActivityMainBinding
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
+    private val bgScope = CoroutineScope(Dispatchers.IO)
     private val handler = Handler()
     private val hideHandler = Handler()
     private var card_state = ResultCardState.HIDDEN
@@ -244,13 +249,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.search_state.set(LOADING)
 
         searchFilter = f
-        doAsync {
+        bgScope.launch {
             val provider = (application as PretixScan).getCheckProvider(conf)
             try {
                 val sr = provider.search(conf.eventSelectionToMap(), f, 1)
                 if (f != searchFilter) {
                     // we lost a race! Abort this.
-                    return@doAsync
+                    return@launch
                 }
                 searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
@@ -338,7 +343,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -352,7 +357,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         e.printStackTrace()
                     }
                 } else {
-                    Toast.makeText(this, "Please grant storage permission for full functionality", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please grant storage permission for full functionality", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -523,13 +528,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun selectEvent() {
+        val intent = Intent(this, EventConfigActivity::class.java)
         if (binding.mainToolbar.event != null && ViewCompat.isLaidOut(binding.mainToolbar.event)) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, binding.mainToolbar.event, "morph_transition")
-            val intent = intentFor<EventConfigActivity>()
             startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
         } else {
-            startWithPIN(intentFor<EventConfigActivity>(), "switch_event", REQ_EVENT, null)
+            startWithPIN(intent, "switch_event", REQ_EVENT, null)
         }
     }
 
@@ -559,16 +564,18 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private val syncRunnable = Runnable {
         syncMessage = ""
-        doAsync {
+        val activity = this
+        bgScope.launch {
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
                     reloadSyncStatus()
                 }
                 scheduleSync()
-                return@doAsync
+                return@launch
             }
+            val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
             try {
-                if (defaultSharedPreferences.getBoolean("pref_sync_auto", true)) {
+                if (prefs.getBoolean("pref_sync_auto", true)) {
                     DGC().backgroundDscListUpdater.update()
                     val result = sm.sync(false) {
                         runOnUiThread {
@@ -621,16 +628,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     fun syncNow() {
         if (isDestroyed) return
         syncMessage = ""
-        pdialog = indeterminateProgressDialog(title = R.string.progress_syncing, message = R.string.progress_syncing)
-        (pdialog as ProgressDialog).setCanceledOnTouchOutside(false)
-        (pdialog as ProgressDialog).setCancelable(false)
-        doAsync {
+        pdialog = ProgressDialog(this).apply {
+            isIndeterminate = true
+            setMessage(getString(R.string.progress_syncing))
+            setTitle(R.string.progress_syncing)
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+            show()
+        }
+        val activity = this
+        bgScope.launch {
             if (!(application as PretixScan).syncLock.tryLock()) {
                 runOnUiThread {
-                    alert(Material3, getString(R.string.error_sync_in_background)).show()
-                    (pdialog as ProgressDialog).dismiss()
+                    MaterialAlertDialogBuilder(activity).setMessage(R.string.error_sync_in_background).create().show()
+                    pdialog?.dismiss()
                 }
-                return@doAsync
+                return@launch
             }
             try {
                 sm.sync(true) { current_action ->
@@ -640,7 +653,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         }
                         reloadSyncStatus()
                         syncMessage = current_action
-                        (pdialog as ProgressDialog).setMessage(current_action)
+                        pdialog?.setMessage(current_action)
                     }
                 }
                 runOnUiThread {
@@ -648,9 +661,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                         return@runOnUiThread
                     }
                     reload()
-                    (pdialog as ProgressDialog).dismiss()
+                    pdialog?.dismiss()
                     if (conf.lastFailedSync > 0) {
-                        alert(Material3, conf.lastFailedSyncMsg).show()
+                        MaterialAlertDialogBuilder(activity).setMessage(conf.lastFailedSyncMsg).create().show()
                     }
                 }
             } catch (e: SyncManager.EventSwitchRequested) {
@@ -658,7 +671,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (isDestroyed) {
                         return@runOnUiThread
                     }
-                    (pdialog as ProgressDialog).dismiss()
+                    pdialog?.dismiss()
                     conf.eventSelection = listOf(EventSelection(
                             eventSlug = e.eventSlug,
                             eventName = e.eventName,
@@ -680,9 +693,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (BuildConfig.SENTRY_DSN != null) {
                         Sentry.captureException(e)
                     }
-                    (pdialog as ProgressDialog).dismiss()
-                    alert(Material3, e.message
-                            ?: getString(R.string.error_unknown_exception)).show()
+                    pdialog?.dismiss()
+                    MaterialAlertDialogBuilder(activity)
+                        .setMessage(e.message ?: getString(R.string.error_unknown_exception))
+                        .create().show()
                 }
             } finally {
                 (application as PretixScan).syncLock.unlock()
@@ -894,7 +908,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
         }
 
-        doAsync {
+        bgScope.launch {
             var checkResult: TicketCheckProvider.CheckResult? = null
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
@@ -1366,9 +1380,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         val myRestrictionsMgr = ctx.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager?
                 ?: return
         val restrictions = myRestrictionsMgr.applicationRestrictions
+        val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
 
         for (key in restrictions.keySet()) {
-            defaultSharedPreferences.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
+            prefs.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
         }
     }
 

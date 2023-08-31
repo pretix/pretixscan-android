@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CalendarView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
@@ -28,9 +29,10 @@ import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityEventSelectBinding
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarDayBinding
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarHeaderBinding
-import eu.pretix.pretixscan.utils.Material3
 import eu.pretix.pretixscan.utils.daysOfWeekFromLocale
-import org.jetbrains.anko.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDateTime
 import java.time.LocalDate
@@ -48,6 +50,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     private lateinit var mRunnable: Runnable
     private val today = LocalDate.now()
     private var selectedDate: LocalDate = today
+    val bgScope = CoroutineScope(Dispatchers.IO)
 
     companion object {
         const val EVENT_SLUG = "event_slug"
@@ -197,31 +200,34 @@ class EventSelectActivity : MorphingDialogActivity() {
         eventsAdapter.submitList(emptyList())
         binding.eventSelectList!!.eventsList.adapter = eventsAdapter
 
-        doAsync {
+        val activity = this
+        bgScope.launch {
             val events: List<RemoteEvent>
             try {
                 val selectedAsJodaTime = LocalDateTime(selectedDate.atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()).toDateTime(DateTimeZone.getDefault())
                 events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null, null)
             } catch (e: DeviceAccessRevokedException) {
                 runOnUiThread {
-                    alert(Material3, R.string.error_access_revoked) {
-                        okButton {
+                    MaterialAlertDialogBuilder(activity).apply {
+                        setMessage(R.string.error_access_revoked)
+                        setPositiveButton(R.string.ok) { dialog, _ ->
+                            dialog.dismiss()
                             wipeApp(this@EventSelectActivity)
                         }
-                    }.show()
+                    }.create().show()
                 }
-                return@doAsync
+                return@launch
             } catch (e: Exception) {
                 binding.eventSelectList!!.swipeContainer.isRefreshing = false
-                uiThread {
+                runOnUiThread {
                     binding.eventSelectList!!.tvError.text = e.toString()
                     binding.eventSelectList!!.tvError.visibility = View.VISIBLE
                     binding.eventSelectList!!.progressBar.visibility = View.GONE
                     eventsAdapter.submitList(emptyList())
                 }
-                return@doAsync
+                return@launch
             }
-            uiThread {
+            runOnUiThread {
                 binding.eventSelectList!!.progressBar.visibility = View.GONE
                 binding.eventSelectList!!.noEventsMessage.visibility = if (events.isEmpty()) { View.VISIBLE } else { View.GONE }
 
