@@ -11,6 +11,8 @@ try {
 }
 
 android {
+    namespace 'eu.pretix.pretixscan.droid'
+
     compileSdkVersion 33
 
     defaultConfig {
