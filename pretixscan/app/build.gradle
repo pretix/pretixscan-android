@@ -24,14 +24,8 @@ android {
         multiDexEnabled true
     }
 
-    dataBinding {
-        enabled = true
-    }
-	dexOptions {
-		javaMaxHeapSize "3g"
-	}
-
     buildFeatures {
+        dataBinding = true
         viewBinding = true
     }
 
@@ -39,10 +33,6 @@ android {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        viewBinding = true
     }
 
     kotlinOptions {
@@ -125,7 +115,6 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
