@@ -1,16 +1,10 @@
 package eu.pretix.pretixscan.droid.ui
 
-
-import android.app.Fragment
-import android.app.FragmentTransaction
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.PreferenceFragment
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.util.AttributeSet
@@ -18,10 +12,14 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.RawRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
+import androidx.preference.CheckBoxPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.db.ResourceSyncStatus
 import eu.pretix.pretixscan.droid.AppConfig
@@ -34,27 +32,23 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import splitties.toast.toast
 
-class PinSettingsFragment : PreferenceFragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        addPreferencesFromResource(R.xml.preferences_pin)
+class PinSettingsFragment : PreferenceFragmentCompat() {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.preferences_pin, rootKey)
     }
 }
 
 
 class AutoOfflineListPreference : ListPreference {
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
             super(context, attrs, defStyleAttr, defStyleRes)
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    constructor(context: Context?) : super(context)
+    constructor(context: Context) : super(context)
 
     override fun onClick() {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_auto_offline_preference, null)
@@ -78,28 +72,26 @@ class AutoOfflineListPreference : ListPreference {
 }
 
 
-class SettingsFragment : PreferenceFragment() {
+class SettingsFragment : PreferenceFragmentCompat() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        addPreferencesFromResource(R.xml.preferences)
-
-        findPreference("licenses").setOnPreferenceClickListener {
+        findPreference<Preference>("licenses")?.setOnPreferenceClickListener {
             asset_dialog(R.raw.about, R.string.settings_label_licenses)
             return@setOnPreferenceClickListener true
         }
-        val conf = AppConfig(activity)
-        findPreference("pref_scan_offline")?.isEnabled = !conf.proxyMode
-        findPreference("pref_auto_offline")?.isEnabled = !conf.proxyMode
-        findPreference("pref_auto_switch")?.isEnabled = conf.eventSelection.size == 1
-        findPreference("pref_sync_orders")?.isEnabled = !conf.proxyMode
-        findPreference("version")?.summary = BuildConfig.VERSION_NAME
-        findPreference("full_resync")?.setOnPreferenceClickListener {
+        val conf = AppConfig(requireActivity())
+        findPreference<CheckBoxPreference>("pref_scan_offline")?.isEnabled = !conf.proxyMode
+        findPreference<AutoOfflineListPreference>("pref_auto_offline")?.isEnabled = !conf.proxyMode
+        findPreference<CheckBoxPreference>("pref_auto_switch")?.isEnabled = conf.eventSelection.size == 1
+        findPreference<CheckBoxPreference>("pref_sync_orders")?.isEnabled = !conf.proxyMode
+        findPreference<Preference>("version")?.summary = BuildConfig.VERSION_NAME
+        findPreference<Preference>("full_resync")?.setOnPreferenceClickListener {
             // First, delete ResourceSyncStatus. This way the system forgets which data was already
             // pulled and will pull all lists completely instead of using If-Modified-Since or
             // ?modified_since= mechanisms
-            (activity.application as PretixScan).data.delete(ResourceSyncStatus::class.java).get()
+            (requireActivity().application as PretixScan).data.delete(ResourceSyncStatus::class.java).get()
                 .value();
 
             // To make sync faster, we only update records in the local database if their `json_data`
@@ -115,29 +107,29 @@ class SettingsFragment : PreferenceFragment() {
             toast("OK")
             return@setOnPreferenceClickListener true
         }
-        findPreference("pref_scan_offline")?.setOnPreferenceChangeListener { preference, newValue ->
-            (activity.application as PretixScan).connectivityHelper.resetHistory()
+        findPreference<CheckBoxPreference>("pref_scan_offline")?.setOnPreferenceChangeListener { preference, newValue ->
+            (requireActivity().application as PretixScan).connectivityHelper.resetHistory()
             true
         }
-        findPreference("full_delete")?.setOnPreferenceClickListener {
-            MaterialAlertDialogBuilder(activity).apply {
+        findPreference<Preference>("full_delete")?.setOnPreferenceClickListener {
+            MaterialAlertDialogBuilder(requireContext()).apply {
                 setMessage(R.string.full_delete_confirm)
                 setPositiveButton(R.string.yes) { dialog, _ ->
                     dialog.dismiss()
-                    wipeApp(activity!!)
+                    wipeApp(requireActivity())
                 }
                 setNegativeButton(R.string.no) { dialog, _ -> dialog.cancel() }
             }.create().show()
             return@setOnPreferenceClickListener true
         }
 
-        findPreference("pref_print_badges")?.setOnPreferenceChangeListener { preference, any ->
+        findPreference<CheckBoxPreference>("pref_print_badges")?.setOnPreferenceChangeListener { preference, any ->
             if (any == true) {
-                if (!isPackageInstalled("eu.pretix.pretixprint", activity.packageManager)
-                    && !isPackageInstalled("eu.pretix.pretixprint.debug", activity.packageManager)
-                    && !isPackageInstalled("de.silpion.bleuartcompanion", activity.packageManager)
+                if (!isPackageInstalled("eu.pretix.pretixprint", requireActivity().packageManager)
+                    && !isPackageInstalled("eu.pretix.pretixprint.debug", requireActivity().packageManager)
+                    && !isPackageInstalled("de.silpion.bleuartcompanion", requireActivity().packageManager)
                 ) {
-                    MaterialAlertDialogBuilder(activity).apply {
+                    MaterialAlertDialogBuilder(requireContext()).apply {
                         setMessage(R.string.preference_badgeprint_install_pretixprint)
                         setPositiveButton(R.string.yes) { dialog, _ ->
                             dialog.dismiss()
@@ -165,19 +157,20 @@ class SettingsFragment : PreferenceFragment() {
             return@setOnPreferenceChangeListener true
         }
 
-        findPreference("datawedge_install")?.isEnabled =
-            DataWedgeHelper(activity).isInstalled || Build.BRAND == "Zebra"
-        findPreference("datawedge_install")?.setOnPreferenceClickListener {
-            DataWedgeHelper(activity).install(true)
-            toast("OK")
-            true
+        findPreference<Preference>("datawedge_install")?.apply {
+            isEnabled =
+                DataWedgeHelper(requireActivity()).isInstalled || Build.BRAND == "Zebra"
+            setOnPreferenceClickListener {
+                DataWedgeHelper(requireActivity()).install(true)
+                toast("OK")
+                true
+            }
         }
-
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {
         val view = LayoutInflater.from(activity).inflate(R.layout.dialog_about, null, false)
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setView(view)
             .setPositiveButton(R.string.dismiss, null)
@@ -215,7 +208,7 @@ class SettingsFragment : PreferenceFragment() {
     }
 }
 
-class SettingsActivity : AppCompatPreferenceActivity() {
+class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,12 +222,12 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             ))
         ) {
             // Protect against external calls
-            finish();
+            finish()
             return
         }
 
         // Display the fragment as the main content.
-        fragmentManager.beginTransaction()
+        supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, SettingsFragment())
             .commit()
     }
@@ -248,7 +241,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     }
 
     override fun onBackPressed() {
-        if (fragmentManager.backStackEntryCount == 0) {
+        if (supportFragmentManager.backStackEntryCount == 0) {
             NavUtils.navigateUpFromSameTask(this)
         } else {
             super.onBackPressed()
@@ -259,53 +252,15 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         when (item.itemId) {
             // Respond to the action bar's Up/Home button
             android.R.id.home -> {
-                if (fragmentManager.backStackEntryCount == 0) {
+                if (supportFragmentManager.backStackEntryCount == 0) {
                     NavUtils.navigateUpFromSameTask(this)
                 } else {
-                    fragmentManager.popBackStack()
+                    supportFragmentManager.popBackStack()
                 }
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun isValidFragment(fragmentName: String): Boolean {
-        return fragmentName.contains("SettingsFragment")
-    }
-
-
-    override fun onPreferenceStartFragment(caller: PreferenceFragment?, pref: Preference): Boolean {
-        val f: Fragment = Fragment.instantiate(this, pref.fragment, pref.extras)
-        val transaction = fragmentManager.beginTransaction()
-        transaction.replace(android.R.id.content, f)
-        if (pref.titleRes != 0) {
-            transaction.setBreadCrumbTitle(pref.titleRes)
-        } else if (pref.title != null) {
-            transaction.setBreadCrumbTitle(pref.title)
-        }
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack(":android:prefs")
-        transaction.commitAllowingStateLoss()
-        return true
-    }
-
-    /*
-    override fun onPreferenceStartFragment(caller: PreferenceFragment, pref: Preference): Boolean {
-        // Instantiate the new Fragment
-        val args = pref.extras
-        val fragment = fragment.instantiate(
-                classLoader,
-                pref.fragment)
-        fragment.arguments = args
-        fragment.setTargetFragment(caller, 0)
-        // Replace the existing Fragment with the new Fragment
-        fragmentManager.beginTransaction()
-                .replace(android.R.id.content, fragment)
-                .addToBackStack(null)
-                .commit()
-        return true
-    }
-     */
 }
 
