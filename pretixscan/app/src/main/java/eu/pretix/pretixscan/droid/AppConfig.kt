@@ -247,6 +247,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         prefs.edit().putString(PREFS_KEY_DEVICE_KNOWN_GATE_NAME, value ?: "").apply()
     }
 
+    override fun getDeviceKnownGateID(): Long {
+        return prefs.getLong(PREFS_KEY_DEVICE_KNOWN_GATE_ID, 0L)
+    }
+
+    override fun setDeviceKnownGateID(value: Long?) {
+        prefs.edit().putLong(PREFS_KEY_DEVICE_KNOWN_GATE_ID, value ?: 0).apply()
+    }
+
     override fun getDeviceKnownVersion(): Int {
         return prefs.getInt(PREFS_KEY_DEVICE_KNOWN_VERSION, 0)
     }
@@ -406,6 +414,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_SERIAL = "device_pos_serial"
         val PREFS_KEY_DEVICE_KNOWN_NAME = "device_pos_known_name"
         val PREFS_KEY_DEVICE_KNOWN_GATE_NAME = "device_pos_known_gate_name"
+        val PREFS_KEY_DEVICE_KNOWN_GATE_ID = "device_pos_known_gate_id"
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
         val PREFS_KEY_DEVICE_KNOWN_INFO = "device_pos_known_info"
         val PREFS_KEY_KNOWN_PRETIX_VERSION = "known_pretix_version"

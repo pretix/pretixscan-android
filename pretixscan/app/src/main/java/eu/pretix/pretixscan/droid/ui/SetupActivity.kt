@@ -24,7 +24,6 @@ import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_setup.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.json.JSONException
@@ -62,7 +61,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        PERMISSIONS_REQUEST_WRITE_STORAGE);
+                        PERMISSIONS_REQUEST_WRITE_STORAGE)
             } else {
                 try {
                     dataWedgeHelper.install()
@@ -115,7 +114,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     }
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -200,6 +199,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 conf!!.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, BuildConfig.VERSION_CODE)
                 conf!!.deviceKnownName = init.device_name
                 conf!!.deviceKnownGateName = init.gate_name ?: ""
+                conf!!.deviceKnownGateID = init.gate_id ?: 0
                 conf!!.proxyMode = token.startsWith("proxy=")
                 if (conf!!.proxyMode) {
                     conf!!.autoSwitchRequested = false
@@ -223,7 +223,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     finish()
                 }
             } catch (e: SetupBadRequestException) {
-                e.printStackTrace();
+                e.printStackTrace()
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread
@@ -233,7 +233,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
                 return@doAsync
             } catch (e: SSLException) {
-                e.printStackTrace();
+                e.printStackTrace()
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread
@@ -243,7 +243,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
                 return@doAsync
             } catch (e: IOException) {
-                e.printStackTrace();
+                e.printStackTrace()
                 runOnUiThread {
                     if (isDestroyed) {
                         return@runOnUiThread
