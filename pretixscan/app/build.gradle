@@ -148,12 +148,12 @@ dependencies {
     implementation 'net.i2p.crypto:eddsa:0.3.0'
     implementation 'com.google.protobuf:protobuf-javalite:3.21.1'
 
-    implementation 'com.facebook.soloader:soloader:0.10.3'
-    debugImplementation 'com.facebook.flipper:flipper:0.139.0'
-    debugImplementation 'com.facebook.soloader:soloader:0.10.3'
-    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.139.0'
+    implementation 'com.facebook.soloader:soloader:0.10.5'
+    debugImplementation 'com.facebook.flipper:flipper:0.191.0'
+    debugImplementation 'com.facebook.soloader:soloader:0.10.5'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.191.0'
 
-    releaseImplementation 'com.facebook.flipper:flipper-noop:0.139.0'
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.191.0'
 
     // libpretixui
     implementation(project(':libpretixui-android')) {
