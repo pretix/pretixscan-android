@@ -282,9 +282,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     toast(e.message ?: getString(R.string.error_unknown_exception))
                 }
             } catch (e: Exception) {
-                if (BuildConfig.SENTRY_DSN != null) {
-                    Sentry.captureException(e)
-                } else {
+                Sentry.captureException(e)
+                if (BuildConfig.DEBUG) {
                     e.printStackTrace()
                 }
                 runOnUiThread {
@@ -690,9 +689,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     if (isDestroyed) {
                         return@runOnUiThread
                     }
-                    if (BuildConfig.SENTRY_DSN != null) {
-                        Sentry.captureException(e)
-                    }
+                    Sentry.captureException(e)
                     pdialog?.dismiss()
                     MaterialAlertDialogBuilder(activity)
                         .setMessage(e.message ?: getString(R.string.error_unknown_exception))
@@ -925,9 +922,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     }
                 }
             } catch (e: Exception) {
-                if (BuildConfig.SENTRY_DSN != null) {
-                    Sentry.captureException(e)
-                } else {
+                Sentry.captureException(e)
+                if (BuildConfig.DEBUG) {
                     e.printStackTrace()
                 }
                 (application as PretixScan).connectivityHelper.recordError()

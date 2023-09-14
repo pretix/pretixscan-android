@@ -34,9 +34,6 @@
         <meta-data
             android:name="android.content.APP_RESTRICTIONS"
             android:resource="@xml/app_restrictions" />
-        <meta-data
-            android:name="io.sentry.auto-init"
-            android:value="false" />
 
         <activity
             android:name=".ui.MainActivity"
@@ -101,6 +98,15 @@
         <activity
             android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
             android:exported="true" />
+
+        <meta-data android:name="io.sentry.dsn" android:value="${SENTRY_DSN}" />
+        <meta-data android:name="io.sentry.auto-session-tracking.enable" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.activity-lifecycle" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.app-lifecycle" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.system-events" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.network-events" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.app-components" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="false" />
     </application>
 
 </manifest>
