@@ -12,9 +12,6 @@ import eu.pretix.pretixscan.droid.anim.MorphViewToDialog
 
 abstract class MorphingDialogActivity : AppCompatActivity() {
     protected fun setupTransition(@ColorInt backgroundStart: Int, duration: Int = 300) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            return  //Show dialog normally if below Lollipop
-
         val arcMotion = ArcMotion()
         arcMotion.minimumHorizontalAngle = 50f
         arcMotion.minimumVerticalAngle = 50f
