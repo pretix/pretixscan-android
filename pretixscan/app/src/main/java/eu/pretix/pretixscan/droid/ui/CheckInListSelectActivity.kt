@@ -133,7 +133,8 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
         checkInListAdapter = CheckInListAdapter(null)
         progressBar.visibility = View.VISIBLE
         val listOfLists = getAllLists()
-        if (forceSync || listOfLists.isEmpty()) {
+        val subeventChanged = !conf.eventSelection.map { it.subEventId ?: 0 }.contains(intent!!.getLongExtra(SUBEVENT_ID, 0))
+        if (forceSync || listOfLists.isEmpty() || subeventChanged) {
             (application as PretixScan).syncLock.withLock {
                 syncSync()
             }
