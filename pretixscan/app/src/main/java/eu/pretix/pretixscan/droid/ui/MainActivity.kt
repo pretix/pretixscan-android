@@ -120,6 +120,8 @@ class ViewDataHolder(private val ctx: Context) {
     val detail4 = ObservableField<String>()
     val detail5 = ObservableField<String>()
     val detail6 = ObservableField<String>()
+    val detail7 = ObservableField<String>()
+    val detail8 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val kioskMode = ObservableField<Boolean>()
@@ -773,6 +775,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         view_data.detail4.set(null)
         view_data.detail5.set(null)
         view_data.detail6.set(null)
+        view_data.detail7.set(null)
+        view_data.detail8.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
@@ -1130,17 +1134,31 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.detail4.set(null)
         }
-        if (result.firstScanned != null) {
-            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-            view_data.detail6.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
-        } else {
-            view_data.detail6.set(null)
-        }
         if (!result.reasonExplanation.isNullOrBlank()) {
             view_data.detail5.set(result.reasonExplanation)
         } else {
             view_data.detail5.set(null)
         }
+        if (!result.shownAnswers.isNullOrEmpty()) {
+            val answers =
+                result.shownAnswers!!.joinToString("\n") { it.question.question + ": " + it.currentValue }
+                .trim()
+            view_data.detail6.set(answers)
+        } else {
+            view_data.detail6.set(null)
+        }
+        if (!result.checkinTexts.isNullOrEmpty()) {
+            view_data.detail7.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
+        } else {
+            view_data.detail7.set(null)
+        }
+        if (result.firstScanned != null) {
+            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+            view_data.detail8.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+        } else {
+            view_data.detail8.set(null)
+        }
+
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
             val event = (application as PretixScan).data.select(Event::class.java)
                     .where(Event.SLUG.eq(result.eventSlug))

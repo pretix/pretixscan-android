@@ -46,7 +46,7 @@
                     app:srcCompat="@drawable/ic_cloud_off_white_24" />
 
                 <TextView
-                    android:id="@+id/textView10"
+                    android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -379,60 +379,81 @@
                                     app:layout_constraintTop_toBottomOf="@+id/textView3"
                                     tools:text="Detail" />
 
-                                <TextView
-                                    android:id="@+id/textView6"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical"
                                     android:layout_marginStart="16dp"
-                                    android:layout_marginTop="4dp"
                                     android:layout_marginEnd="16dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail4}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_small"
-                                    android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView5"
-                                    tools:text="Detail" />
+                                    app:layout_constraintTop_toBottomOf="@+id/textView5">
 
-                                <TextView
-                                    android:id="@+id/textView7"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="4dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail5}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_small"
-                                    android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView6"
-                                    tools:text="Detail" />
+                                    <TextView
+                                        android:id="@+id/textView6"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail4}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
+                                        tools:text="Detail" />
 
-                                <TextView
-                                    android:id="@+id/textView8"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="4dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail6}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_small"
-                                    android:visibility="@{data.detail6 != null &amp;&amp; !&quot;null&quot;.equals(data.detail6) ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView7"
-                                    tools:text="Detail" />
+                                    <TextView
+                                        android:id="@+id/textView7"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail5}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
+                                        tools:text="Detail" />
+
+                                    <TextView
+                                        android:id="@+id/textView8"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail6}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.detail6 != null &amp;&amp; !&quot;null&quot;.equals(data.detail6) ? View.VISIBLE : View.GONE}"
+                                        tools:text="Detail" />
+
+                                    <TextView
+                                        android:id="@+id/textView9"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail7}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.detail7 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
+                                        tools:text="Detail" />
+
+                                    <TextView
+                                        android:id="@+id/textView10"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail8}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.detail8 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
+                                        tools:text="Detail" />
+                                </LinearLayout>
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
