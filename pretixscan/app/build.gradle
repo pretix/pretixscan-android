@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode 82
         versionName "2.4.0"

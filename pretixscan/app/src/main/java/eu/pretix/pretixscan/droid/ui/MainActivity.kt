@@ -723,29 +723,27 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         (application as PretixScan).connectivityHelper.addListener(this)
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            val networkRequest = NetworkRequest.Builder()
-                    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    .build()
-            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            fun check() {
-                (application as PretixScan).connectivityHelper.setHardOffline(connectivityManager.activeNetworkInfo?.isConnectedOrConnecting != true)
-            }
-
-            networkCallback = object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    (application as PretixScan).connectivityHelper.setHardOffline(false)
-                }
-
-                override fun onLost(network: Network) {
-                    check()
-                }
-            }
-            check()
-            connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
+        val networkRequest = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+                .build()
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        fun check() {
+            (application as PretixScan).connectivityHelper.setHardOffline(connectivityManager.activeNetworkInfo?.isConnectedOrConnecting != true)
         }
+
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                (application as PretixScan).connectivityHelper.setHardOffline(false)
+            }
+
+            override fun onLost(network: Network) {
+                check()
+            }
+        }
+        check()
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
     }
 
     fun hideSearchCard() {
@@ -832,7 +830,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         hardwareScanner.stop(this)
 
-        if (Build.VERSION.SDK_INT >= 21 && networkCallback != null) {
+        if (networkCallback != null) {
             val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(networkCallback!!)
         }
@@ -1367,11 +1365,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     fun getRestrictions(ctx: Context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return
-        }
         val myRestrictionsMgr = ctx.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager?
                 ?: return
         val restrictions = myRestrictionsMgr.applicationRestrictions
