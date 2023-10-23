@@ -81,7 +81,7 @@ android {
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
-            manifestPlaceholders["SENTRY_DSN"] = sentry_dsn
+            manifestPlaceholders["SENTRY_DSN"] = ""
         }
     }
 
