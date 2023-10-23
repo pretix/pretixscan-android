@@ -1,6 +1,7 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.Manifest
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -15,8 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
@@ -181,7 +180,13 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         }
         ongoing_setup = true
 
-        val pdialog = Snackbar.make(binding.root, R.string.setup_progress, BaseTransientBottomBar.LENGTH_INDEFINITE)
+        val pdialog = ProgressDialog(this).apply {
+            isIndeterminate = true
+            setMessage(getString(R.string.setup_progress))
+            setTitle(R.string.setup_progress)
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+        }
 
         fun resume() {
             pdialog.dismiss()
