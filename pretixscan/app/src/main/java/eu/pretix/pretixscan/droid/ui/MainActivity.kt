@@ -1077,6 +1077,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     TicketCheckProvider.CheckInType.EXIT -> getString(R.string.scan_result_exit)
                     TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
                 }
+                TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
                 TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
