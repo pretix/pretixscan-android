@@ -28,6 +28,7 @@
             <include layout="@layout/include_main_toolbar" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_offline_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pretix_brand_red"
@@ -51,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="32dp"
                     android:layout_marginBottom="4dp"
                     android:text="@string/checktype_offline"
                     android:textColor="@color/white"
@@ -100,6 +101,7 @@
                         app:srcCompat="@drawable/ic_exit_orange_24dp" />
 
                     <TextView
+                        android:id="@+id/tv_scanmode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
@@ -110,6 +112,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tv_config"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
@@ -125,11 +128,14 @@
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl_main"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:keepScreenOn="true">
+                    android:keepScreenOn="true"
+                    tools:visibility="visible">
 
                     <ImageView
+                        android:id="@+id/iv_entry"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginTop="32dp"
@@ -140,6 +146,7 @@
                         app:srcCompat="@drawable/ic_entry_gray_24dp" />
 
                     <ImageView
+                        android:id="@+id/iv_exit"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginTop="32dp"
@@ -160,7 +167,8 @@
                         android:gravity="bottom"
                         android:maxLines="12"
                         android:singleLine="true"
-                        android:text="TextView"
+                        android:text=""
+                        tools:text="synchronization status message"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/fab_flash"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -187,105 +195,96 @@
                         app:layout_constraintEnd_toStartOf="@id/fab_focus"
                         app:srcCompat="@drawable/ic_lightbulb_white_24dp" />
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/card_result"
-                        style="?attr/materialCardViewElevatedStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginEnd="16dp"
-                        android:animateLayoutChanges="true"
-                        app:layout_constrainedWidth="true"
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        app:layout_constraintBottom_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_max="800dp">
+                        app:layout_constraintTop_toTopOf="parent">
 
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_result"
+                            style="?attr/materialCardViewElevatedStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:animateLayoutChanges="true"
+                            android:clipChildren="true"
+                            app:layout_constrainedWidth="true"
+                            tools:visibility="visible">
 
-                            <androidx.constraintlayout.widget.ConstraintLayout
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@{data.getColor(data.result_state)}"
-                                android:minHeight="@dimen/card_result_min_height"
-                                android:paddingBottom="@dimen/card_result_padding_bottom"
-                                tools:background="@color/pretix_brand_green">
+                                android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/textView1"
-                                    android:layout_width="0dp"
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:id="@+id/event_bar"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:gravity="left"
-                                    android:text="@{data.event_name}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_medium"
+                                    android:background="@{data.getColor(data.result_state)}"
+                                    android:backgroundTint="#19000000"
+                                    android:backgroundTintMode="src_atop"
                                     android:visibility="@{data.event_name != null ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintEnd_toStartOf="@+id/ibPrint"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
+                                    tools:background="@color/pretix_brand_green">
 
-                                <Button
-                                    android:id="@+id/ibPrint"
-                                    style="@style/Widget.Material3.Button.IconButton"
-                                    android:layout_width="wrap_content"
+                                    <TextView
+                                        android:id="@+id/textView1"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:gravity="start"
+                                        android:text="@{data.event_name}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_small"
+                                        android:visibility="@{data.event_name != null ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        tools:text="Event Name (when multievent)"
+                                        tools:visibility="visible" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="16dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:visibility="@{data.show_print ? View.VISIBLE : View.GONE}"
-                                    app:icon="@drawable/ic_print_black_24dp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="1.0"
-                                    app:layout_constraintStart_toEndOf="@+id/frameLayout"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <FrameLayout
-                                    android:id="@+id/frameLayout"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:padding="@dimen/card_result_icon_padding"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@id/textView1">
+                                    android:background="@{data.getColor(data.result_state)}"
+                                    android:minHeight="@dimen/card_result_min_height"
+                                    android:paddingBottom="@dimen/card_result_padding_bottom"
+                                    tools:background="@color/pretix_brand_green">
 
                                     <ImageView
-                                        android:id="@+id/ivStatusIconSuccess"
-                                        android:layout_width="@dimen/card_result_icon_size"
-                                        android:layout_height="@dimen/card_result_icon_size"
-                                        android:visibility="@{data.result_state == ResultState.SUCCESS ? View.VISIBLE : View.GONE}"
-                                        app:srcCompat="@drawable/ic_check_circle_white_24dp" />
+                                        android:id="@+id/ivResultOffline"
+                                        android:layout_width="22dp"
+                                        android:layout_height="22dp"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginTop="8dp"
+                                        android:visibility="@{data.result_offline ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:srcCompat="@drawable/ic_cloud_off_white_24" />
 
-                                    <ImageView
-                                        android:id="@+id/ivStatusIconSuccessExit"
-                                        android:layout_width="@dimen/card_result_icon_size"
-                                        android:layout_height="@dimen/card_result_icon_size"
-                                        android:visibility="@{data.result_state == ResultState.SUCCESS_EXIT ? View.VISIBLE : View.GONE}"
-                                        app:srcCompat="@drawable/ic_exit_white_24dp"
-                                        tools:visibility="gone" />
-
-                                    <ImageView
-                                        android:id="@+id/ivStatusIconWarning"
-                                        android:layout_width="@dimen/card_result_icon_size"
-                                        android:layout_height="@dimen/card_result_icon_size"
-                                        android:visibility="@{data.result_state == ResultState.WARNING ? View.VISIBLE : View.GONE}"
-                                        app:srcCompat="@drawable/ic_warning_white_24dp"
-                                        tools:visibility="gone" />
-
-                                    <ImageView
-                                        android:id="@+id/ivStatusIconError"
-                                        android:layout_width="@dimen/card_result_icon_size"
-                                        android:layout_height="@dimen/card_result_icon_size"
-                                        android:visibility="@{data.result_state == ResultState.ERROR ? View.VISIBLE : View.GONE}"
-                                        app:srcCompat="@drawable/ic_error_white_24dp"
-                                        tools:visibility="gone" />
+                                    <Button
+                                        android:id="@+id/ibPrint"
+                                        style="@style/Widget.Material3.Button.IconButton"
+                                        android:layout_width="48dp"
+                                        android:layout_height="56dp"
+                                        android:visibility="@{data.show_print ? View.VISIBLE : View.GONE}"
+                                        app:icon="@drawable/ic_print_black_24dp"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintHorizontal_bias="1.0"
+                                        app:layout_constraintStart_toEndOf="@+id/fl_statusicon"
+                                        app:layout_constraintTop_toTopOf="parent" />
 
                                     <ProgressBar
                                         android:id="@+id/pbResultProgress"
@@ -293,207 +292,270 @@
                                         android:layout_width="@dimen/card_result_icon_size"
                                         android:layout_height="@dimen/card_result_icon_size"
                                         android:visibility="@{data.result_state == ResultState.LOADING ? View.VISIBLE : View.GONE}"
-                                        tools:visibility="gone" />
-                                </FrameLayout>
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        tools:visibility="invisible" />
 
-                                <TextView
-                                    android:id="@+id/textView2"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="0dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:text="@{data.result_text}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_large"
-                                    android:visibility="@{data.result_text != null ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+                                    <FrameLayout
+                                        android:layout_width="16dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginStart="16dp"
+                                        android:clipChildren="true"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent">
 
-                                <ImageView
-                                    android:id="@+id/ivResultOffline"
-                                    android:layout_width="22dp"
-                                    android:layout_height="22dp"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="16dp"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    android:visibility="@{data.result_offline ? View.VISIBLE : View.GONE}"
-                                    app:srcCompat="@drawable/ic_cloud_off_white_24" />
+                                        <TextView
+                                            android:id="@+id/textView4"
+                                            android:layout_width="100dp"
+                                            android:layout_height="100dp"
+                                            android:layout_marginLeft="-5dp"
+                                            android:fontFamily="monospace"
+                                            android:gravity="center|top"
+                                            android:maxLines="1"
+                                            android:rotation="270"
+                                            android:text="@{data.detail2}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/card_result_test_size_medium"
+                                            android:visibility="@{data.detail2 != null ? View.VISIBLE : View.GONE}"
+                                            tools:text="XMXMX-2" />
+                                    </FrameLayout>
 
-                                <TextView
-                                    android:id="@+id/textView3"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail1}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_medium"
-                                    android:visibility="@{data.detail1 != null ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView2"
-                                    tools:text="Detail" />
+                                    <FrameLayout
+                                        android:id="@+id/fl_statusicon"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="@dimen/card_result_icon_padding"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView4"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="0dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail2}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_medium"
-                                    android:visibility="@{data.detail2 != null ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView3"
-                                    tools:text="Detail" />
+                                        <ImageView
+                                            android:id="@+id/ivStatusIconSuccess"
+                                            android:layout_width="@dimen/card_result_icon_size"
+                                            android:layout_height="@dimen/card_result_icon_size"
+                                            android:layout_gravity="center"
+                                            android:visibility="@{data.result_state == ResultState.SUCCESS ? View.VISIBLE : View.GONE}"
+                                            app:srcCompat="@drawable/ic_check_circle_white_24dp" />
 
-                                <TextView
-                                    android:id="@+id/textView5"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginTop="0dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:text="@{data.detail3}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/card_result_test_size_medium"
-                                    android:visibility="@{data.detail3 != null &amp;&amp; !&quot;null&quot;.equals(data.detail3) ? View.VISIBLE : View.GONE}"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toEndOf="@+id/textView4"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView3"
-                                    tools:text="Detail" />
+                                        <ImageView
+                                            android:id="@+id/ivStatusIconSuccessExit"
+                                            android:layout_width="@dimen/card_result_icon_size"
+                                            android:layout_height="@dimen/card_result_icon_size"
+                                            android:visibility="@{data.result_state == ResultState.SUCCESS_EXIT ? View.VISIBLE : View.GONE}"
+                                            app:srcCompat="@drawable/ic_exit_white_24dp"
+                                            tools:visibility="gone" />
 
-                                <LinearLayout
+                                        <ImageView
+                                            android:id="@+id/ivStatusIconWarning"
+                                            android:layout_width="@dimen/card_result_icon_size"
+                                            android:layout_height="@dimen/card_result_icon_size"
+                                            android:visibility="@{data.result_state == ResultState.WARNING ? View.VISIBLE : View.GONE}"
+                                            app:srcCompat="@drawable/ic_warning_white_24dp"
+                                            tools:visibility="gone" />
+
+                                        <ImageView
+                                            android:id="@+id/ivStatusIconError"
+                                            android:layout_width="@dimen/card_result_icon_size"
+                                            android:layout_height="@dimen/card_result_icon_size"
+                                            android:visibility="@{data.result_state == ResultState.ERROR ? View.VISIBLE : View.GONE}"
+                                            app:srcCompat="@drawable/ic_error_white_24dp"
+                                            tools:visibility="gone" />
+
+                                    </FrameLayout>
+
+                                    <TextView
+                                        android:id="@+id/textView2"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="38dp"
+                                        android:layout_marginEnd="38dp"
+                                        android:gravity="center_horizontal|top"
+                                        android:text="@{data.result_text}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_large"
+                                        android:visibility="@{data.result_text != null ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/fl_statusicon"
+                                        tools:text="Result Text: Valid Ticket" />
+
+                                    <TextView
+                                        android:id="@+id/textView3"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="38dp"
+                                        android:layout_marginEnd="38dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail1}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_medium"
+                                        android:visibility="@{data.detail1 != null ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/textView2"
+                                        tools:text="Detail 1" />
+
+                                    <TextView
+                                        android:id="@+id/textView5"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="38dp"
+                                        android:layout_marginEnd="38dp"
+                                        android:gravity="center"
+                                        android:text="@{data.detail3}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/card_result_test_size_medium"
+                                        android:visibility="@{data.detail3 != null &amp;&amp; !&quot;null&quot;.equals(data.detail3) ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/textView3"
+                                        tools:text="Detail 3" />
+
+                                    <LinearLayout
+                                        android:id="@+id/linearLayout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginStart="38dp"
+                                        android:layout_marginEnd="38dp"
+                                        android:orientation="vertical"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                                        <TextView
+                                            android:id="@+id/textView6"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:gravity="center"
+                                            android:text="@{data.detail4}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Detail 4" />
+
+                                        <TextView
+                                            android:id="@+id/textView7"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:gravity="center"
+                                            android:text="@{data.detail5}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Detail 5" />
+
+                                    </LinearLayout>
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:orientation="vertical"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginEnd="16dp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView5">
-
-                                    <TextView
-                                        android:id="@+id/textView6"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:gravity="center"
-                                        android:text="@{data.detail4}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_small"
-                                        android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
-                                        tools:text="Detail" />
-
-                                    <TextView
-                                        android:id="@+id/textView7"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:gravity="center"
-                                        android:text="@{data.detail5}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_small"
-                                        android:visibility="@{data.detail5 != null &amp;&amp; !&quot;null&quot;.equals(data.detail5) ? View.VISIBLE : View.GONE}"
-                                        tools:text="Detail" />
-
-                                    <TextView
-                                        android:id="@+id/textView8"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:gravity="center"
-                                        android:text="@{data.detail6}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_small"
-                                        android:visibility="@{data.detail6 != null &amp;&amp; !&quot;null&quot;.equals(data.detail6) ? View.VISIBLE : View.GONE}"
-                                        tools:text="Detail" />
-
-                                    <TextView
-                                        android:id="@+id/textView9"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:gravity="center"
-                                        android:text="@{data.detail7}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_small"
-                                        android:visibility="@{data.detail7 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
-                                        tools:text="Detail" />
-
-                                    <TextView
-                                        android:id="@+id/textView10"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:gravity="center"
-                                        android:text="@{data.detail8}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_small"
-                                        android:visibility="@{data.detail8 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
-                                        tools:text="Detail" />
-                                </LinearLayout>
-
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/attention_flag"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@color/pretix_brand_blue"
-                                android:visibility="@{data.attention ? View.VISIBLE : View.GONE}">
-
-                                <ImageView
-                                    android:id="@+id/imageView"
-                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginBottom="8dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/ic_warning_white_24dp" />
+                                    android:background="@color/transparent"
+                                    android:visibility="@{data.detail6 != null || data.detail7 != null || data.detail8 != null ? View.VISIBLE : View.GONE}">
 
-                                <TextView
-                                    android:id="@+id/textView"
-                                    android:layout_width="0dp"
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginEnd="16dp"
+                                        android:orientation="vertical"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent">
+
+                                        <TextView
+                                            android:id="@+id/textView8"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:gravity="start"
+                                            android:text="@{data.detail6}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/text_color"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.detail6 != null &amp;&amp; !&quot;null&quot;.equals(data.detail6) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Detail 6" />
+
+                                        <TextView
+                                            android:id="@+id/textView9"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:gravity="start"
+                                            android:text="@{data.detail7}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/text_color"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.detail7 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Detail 7" />
+
+                                        <TextView
+                                            android:id="@+id/textView10"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:gravity="start"
+                                            android:text="@{data.detail8}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/text_color"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.detail8 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Detail 8" />
+                                    </LinearLayout>
+
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:id="@+id/attention_flag"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:text="@string/ticket_attention"
-                                    android:textColor="@color/white"
-                                    android:textStyle="bold"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toEndOf="@+id/imageView"
-                                    app:layout_constraintTop_toTopOf="parent" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                                    android:background="@color/pretix_brand_blue"
+                                    android:visibility="@{data.attention ? View.VISIBLE : View.GONE}">
+
+                                    <ImageView
+                                        android:id="@+id/imageView"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:srcCompat="@drawable/ic_warning_white_24dp" />
+
+                                    <TextView
+                                        android:id="@+id/textView"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:text="@string/ticket_attention"
+                                        android:textColor="@color/white"
+                                        android:textStyle="bold"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toEndOf="@+id/imageView"
+                                        app:layout_constraintTop_toTopOf="parent" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </ScrollView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/card_search"
