@@ -198,12 +198,13 @@
                         app:srcCompat="@drawable/ic_lightbulb_white_24dp" />
 
                     <ScrollView
+                        android:id="@+id/svCardOverflow"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:clipToPadding="false"
                         android:paddingTop="16dp"
                         android:paddingBottom="16dp"
-                        app:layout_constraintBottom_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/pbCardHidingTimer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -608,6 +609,19 @@
                         </FrameLayout>
 
                     </com.google.android.material.card.MaterialCardView>
+
+                    <ProgressBar
+                        android:id="@+id/pbCardHidingTimer"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:visibility="@{data.hideTimerVisible ? View.VISIBLE : View.GONE}"
+                        android:progress="@{data.hideTimerProgress}"
+                        android:progressTint="@color/pretix_brand_light"
+                        android:progressBackgroundTint="@color/pretix_brand_lightgrey"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

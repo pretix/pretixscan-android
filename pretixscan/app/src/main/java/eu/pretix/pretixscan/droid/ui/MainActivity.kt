@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -38,6 +39,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
@@ -134,6 +136,8 @@ class ViewDataHolder(private val ctx: Context) {
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
     val isOffline = ObservableField<Boolean>()
+    val hideTimerVisible = ObservableField<Boolean>()
+    val hideTimerProgress = ObservableField<Int>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -153,6 +157,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private lateinit var conf: AppConfig
     private val handler = Handler()
     private val hideHandler = Handler()
+    private var hideAnimation: ValueAnimator? = null
     private var card_state = ResultCardState.HIDDEN
     private var view_data = ViewDataHolder(this)
     private var mediaPlayers: MutableMap<Int, MediaPlayer> = mutableMapOf()
@@ -390,7 +395,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         card_result.setOnTouchListener(object : OnSwipeTouchListener(this) {
             override fun onSwipeLeft() {
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 card_state = ResultCardState.HIDDEN
                 card_result.clearAnimation()
                 val displayMetrics = DisplayMetrics()
@@ -400,7 +405,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
 
             override fun onSwipeRight() {
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 card_state = ResultCardState.HIDDEN
                 card_result.clearAnimation()
                 val displayMetrics = DisplayMetrics()
@@ -409,6 +414,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 hideHandler.postDelayed(hideRunnable, 250)
             }
         })
+
+        binding.svCardOverflow.viewTreeObserver.addOnScrollChangedListener {
+            stopHidingTimer()
+        }
     }
 
     override fun onCompletion(p0: MediaPlayer?) {
@@ -566,6 +575,32 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             hideCard()
         }
+    }
+
+    fun stopHidingTimer() {
+        hideHandler.removeCallbacks(hideRunnable)
+        hideAnimation?.cancel()
+        view_data.hideTimerVisible.set(false)
+    }
+
+    fun startHidingTimer() {
+        val HIDING_TIME_MILLIS = 30000L
+        view_data.hideTimerVisible.set(true)
+        view_data.hideTimerProgress.set(100)
+
+        hideAnimation = ValueAnimator.ofInt(100, 0).apply {
+            duration = HIDING_TIME_MILLIS
+            interpolator = LinearInterpolator()
+            addUpdateListener {
+                view_data.hideTimerProgress.set(it.animatedValue as Int)
+            }
+            doOnEnd {
+                view_data.hideTimerVisible.set(false)
+            }
+        }
+
+        hideHandler.postDelayed(hideRunnable, HIDING_TIME_MILLIS)
+        hideAnimation!!.start()
     }
 
     private val syncRunnable = Runnable {
@@ -768,7 +803,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     fun showLoadingCard() {
-        hideHandler.removeCallbacks(hideRunnable)
+        stopHidingTimer()
         binding.cardResult.clearAnimation()
         view_data.resultState.set(LOADING)
         view_data.resultText.set(null)
@@ -1056,12 +1091,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             }
 
-        hideHandler.removeCallbacks(hideRunnable)
-        hideHandler.postDelayed(hideRunnable, 30000)
+        stopHidingTimer()
+        startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG)
             dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1070,7 +1105,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
             view_data.resultState.set(DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1439,7 +1474,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
 
             dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastIgnoreUnpaid, values, true) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.onRestoreInstanceState(answers)
