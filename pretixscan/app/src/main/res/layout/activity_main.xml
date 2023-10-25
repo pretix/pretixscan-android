@@ -270,7 +270,7 @@
                                         android:layout_width="22dp"
                                         android:layout_height="22dp"
                                         android:layout_marginStart="16dp"
-                                        android:layout_marginTop="8dp"
+                                        android:layout_marginTop="16dp"
                                         android:visibility="@{data.result_offline ? View.VISIBLE : View.GONE}"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent"
@@ -301,36 +301,13 @@
                                         tools:visibility="invisible" />
 
                                     <FrameLayout
-                                        android:layout_width="16dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_marginStart="16dp"
-                                        android:clipChildren="true"
-                                        app:layout_constraintBottom_toBottomOf="parent"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent">
-
-                                        <TextView
-                                            android:id="@+id/textView4"
-                                            android:layout_width="100dp"
-                                            android:layout_height="100dp"
-                                            android:layout_marginLeft="-5dp"
-                                            android:fontFamily="monospace"
-                                            android:gravity="center|top"
-                                            android:maxLines="1"
-                                            android:rotation="270"
-                                            android:text="@{data.detail2}"
-                                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                            android:textColor="@color/white"
-                                            android:textSize="@dimen/card_result_test_size_medium"
-                                            android:visibility="@{data.detail2 != null ? View.VISIBLE : View.GONE}"
-                                            tools:text="XMXMX-2" />
-                                    </FrameLayout>
-
-                                    <FrameLayout
                                         android:id="@+id/fl_statusicon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/card_result_icon_padding"
+                                        android:paddingTop="@dimen/card_result_icon_padding"
+                                        android:paddingStart="@dimen/card_result_icon_padding"
+                                        android:paddingEnd="@dimen/card_result_icon_padding"
+                                        android:paddingBottom="4dp"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent">
@@ -369,34 +346,29 @@
 
                                     </FrameLayout>
 
-                                    <TextView
-                                        android:id="@+id/textView2"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="38dp"
-                                        android:layout_marginEnd="38dp"
-                                        android:gravity="center_horizontal|top"
-                                        android:text="@{data.result_text}"
-                                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                                        android:textColor="@color/white"
-                                        android:textSize="@dimen/card_result_test_size_large"
-                                        android:visibility="@{data.result_text != null ? View.VISIBLE : View.GONE}"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/fl_statusicon"
-                                        tools:text="Valid Ticket" />
-
                                     <LinearLayout
                                         android:id="@+id/linearLayout"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:layout_marginStart="38dp"
-                                        android:layout_marginTop="4dp"
-                                        android:layout_marginEnd="38dp"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginEnd="16dp"
                                         android:orientation="vertical"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@+id/textView2">
+                                        app:layout_constraintTop_toBottomOf="@+id/fl_statusicon">
+
+                                        <TextView
+                                            android:id="@+id/textView2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:gravity="center_horizontal|top"
+                                            android:text="@{data.result_text}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/card_result_test_size_large"
+                                            android:textStyle="bold"
+                                            android:visibility="@{data.result_text != null ? View.VISIBLE : View.GONE}"
+                                            tools:text="Valid Ticket" />
 
                                         <TextView
                                             android:id="@+id/textView3"
@@ -482,27 +454,50 @@
                                     android:background="@color/transparent"
                                     android:visibility="@{data.detail6 != null || data.detail7 != null || data.detail8 != null ? View.VISIBLE : View.GONE}">
 
+                                    <TextView
+                                        android:id="@+id/textView5"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="16dp"
+                                        android:text="@{data.detail3}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                        android:textSize="@dimen/card_result_test_size_medium"
+                                        android:textStyle="bold"
+                                        android:visibility="@{data.detail3 != null &amp;&amp; !&quot;null&quot;.equals(data.detail3) ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintEnd_toStartOf="@+id/textView4"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        tools:text="Attendee name" />
+
+                                    <TextView
+                                        android:id="@+id/textView4"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:gravity="center|top"
+                                        android:maxLines="1"
+                                        android:text="@{data.detail2}"
+                                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                        android:textSize="@dimen/card_result_test_size_medium"
+                                        android:visibility="@{data.detail2 != null ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        android:layout_marginStart="16dp"
+                                        android:layout_marginEnd="16dp"
+                                        android:layout_marginTop="8dp"
+                                        tools:text="XMXMX-2" />
+
                                     <LinearLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="16dp"
                                         android:layout_marginEnd="16dp"
                                         android:orientation="vertical"
-                                        android:paddingTop="8dp"
                                         android:paddingBottom="8dp"
                                         app:layout_constraintBottom_toBottomOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent">
-
-                                        <TextView
-                                            android:id="@+id/textView5"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:text="@{data.detail3}"
-                                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                            android:textColor="@color/text_color"
-                                            android:textSize="@dimen/card_result_test_size_medium"
-                                            android:visibility="@{data.detail3 != null &amp;&amp; !&quot;null&quot;.equals(data.detail3) ? View.VISIBLE : View.GONE}"
-                                            tools:text="Attendee name" />
+                                        app:layout_constraintTop_toBottomOf="@id/textView5">
 
                                         <TextView
                                             android:id="@+id/textView6"
@@ -511,7 +506,6 @@
                                             android:layout_marginTop="4dp"
                                             android:text="@{data.detail4}"
                                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                                            android:textColor="@color/text_color"
                                             android:textSize="@dimen/card_result_test_size_small"
                                             android:visibility="@{data.detail4 != null &amp;&amp; !&quot;null&quot;.equals(data.detail4) ? View.VISIBLE : View.GONE}"
                                             tools:text="Zone A, Row 3, Seat 5" />
@@ -520,7 +514,7 @@
                                             android:id="@+id/textView8"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginTop="4dp"
+                                            android:gravity="start"
                                             android:text="@{data.detail6}"
                                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                                             android:textColor="@color/text_color"
@@ -532,19 +526,17 @@
                                             android:id="@+id/textView9"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginTop="4dp"
+                                            android:gravity="start"
                                             android:text="@{data.detail7}"
                                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                                             android:textColor="@color/text_color"
                                             android:textSize="@dimen/card_result_test_size_small"
                                             android:visibility="@{data.detail7 != null &amp;&amp; !&quot;null&quot;.equals(data.detail7) ? View.VISIBLE : View.GONE}"
-                                            tools:text="Order, Item, Variation Check-In Texts" />
+                                            tools:text="Order, Item, Variation\nCheck-In Texts" />
 
                                     </LinearLayout>
 
-
                                 </androidx.constraintlayout.widget.ConstraintLayout>
-
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </ScrollView>
