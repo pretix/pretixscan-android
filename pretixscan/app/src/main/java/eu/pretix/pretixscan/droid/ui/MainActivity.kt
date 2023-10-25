@@ -111,20 +111,20 @@ enum class ResultState {
 }
 
 class ViewDataHolder(private val ctx: Context) {
-    val result_state = ObservableField<ResultState>()
-    val search_state = ObservableField<ResultState>()
-    val result_text = ObservableField<String>()
-    val result_offline = ObservableField<Boolean>()
-    val show_print = ObservableField<Boolean>()
-    val event_name = ObservableField<String>()
-    val detail1 = ObservableField<String>()
-    val detail2 = ObservableField<String>()
-    val detail3 = ObservableField<String>()
-    val detail4 = ObservableField<String>()
-    val detail5 = ObservableField<String>()
-    val detail6 = ObservableField<SpannableString>()
-    val detail7 = ObservableField<String>()
-    val detail8 = ObservableField<String>()
+    val resultState = ObservableField<ResultState>()
+    val searchState = ObservableField<ResultState>()
+    val resultText = ObservableField<String>()
+    val resultOffline = ObservableField<Boolean>()
+    val showPrint = ObservableField<Boolean>()
+    val eventName = ObservableField<String>()
+    val ticketAndVariationName = ObservableField<String>()
+    val orderCodeAndPositionId = ObservableField<String>()
+    val attendeeName = ObservableField<String>()
+    val seat = ObservableField<String>()
+    val reasonExplanation = ObservableField<String>()
+    val questionAndAnswers = ObservableField<SpannableString>()
+    val checkInTexts = ObservableField<String>()
+    val firstScanned = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val kioskMode = ObservableField<Boolean>()
@@ -248,8 +248,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     }
 
     private fun setSearchFilter(f: String) {
-        card_search.visibility = View.VISIBLE
-        view_data.search_state.set(LOADING)
+        binding.cardSearch.visibility = View.VISIBLE
+        view_data.searchState.set(LOADING)
 
         searchFilter = f
         doAsync {
@@ -273,9 +273,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 runOnUiThread {
                     recyclerView_search.adapter = searchAdapter
                     if (sr.size == 0) {
-                        view_data.search_state.set(WARNING)
+                        view_data.searchState.set(WARNING)
                     } else {
-                        view_data.search_state.set(SUCCESS)
+                        view_data.searchState.set(SUCCESS)
                     }
                 }
             } catch (e: CheckException) {
@@ -440,8 +440,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         conf = AppConfig(this)
 
         getRestrictions(this)
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        view_data.result_state.set(ERROR)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        view_data.resultState.set(ERROR)
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
@@ -757,29 +757,29 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun hideCard() {
         card_state = ResultCardState.HIDDEN
-        card_result.clearAnimation()
-        card_result.visibility = View.GONE
-        view_data.result_state.set(ERROR)
-        view_data.result_text.set(null)
-        view_data.result_offline.set(false)
+        binding.cardResult.clearAnimation()
+        binding.cardResult.visibility = View.GONE
+        view_data.resultState.set(ERROR)
+        view_data.resultText.set(null)
+        view_data.resultOffline.set(false)
     }
 
     fun showLoadingCard() {
         hideHandler.removeCallbacks(hideRunnable)
-        card_result.clearAnimation()
-        view_data.result_state.set(LOADING)
-        view_data.result_text.set(null)
-        view_data.result_offline.set(false)
-        view_data.show_print.set(false)
-        view_data.event_name.set(null)
-        view_data.detail1.set(null)
-        view_data.detail2.set(null)
-        view_data.detail3.set(null)
-        view_data.detail4.set(null)
-        view_data.detail5.set(null)
-        view_data.detail6.set(null)
-        view_data.detail7.set(null)
-        view_data.detail8.set(null)
+        binding.cardResult.clearAnimation()
+        view_data.resultState.set(LOADING)
+        view_data.resultText.set(null)
+        view_data.resultOffline.set(false)
+        view_data.showPrint.set(false)
+        view_data.eventName.set(null)
+        view_data.ticketAndVariationName.set(null)
+        view_data.orderCodeAndPositionId.set(null)
+        view_data.attendeeName.set(null)
+        view_data.seat.set(null)
+        view_data.reasonExplanation.set(null)
+        view_data.questionAndAnswers.set(null)
+        view_data.checkInTexts.set(null)
+        view_data.firstScanned.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
@@ -1056,7 +1056,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         hideHandler.removeCallbacks(hideRunnable)
         hideHandler.postDelayed(hideRunnable, 30000)
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
                 hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
@@ -1065,7 +1065,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
                 hideHandler.removeCallbacks(hideRunnable)
                 handleScan(secret, answers, ignore_unpaid)
@@ -1092,9 +1092,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 else -> null
             }
         }
-        view_data.result_text.set(result.message)
-        view_data.result_offline.set(result.offline)
-        view_data.result_state.set(when (result.type!!) {
+        view_data.resultText.set(result.message)
+        view_data.resultOffline.set(result.offline)
+        view_data.resultState.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ERROR
             TicketCheckProvider.CheckResult.Type.VALID -> {
                 when (result.scanType) {
@@ -1116,32 +1116,38 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         })
         if (result.ticket != null) {
             if (result.variation != null) {
-                view_data.detail1.set(result.ticket + " – " + result.variation)
+                view_data.ticketAndVariationName.set(result.ticket + " – " + result.variation)
             } else {
-                view_data.detail1.set(result.ticket)
+                view_data.ticketAndVariationName.set(result.ticket)
             }
         } else {
-            view_data.detail1.set(null)
-        }
-        if (result.orderCodeAndPositionId() != null) {
-            view_data.detail2.set(result.orderCodeAndPositionId())
-        } else {
-            view_data.detail2.set(null)
-        }
-        if (result.attendee_name != null && !conf.hideNames) {
-            view_data.detail3.set(result.attendee_name)
-        } else {
-            view_data.detail3.set("")
-        }
-        if (result.seat != null) {
-            view_data.detail4.set(result.seat)
-        } else {
-            view_data.detail4.set(null)
+            view_data.ticketAndVariationName.set(null)
         }
         if (!result.reasonExplanation.isNullOrBlank()) {
-            view_data.detail5.set(result.reasonExplanation)
+            view_data.reasonExplanation.set(result.reasonExplanation)
         } else {
-            view_data.detail5.set(null)
+            view_data.reasonExplanation.set(null)
+        }
+        if (result.firstScanned != null) {
+            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
+            view_data.firstScanned.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+        } else {
+            view_data.firstScanned.set(null)
+        }
+        if (result.attendee_name != null && !conf.hideNames) {
+            view_data.attendeeName.set(result.attendee_name)
+        } else {
+            view_data.attendeeName.set("")
+        }
+        if (result.orderCodeAndPositionId() != null) {
+            view_data.orderCodeAndPositionId.set(result.orderCodeAndPositionId())
+        } else {
+            view_data.orderCodeAndPositionId.set(null)
+        }
+        if (result.seat != null) {
+            view_data.seat.set(result.seat)
+        } else {
+            view_data.seat.set(null)
         }
         if (!result.shownAnswers.isNullOrEmpty()) {
             val qanda = SpannableStringBuilder()
@@ -1153,27 +1159,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     qanda.append("\n")
                 }
             }
-            view_data.detail6.set(SpannableString.valueOf(qanda))
+            view_data.questionAndAnswers.set(SpannableString.valueOf(qanda))
         } else {
-            view_data.detail6.set(null)
+            view_data.questionAndAnswers.set(null)
         }
         if (!result.checkinTexts.isNullOrEmpty()) {
-            view_data.detail7.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
+            view_data.checkInTexts.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
         } else {
-            view_data.detail7.set(null)
-        }
-        if (result.firstScanned != null) {
-            val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-            view_data.detail8.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
-        } else {
-            view_data.detail8.set(null)
+            view_data.checkInTexts.set(null)
         }
 
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
             val event = (application as PretixScan).data.select(Event::class.java)
                     .where(Event.SLUG.eq(result.eventSlug))
                     .get().firstOrNull()
-            view_data.event_name.set(event?.name)
+            view_data.eventName.set(event?.name)
         }
 
         view_data.attention.set(result.isRequireAttention)
@@ -1183,15 +1183,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
             }
             if (result.position != null && conf.printBadges) {
-                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
-                ibPrint.setOnClickListener {
+                view_data.showPrint.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+                binding.ibPrint.setOnClickListener {
                     printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
                 }
             } else {
-                view_data.show_print.set(false)
+                view_data.showPrint.set(false)
             }
         } else {
-            view_data.show_print.set(false)
+            view_data.showPrint.set(false)
         }
 
         card_result.clearAnimation()
@@ -1208,7 +1208,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun handleResult(rawResult: Result) {
         scanner_view.resumeCameraPreview(this@MainActivity)
 
-        if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == LOADING) {
+        if ((dialog != null && dialog!!.isShowing()) || view_data.resultState.get() == LOADING) {
             return
         }
 
@@ -1420,7 +1420,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
@@ -1452,7 +1452,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         // passes. In these case, we try to serialize all state required to re-create the dialog
         // if the user returns.
 
-        if (view_data.result_state.get() == DIALOG && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() == DIALOG && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())
