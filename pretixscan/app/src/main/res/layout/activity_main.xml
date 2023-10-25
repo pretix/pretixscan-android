@@ -452,7 +452,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:background="@color/transparent"
-                                    android:visibility="@{data.questionAndAnswers != null || data.checkInTexts != null || data.firstScanned != null ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{data.attendeeName != null || data.orderCodeAndPositionId != null || data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null ? View.VISIBLE : View.GONE}">
 
                                     <TextView
                                         android:id="@+id/tvAttendeeName"
