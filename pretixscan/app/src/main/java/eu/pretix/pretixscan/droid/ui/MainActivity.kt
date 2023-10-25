@@ -20,6 +20,8 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.KeyEvent
@@ -37,6 +39,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.text.bold
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
@@ -119,7 +122,7 @@ class ViewDataHolder(private val ctx: Context) {
     val detail3 = ObservableField<String>()
     val detail4 = ObservableField<String>()
     val detail5 = ObservableField<String>()
-    val detail6 = ObservableField<String>()
+    val detail6 = ObservableField<SpannableString>()
     val detail7 = ObservableField<String>()
     val detail8 = ObservableField<String>()
     val attention = ObservableField<Boolean>()
@@ -1141,10 +1144,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.detail5.set(null)
         }
         if (!result.shownAnswers.isNullOrEmpty()) {
-            val answers =
-                result.shownAnswers!!.joinToString("\n") { it.question.question + ": " + it.currentValue }
-                .trim()
-            view_data.detail6.set(answers)
+            val qanda = SpannableStringBuilder()
+            result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
+                qanda.bold { append(questionAnswer.question.question + ":") }
+                qanda.append(" ")
+                qanda.append(questionAnswer.currentValue)
+                if (index != result.shownAnswers!!.lastIndex) {
+                    qanda.append("\n")
+                }
+            }
+            view_data.detail6.set(SpannableString.valueOf(qanda))
         } else {
             view_data.detail6.set(null)
         }
