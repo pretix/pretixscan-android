@@ -3,7 +3,6 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
-import android.annotation.TargetApi
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -28,8 +27,11 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -82,6 +84,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.json.JSONArray
 import org.json.JSONObject
+import splitties.toast.toast
 import java.io.IOException
 import java.lang.Integer.max
 import java.nio.charset.Charset
@@ -1194,12 +1197,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             view_data.showPrint.set(false)
         }
 
-        card_result.clearAnimation()
+        binding.attentionFlag.clearAnimation()
         if (result.isRequireAttention) {
-            card_result.rotation = 0f
-            ObjectAnimator.ofFloat(card_result, "rotationY", 0f, 25f, 0f, -25f, 0f, 25f, 0f, -25f, 0f).apply {
-                duration = 1500
-                start()
+            binding.attentionFlag.animation = AlphaAnimation(1f, 0.3f).apply {
+                duration = 350
+                interpolator = LinearInterpolator()
+                repeatCount = 6
+                repeatMode = Animation.REVERSE
             }
         }
 
