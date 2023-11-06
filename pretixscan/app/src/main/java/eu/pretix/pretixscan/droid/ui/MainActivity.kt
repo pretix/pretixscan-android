@@ -1152,6 +1152,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
         })
+        val isExit = (result.scanType == TicketCheckProvider.CheckInType.EXIT)
         if (result.ticket != null) {
             if (result.variation != null) {
                 view_data.ticketAndVariationName.set(result.ticket + " – " + result.variation)
@@ -1182,12 +1183,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.orderCodeAndPositionId.set(null)
         }
-        if (result.seat != null) {
+        if (!isExit && result.seat != null) {
             view_data.seat.set(result.seat)
         } else {
             view_data.seat.set(null)
         }
-        if (!result.shownAnswers.isNullOrEmpty()) {
+        if (!isExit && !result.shownAnswers.isNullOrEmpty()) {
             val qanda = SpannableStringBuilder()
             result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
                 qanda.bold { append(questionAnswer.question.question + ":") }
@@ -1201,7 +1202,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         } else {
             view_data.questionAndAnswers.set(null)
         }
-        if (!result.checkinTexts.isNullOrEmpty()) {
+        if (!isExit && !result.checkinTexts.isNullOrEmpty()) {
             view_data.checkInTexts.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
         } else {
             view_data.checkInTexts.set(null)
