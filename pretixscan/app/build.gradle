@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 def flavors = [:]
@@ -12,6 +11,8 @@ try {
 }
 
 android {
+    namespace 'eu.pretix.pretixscan.droid'
+
     compileSdkVersion 33
 
     defaultConfig {
@@ -25,21 +26,15 @@ android {
         multiDexEnabled true
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
     }
-	dexOptions {
-		javaMaxHeapSize "3g"
-	}
 
     compileOptions {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        viewBinding = true
     }
 
     kotlinOptions {
@@ -65,15 +60,13 @@ android {
     }
 
     buildTypes {
-		def sentry_dsn = "null"
+		def sentry_dsn = ""
 		try {
 			Properties properties = new Properties()
 			properties.load(project.rootProject.file('local.properties').newDataInputStream())
             sentry_dsn = properties.getProperty('sentry.dsn')
             if (sentry_dsn == null) {
-                sentry_dsn = "null"
-            } else {
-                sentry_dsn = "\"" + sentry_dsn + "\""
+                sentry_dsn = ""
             }
 		} catch (ignore) {
 		}
@@ -81,13 +74,14 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "SENTRY_DSN", sentry_dsn
+            multiDexKeepProguard file('multidex-config.pro')
+            manifestPlaceholders["SENTRY_DSN"] = sentry_dsn
         }
         debug {
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
-            buildConfigField "String", "SENTRY_DSN", "null"
+            manifestPlaceholders["SENTRY_DSN"] = ""
         }
     }
 
@@ -122,8 +116,6 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'org.jetbrains.anko:anko:0.10.6'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -132,14 +124,16 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "androidx.preference:preference-ktx:1.2.1"
 
+    implementation 'com.louiscad.splitties:splitties-toast:3.0.0'
     implementation 'com.github.traex.rippleeffect:library:1.3'
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     implementation 'com.github.kizitonwose:CalendarView:1.0.4'
 
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation 'io.sentry:sentry-android:4.3.0'
+    implementation 'io.sentry:sentry-android:6.29.0'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation 'joda-time:joda-time:2.10.10'
     implementation 'io.requery:requery:1.6.0'
@@ -153,12 +147,12 @@ dependencies {
     implementation 'net.i2p.crypto:eddsa:0.3.0'
     implementation 'com.google.protobuf:protobuf-javalite:3.21.1'
 
-    implementation 'com.facebook.soloader:soloader:0.10.3'
-    debugImplementation 'com.facebook.flipper:flipper:0.139.0'
-    debugImplementation 'com.facebook.soloader:soloader:0.10.3'
-    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.139.0'
+    implementation 'com.facebook.soloader:soloader:0.10.5'
+    debugImplementation 'com.facebook.flipper:flipper:0.191.0'
+    debugImplementation 'com.facebook.soloader:soloader:0.10.5'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.191.0'
 
-    releaseImplementation 'com.facebook.flipper:flipper-noop:0.139.0'
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.191.0'
 
     // libpretixui
     implementation(project(':libpretixui-android')) {

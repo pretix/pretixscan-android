@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.preference.PreferenceManager
 import android.util.Log
 import androidx.core.content.ContextCompat.getExternalFilesDirs
-import org.jetbrains.anko.defaultSharedPreferences
 import java.io.*
 
 
@@ -93,7 +93,8 @@ class DataWedgeHelper(private val ctx: Context) {
     @Throws(IOException::class)
     fun install(force: Boolean = false) {
         val stgfile = File(stagingDirectory, "dwprofile_pretix.db")
-        if (!force && stgfile.exists() && ctx.defaultSharedPreferences.getInt("__dwprofile_installed_version", 0) >= dwprofileVersion) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
+        if (!force && stgfile.exists() && prefs.getInt("__dwprofile_installed_version", 0) >= dwprofileVersion) {
             return
         }
         val stgout = FileOutputStream(stgfile)
@@ -112,6 +113,6 @@ class DataWedgeHelper(private val ctx: Context) {
         importIntent.putExtra("com.symbol.datawedge.api.IMPORT_CONFIG", importBundle)
         ctx.sendBroadcast(importIntent)
 
-        ctx.defaultSharedPreferences.edit().putInt("__dwprofile_installed_version", dwprofileVersion).apply()
+        prefs.edit().putInt("__dwprofile_installed_version", dwprofileVersion).apply()
     }
 }

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CalendarView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
@@ -25,13 +26,13 @@ import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.databinding.ActivityEventSelectBinding
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarDayBinding
 import eu.pretix.pretixscan.droid.databinding.EventSelectCalendarHeaderBinding
-import eu.pretix.pretixscan.utils.Material3
 import eu.pretix.pretixscan.utils.daysOfWeekFromLocale
-import kotlinx.android.synthetic.main.activity_event_select.*
-import kotlinx.android.synthetic.main.include_event_select_list.*
-import org.jetbrains.anko.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDateTime
 import java.time.LocalDate
@@ -40,6 +41,7 @@ import java.time.ZoneOffset
 
 
 class EventSelectActivity : MorphingDialogActivity() {
+    private lateinit var binding: ActivityEventSelectBinding
     private lateinit var eventsAdapter: EventAdapter
     private lateinit var eventsLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var eventManager: EventManager
@@ -48,6 +50,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     private lateinit var mRunnable: Runnable
     private val today = LocalDate.now()
     private var selectedDate: LocalDate = today
+    val bgScope = CoroutineScope(Dispatchers.IO)
 
     companion object {
         const val EVENT_SLUG = "event_slug"
@@ -59,16 +62,17 @@ class EventSelectActivity : MorphingDialogActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_event_select)
+        binding = ActivityEventSelectBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         conf = AppConfig(this)
 
         eventsLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        events_list.apply {
+        binding.eventSelectList!!.eventsList.apply {
             layoutManager = eventsLayoutManager
         }
 
-        btnOk.setOnClickListener {
+        binding.btnOk.setOnClickListener {
             val selectedEvent = eventsAdapter.selectedEvent
             if (selectedEvent != null) {
                 val i = Intent()
@@ -83,10 +87,10 @@ class EventSelectActivity : MorphingDialogActivity() {
         }
 
         mHandler = Handler()
-        swipe_container.setOnRefreshListener {
+        binding.eventSelectList!!.swipeContainer.setOnRefreshListener {
             mRunnable = Runnable {
                 refreshEvents()
-                swipe_container.isRefreshing = false
+                binding.eventSelectList!!.swipeContainer.isRefreshing = false
             }
 
             mHandler.post(mRunnable)
@@ -125,7 +129,7 @@ class EventSelectActivity : MorphingDialogActivity() {
                             cv.visibility = View.GONE
                             findViewById<View>(R.id.eventListContainer).visibility = View.VISIBLE
                             btnCalendar.visibility = View.VISIBLE
-                            btnOk.visibility = View.VISIBLE
+                            binding.btnOk.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -177,7 +181,7 @@ class EventSelectActivity : MorphingDialogActivity() {
                     cv.visibility = View.VISIBLE
                     findViewById<View>(R.id.eventListContainer).visibility = View.GONE
                     btnCalendar.visibility = View.GONE
-                    btnOk.visibility = View.GONE
+                    binding.btnOk.visibility = View.GONE
                 }
             }
         }
@@ -190,39 +194,42 @@ class EventSelectActivity : MorphingDialogActivity() {
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
         eventManager = EventManager((application as PretixScan).data, api, conf, false)
         eventsAdapter = EventAdapter(null)
-        tvError.visibility = View.GONE
-        progressBar.visibility = View.VISIBLE
-        noEventsMessage.visibility = View.GONE
+        binding.eventSelectList!!.tvError.visibility = View.GONE
+        binding.eventSelectList!!.progressBar.visibility = View.VISIBLE
+        binding.eventSelectList!!.noEventsMessage.visibility = View.GONE
         eventsAdapter.submitList(emptyList())
-        events_list.adapter = eventsAdapter
+        binding.eventSelectList!!.eventsList.adapter = eventsAdapter
 
-        doAsync {
+        val activity = this
+        bgScope.launch {
             val events: List<RemoteEvent>
             try {
                 val selectedAsJodaTime = LocalDateTime(selectedDate.atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()).toDateTime(DateTimeZone.getDefault())
                 events = eventManager.getAvailableEvents(selectedAsJodaTime, 5, null, null, null)
             } catch (e: DeviceAccessRevokedException) {
                 runOnUiThread {
-                    alert(Material3, R.string.error_access_revoked) {
-                        okButton {
+                    MaterialAlertDialogBuilder(activity).apply {
+                        setMessage(R.string.error_access_revoked)
+                        setPositiveButton(R.string.ok) { dialog, _ ->
+                            dialog.dismiss()
                             wipeApp(this@EventSelectActivity)
                         }
-                    }.show()
+                    }.create().show()
                 }
-                return@doAsync
+                return@launch
             } catch (e: Exception) {
-                swipe_container.isRefreshing = false
-                uiThread {
-                    tvError.text = e.toString()
-                    tvError.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
+                binding.eventSelectList!!.swipeContainer.isRefreshing = false
+                runOnUiThread {
+                    binding.eventSelectList!!.tvError.text = e.toString()
+                    binding.eventSelectList!!.tvError.visibility = View.VISIBLE
+                    binding.eventSelectList!!.progressBar.visibility = View.GONE
                     eventsAdapter.submitList(emptyList())
                 }
-                return@doAsync
+                return@launch
             }
-            uiThread {
-                progressBar.visibility = View.GONE
-                noEventsMessage.visibility = if (events.isEmpty()) { View.VISIBLE } else { View.GONE }
+            runOnUiThread {
+                binding.eventSelectList!!.progressBar.visibility = View.GONE
+                binding.eventSelectList!!.noEventsMessage.visibility = if (events.isEmpty()) { View.VISIBLE } else { View.GONE }
 
                 if (intent.extras?.containsKey(EVENT_SLUG) == true) {
                     eventsAdapter.selectedEvent = events.find {
@@ -231,7 +238,7 @@ class EventSelectActivity : MorphingDialogActivity() {
                 }
 
                 eventsAdapter.submitList(events)
-                events_list.adapter = eventsAdapter
+                binding.eventSelectList!!.eventsList.adapter = eventsAdapter
 
                 val last = events.findLast { it.date_from.toLocalDate() == org.joda.time.LocalDate.now() && it.date_from.isBeforeNow }
                 if (last != null) {
