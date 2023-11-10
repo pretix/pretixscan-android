@@ -1183,7 +1183,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         if (result.attendee_name != null && !conf.hideNames) {
             view_data.attendeeName.set(result.attendee_name)
         } else {
-            view_data.attendeeName.set("")
+            view_data.attendeeName.set(null)
         }
         if (result.orderCodeAndPositionId() != null) {
             view_data.orderCodeAndPositionId.set(result.orderCodeAndPositionId())
