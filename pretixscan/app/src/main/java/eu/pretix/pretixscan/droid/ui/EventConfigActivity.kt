@@ -15,11 +15,10 @@ import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.EventSelection
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.databinding.ActivityEventConfigBinding
 import eu.pretix.pretixscan.droid.databinding.ItemEventSelectionBinding
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import kotlinx.android.synthetic.main.activity_event_config.*
-import org.jetbrains.anko.intentFor
 import org.joda.time.DateTime
 
 
@@ -69,6 +68,7 @@ internal class EventSelectionAdapter(private val store: BlockingEntityStore<Pers
 }
 
 class EventConfigActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityEventConfigBinding
     private lateinit var conf: AppConfig
     private lateinit var eventSelectionAdapter: EventSelectionAdapter
     private var eventSelectResult: ActivityResult? = null
@@ -76,12 +76,13 @@ class EventConfigActivity : AppCompatActivity() {
     private var eventSelectLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             eventSelectResult = result
-            val i = intentFor<CheckInListSelectActivity>()
-            i.putExtra(CheckInListSelectActivity.EVENT_SLUG, result.data!!.getStringExtra(EventSelectActivity.EVENT_SLUG))
-            i.putExtra(CheckInListSelectActivity.SUBEVENT_ID, result.data!!.getLongExtra(EventSelectActivity.SUBEVENT_ID, 0L))
-            val cs = conf.eventSelection
-            if (!conf.multiEventMode && cs.size == 1) {
-                i.putExtra(CheckInListSelectActivity.LIST_ID, cs.first().checkInList)
+            val i = Intent(this, CheckInListSelectActivity::class.java).apply {
+                putExtra(CheckInListSelectActivity.EVENT_SLUG, result.data!!.getStringExtra(EventSelectActivity.EVENT_SLUG))
+                putExtra(CheckInListSelectActivity.SUBEVENT_ID, result.data!!.getLongExtra(EventSelectActivity.SUBEVENT_ID, 0L))
+                val cs = conf.eventSelection
+                if (!conf.multiEventMode && cs.size == 1) {
+                    putExtra(CheckInListSelectActivity.LIST_ID, cs.first().checkInList)
+                }
             }
             checkinListSelectLauncher.launch(i)
         } else {
@@ -126,23 +127,26 @@ class EventConfigActivity : AppCompatActivity() {
     }
 
     fun changeListForEvent(event: EventSelection) {
-        val intent = Intent()
-        intent.putExtra(EventSelectActivity.EVENT_SLUG, event.eventSlug)
-        intent.putExtra(EventSelectActivity.EVENT_NAME, event.eventName)
-        intent.putExtra(EventSelectActivity.EVENT_DATE_TO, event.dateTo)
-        intent.putExtra(EventSelectActivity.EVENT_DATE_FROM, event.dateFrom)
-        intent.putExtra(EventSelectActivity.SUBEVENT_ID, event.subEventId)
+        val intent = Intent().apply {
+            putExtra(EventSelectActivity.EVENT_SLUG, event.eventSlug)
+            putExtra(EventSelectActivity.EVENT_NAME, event.eventName)
+            putExtra(EventSelectActivity.EVENT_DATE_TO, event.dateTo)
+            putExtra(EventSelectActivity.EVENT_DATE_FROM, event.dateFrom)
+            putExtra(EventSelectActivity.SUBEVENT_ID, event.subEventId)
+        }
         eventSelectResult = ActivityResult(Activity.RESULT_OK, intent)
-        val i = intentFor<CheckInListSelectActivity>()
-        i.putExtra(CheckInListSelectActivity.EVENT_SLUG, event.eventSlug)
-        i.putExtra(CheckInListSelectActivity.SUBEVENT_ID, event.subEventId)
-        i.putExtra(CheckInListSelectActivity.LIST_ID, event.checkInList)
+        val i = Intent(this, CheckInListSelectActivity::class.java).apply {
+            putExtra(CheckInListSelectActivity.EVENT_SLUG, event.eventSlug)
+            putExtra(CheckInListSelectActivity.SUBEVENT_ID, event.subEventId)
+            putExtra(CheckInListSelectActivity.LIST_ID, event.checkInList)
+        }
         checkinListSelectLauncher.launch(i)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_event_config)
+        binding = ActivityEventConfigBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         conf = AppConfig(this)
         eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).data, conf, this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
@@ -151,12 +155,12 @@ class EventConfigActivity : AppCompatActivity() {
             return
         }
 
-        rvEventList.apply {
+        binding.rvEventList.apply {
             layoutManager = LinearLayoutManager(this@EventConfigActivity)
             adapter = eventSelectionAdapter
         }
 
-        fabAdd.setOnClickListener {
+        binding.fabAdd.setOnClickListener {
             startAddEvent()
         }
 

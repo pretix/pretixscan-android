@@ -25,7 +25,7 @@
             android:keepScreenOn="true"
             android:orientation="vertical">
 
-            <include layout="@layout/include_main_toolbar" />
+            <include android:id="@+id/mainToolbar" layout="@layout/include_main_toolbar" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
