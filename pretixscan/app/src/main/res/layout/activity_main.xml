@@ -453,6 +453,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:background="@color/transparent"
+                                    android:layout_marginBottom="12dp"
                                     android:visibility="@{data.attendeeName != null || data.orderCodeAndPositionId != null || data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null ? View.VISIBLE : View.GONE}">
 
                                     <TextView
@@ -496,11 +497,11 @@
                                         android:layout_marginStart="16dp"
                                         android:layout_marginTop="4dp"
                                         android:layout_marginEnd="16dp"
-                                        android:layout_marginBottom="12dp"
                                         android:orientation="vertical"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
+                                        android:visibility="@{((data.seat != null &amp;&amp; !&quot;null&quot;.equals(data.seat)) || (data.questionAndAnswers != null &amp;&amp; !&quot;null&quot;.equals(data.questionAndAnswers)) || (data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts))) ? View.VISIBLE : View.GONE}"
                                         app:layout_constraintTop_toBottomOf="@id/tvAttendeeName">
 
                                         <TextView
