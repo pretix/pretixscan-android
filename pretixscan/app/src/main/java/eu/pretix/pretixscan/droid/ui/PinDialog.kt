@@ -48,7 +48,7 @@ class PinDialog : DialogFragment() {
         binding.keyboardButtonView9.setOnClickListener { pushDigit("9") }
         binding.keyboardButtonViewBackspace.setOnClickListener { pushBackspace() }
 
-        return MaterialAlertDialogBuilder(context!!)
+        return MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setOnKeyListener { _, keyCode, event ->
                 if (event.action != KeyEvent.ACTION_DOWN) return@setOnKeyListener false
