@@ -1,32 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ScrollView1"
-    android:layout_width="match_parent"
-    android:layout_height="0dip"
-    android:layout_weight="1">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.andrognito.pinlockview.IndicatorDots
-        android:id="@+id/indicator_dots"
+    <data>
+        <variable
+            name="data"
+            type="eu.pretix.pretixscan.droid.ui.PINInputDataHolder" />
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/activity_operation_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:dotEmptyBackground="@color/pretix_brand_lightgrey"
-        app:dotFilledBackground="@color/pretix_brand_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:minWidth="@dimen/dialog_minwidth">
 
-    <com.andrognito.pinlockview.PinLockView
-        android:id="@+id/pin_lock_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:keypadTextColor="@color/pretix_brand_dark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/indicator_dots" />
+        <View
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:background="@color/pretix_brand_dark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/textView31"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{data.text}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view" />
+
+        <LinearLayout
+            android:id="@+id/llKeyboard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView31">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="1" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="2" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="4" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="5" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="6" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="7" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="8" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView9"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="9" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView00"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="00" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonView0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_text="0" />
+
+                <eu.pretix.pretixscan.droid.ui.KeyboardButtonView
+                    android:id="@+id/keyboardButtonViewBackspace"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="16dp"
+                    android:minHeight="16dp"
+                    app:lp_keyboard_button_image="@drawable/ic_backspace_black_24dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView_headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/pin_protection_enter"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+            app:layout_constraintBottom_toBottomOf="@+id/view"
+            app:layout_constraintEnd_toEndOf="@+id/view"
+            app:layout_constraintStart_toStartOf="@+id/view"
+            app:layout_constraintTop_toTopOf="@+id/view" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
