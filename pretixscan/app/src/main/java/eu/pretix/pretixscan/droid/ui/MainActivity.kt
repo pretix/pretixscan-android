@@ -3,7 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
-import android.annotation.TargetApi
+import android.animation.ValueAnimator
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -20,23 +20,30 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.text.bold
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
@@ -79,6 +86,7 @@ import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.json.JSONArray
 import org.json.JSONObject
+import splitties.toast.toast
 import java.io.IOException
 import java.lang.Integer.max
 import java.nio.charset.Charset
@@ -108,24 +116,28 @@ enum class ResultState {
 }
 
 class ViewDataHolder(private val ctx: Context) {
-    val result_state = ObservableField<ResultState>()
-    val search_state = ObservableField<ResultState>()
-    val result_text = ObservableField<String>()
-    val result_offline = ObservableField<Boolean>()
-    val show_print = ObservableField<Boolean>()
-    val event_name = ObservableField<String>()
-    val detail1 = ObservableField<String>()
-    val detail2 = ObservableField<String>()
-    val detail3 = ObservableField<String>()
-    val detail4 = ObservableField<String>()
-    val detail5 = ObservableField<String>()
-    val detail6 = ObservableField<String>()
+    val resultState = ObservableField<ResultState>()
+    val searchState = ObservableField<ResultState>()
+    val resultText = ObservableField<String>()
+    val resultOffline = ObservableField<Boolean>()
+    val showPrint = ObservableField<Boolean>()
+    val eventName = ObservableField<String>()
+    val ticketAndVariationName = ObservableField<String>()
+    val orderCodeAndPositionId = ObservableField<String>()
+    val attendeeName = ObservableField<String>()
+    val seat = ObservableField<String>()
+    val reasonExplanation = ObservableField<String>()
+    val questionAndAnswers = ObservableField<SpannableString>()
+    val checkInTexts = ObservableField<String>()
+    val firstScanned = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val kioskMode = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
     val isOffline = ObservableField<Boolean>()
+    val hideTimerVisible = ObservableField<Boolean>()
+    val hideTimerProgress = ObservableField<Int>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -147,6 +159,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private val bgScope = CoroutineScope(Dispatchers.IO)
     private val handler = Handler()
     private val hideHandler = Handler()
+    private var hideAnimation: ValueAnimator? = null
     private var card_state = ResultCardState.HIDDEN
     private var view_data = ViewDataHolder(this)
     private var mediaPlayers: MutableMap<Int, MediaPlayer> = mutableMapOf()
@@ -246,7 +259,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private fun setSearchFilter(f: String) {
         binding.cardSearch.visibility = View.VISIBLE
-        view_data.search_state.set(LOADING)
+        view_data.searchState.set(LOADING)
 
         searchFilter = f
         bgScope.launch {
@@ -270,9 +283,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 runOnUiThread {
                     binding.recyclerViewSearch.adapter = searchAdapter
                     if (sr.size == 0) {
-                        view_data.search_state.set(WARNING)
+                        view_data.searchState.set(WARNING)
                     } else {
-                        view_data.search_state.set(SUCCESS)
+                        view_data.searchState.set(SUCCESS)
                     }
                 }
             } catch (e: CheckException) {
@@ -383,7 +396,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         binding.cardResult.setOnTouchListener(object : OnSwipeTouchListener(this) {
             override fun onSwipeLeft() {
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 card_state = ResultCardState.HIDDEN
                 binding.cardResult.clearAnimation()
                 val displayMetrics = DisplayMetrics()
@@ -393,7 +406,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
 
             override fun onSwipeRight() {
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 card_state = ResultCardState.HIDDEN
                 binding.cardResult.clearAnimation()
                 val displayMetrics = DisplayMetrics()
@@ -402,6 +415,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 hideHandler.postDelayed(hideRunnable, 250)
             }
         })
+
+        binding.svCardOverflow.viewTreeObserver.addOnScrollChangedListener {
+            stopHidingTimer()
+        }
     }
 
     override fun onCompletion(p0: MediaPlayer?) {
@@ -437,7 +454,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         getRestrictions(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        view_data.result_state.set(ERROR)
+        view_data.resultState.set(ERROR)
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
@@ -559,6 +576,32 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
             hideCard()
         }
+    }
+
+    fun stopHidingTimer() {
+        hideHandler.removeCallbacks(hideRunnable)
+        hideAnimation?.cancel()
+        view_data.hideTimerVisible.set(false)
+    }
+
+    fun startHidingTimer() {
+        val HIDING_TIME_MILLIS = 30000L
+        view_data.hideTimerVisible.set(true)
+        view_data.hideTimerProgress.set(100)
+
+        hideAnimation = ValueAnimator.ofInt(100, 0).apply {
+            duration = HIDING_TIME_MILLIS
+            interpolator = LinearInterpolator()
+            addUpdateListener {
+                view_data.hideTimerProgress.set(it.animatedValue as Int)
+            }
+            doOnEnd {
+                view_data.hideTimerVisible.set(false)
+            }
+        }
+
+        hideHandler.postDelayed(hideRunnable, HIDING_TIME_MILLIS)
+        hideAnimation!!.start()
     }
 
     private val syncRunnable = Runnable {
@@ -762,25 +805,27 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_state = ResultCardState.HIDDEN
         binding.cardResult.clearAnimation()
         binding.cardResult.visibility = View.GONE
-        view_data.result_state.set(ERROR)
-        view_data.result_text.set(null)
-        view_data.result_offline.set(false)
+        view_data.resultState.set(ERROR)
+        view_data.resultText.set(null)
+        view_data.resultOffline.set(false)
     }
 
     fun showLoadingCard() {
-        hideHandler.removeCallbacks(hideRunnable)
+        stopHidingTimer()
         binding.cardResult.clearAnimation()
-        view_data.result_state.set(LOADING)
-        view_data.result_text.set(null)
-        view_data.result_offline.set(false)
-        view_data.show_print.set(false)
-        view_data.event_name.set(null)
-        view_data.detail1.set(null)
-        view_data.detail2.set(null)
-        view_data.detail3.set(null)
-        view_data.detail4.set(null)
-        view_data.detail5.set(null)
-        view_data.detail6.set(null)
+        view_data.resultState.set(LOADING)
+        view_data.resultText.set(null)
+        view_data.resultOffline.set(false)
+        view_data.showPrint.set(false)
+        view_data.eventName.set(null)
+        view_data.ticketAndVariationName.set(null)
+        view_data.orderCodeAndPositionId.set(null)
+        view_data.attendeeName.set(null)
+        view_data.seat.set(null)
+        view_data.reasonExplanation.set(null)
+        view_data.questionAndAnswers.set(null)
+        view_data.checkInTexts.set(null)
+        view_data.firstScanned.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
             card_state = ResultCardState.SHOWN
@@ -1053,21 +1098,21 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 }
             }
 
-        hideHandler.removeCallbacks(hideRunnable)
-        hideHandler.postDelayed(hideRunnable, 30000)
+        stopHidingTimer()
+        startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1080,6 +1125,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                     TicketCheckProvider.CheckInType.EXIT -> getString(R.string.scan_result_exit)
                     TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
                 }
+                TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
                 TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
@@ -1091,9 +1137,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 else -> null
             }
         }
-        view_data.result_text.set(result.message)
-        view_data.result_offline.set(result.offline)
-        view_data.result_state.set(when (result.type!!) {
+        view_data.resultText.set(result.message)
+        view_data.resultOffline.set(result.offline)
+        view_data.resultState.set(when (result.type!!) {
             TicketCheckProvider.CheckResult.Type.INVALID -> ERROR
             TicketCheckProvider.CheckResult.Type.VALID -> {
                 when (result.scanType) {
@@ -1113,46 +1159,67 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
         })
+        val isExit = (result.scanType == TicketCheckProvider.CheckInType.EXIT)
         if (result.ticket != null) {
             if (result.variation != null) {
-                view_data.detail1.set(result.ticket + " – " + result.variation)
+                view_data.ticketAndVariationName.set(result.ticket + " – " + result.variation)
             } else {
-                view_data.detail1.set(result.ticket)
+                view_data.ticketAndVariationName.set(result.ticket)
             }
         } else {
-            view_data.detail1.set(null)
+            view_data.ticketAndVariationName.set(null)
         }
-        if (result.orderCodeAndPositionId() != null) {
-            view_data.detail2.set(result.orderCodeAndPositionId())
+        if (!result.reasonExplanation.isNullOrBlank()) {
+            view_data.reasonExplanation.set(result.reasonExplanation)
         } else {
-            view_data.detail2.set(null)
-        }
-        if (result.attendee_name != null && !conf.hideNames) {
-            view_data.detail3.set(result.attendee_name)
-        } else {
-            view_data.detail3.set("")
-        }
-        if (result.seat != null) {
-            view_data.detail4.set(result.seat)
-        } else {
-            view_data.detail4.set(null)
+            view_data.reasonExplanation.set(null)
         }
         if (result.firstScanned != null) {
             val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-            view_data.detail6.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
+            view_data.firstScanned.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
         } else {
-            view_data.detail6.set(null)
+            view_data.firstScanned.set(null)
         }
-        if (!result.reasonExplanation.isNullOrBlank()) {
-            view_data.detail5.set(result.reasonExplanation)
+        if (result.attendee_name != null && !conf.hideNames) {
+            view_data.attendeeName.set(result.attendee_name)
         } else {
-            view_data.detail5.set(null)
+            view_data.attendeeName.set(null)
         }
+        if (result.orderCodeAndPositionId() != null) {
+            view_data.orderCodeAndPositionId.set(result.orderCodeAndPositionId())
+        } else {
+            view_data.orderCodeAndPositionId.set(null)
+        }
+        if (!isExit && result.seat != null) {
+            view_data.seat.set(result.seat)
+        } else {
+            view_data.seat.set(null)
+        }
+        if (!isExit && !result.shownAnswers.isNullOrEmpty()) {
+            val qanda = SpannableStringBuilder()
+            result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
+                qanda.bold { append(questionAnswer.question.question + ":") }
+                qanda.append(" ")
+                qanda.append(questionAnswer.currentValue)
+                if (index != result.shownAnswers!!.lastIndex) {
+                    qanda.append("\n")
+                }
+            }
+            view_data.questionAndAnswers.set(SpannableString.valueOf(qanda))
+        } else {
+            view_data.questionAndAnswers.set(null)
+        }
+        if (!isExit && !result.checkinTexts.isNullOrEmpty()) {
+            view_data.checkInTexts.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
+        } else {
+            view_data.checkInTexts.set(null)
+        }
+
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
             val event = (application as PretixScan).data.select(Event::class.java)
                     .where(Event.SLUG.eq(result.eventSlug))
                     .get().firstOrNull()
-            view_data.event_name.set(event?.name)
+            view_data.eventName.set(event?.name)
         }
 
         view_data.attention.set(result.isRequireAttention)
@@ -1162,23 +1229,24 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
             }
             if (result.position != null && conf.printBadges) {
-                view_data.show_print.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+                view_data.showPrint.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
                 binding.ibPrint.setOnClickListener {
                     printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
                 }
             } else {
-                view_data.show_print.set(false)
+                view_data.showPrint.set(false)
             }
         } else {
-            view_data.show_print.set(false)
+            view_data.showPrint.set(false)
         }
 
-        binding.cardResult.clearAnimation()
+        binding.attentionFlag.clearAnimation()
         if (result.isRequireAttention) {
-            binding.cardResult.rotation = 0f
-            ObjectAnimator.ofFloat(binding.cardResult, "rotationY", 0f, 25f, 0f, -25f, 0f, 25f, 0f, -25f, 0f).apply {
-                duration = 1500
-                start()
+            binding.attentionFlag.animation = AlphaAnimation(1f, 0.3f).apply {
+                duration = 350
+                interpolator = LinearInterpolator()
+                repeatCount = 6
+                repeatMode = Animation.REVERSE
             }
         }
 
@@ -1187,7 +1255,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     override fun handleResult(rawResult: Result) {
         binding.scannerView.resumeCameraPreview(this@MainActivity)
 
-        if ((dialog != null && dialog!!.isShowing()) || view_data.result_state.get() == LOADING) {
+        if ((dialog != null && dialog!!.isShowing()) || view_data.resultState.get() == LOADING) {
             return
         }
 
@@ -1400,7 +1468,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            view_data.result_state.set(DIALOG)
+            view_data.resultState.set(DIALOG)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
@@ -1415,7 +1483,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             }
 
             dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastIgnoreUnpaid, values, true) { secret, answers, ignore_unpaid ->
-                hideHandler.removeCallbacks(hideRunnable)
+                stopHidingTimer()
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.onRestoreInstanceState(answers)
@@ -1432,7 +1500,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         // passes. In these case, we try to serialize all state required to re-create the dialog
         // if the user returns.
 
-        if (view_data.result_state.get() == DIALOG && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() == DIALOG && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())
