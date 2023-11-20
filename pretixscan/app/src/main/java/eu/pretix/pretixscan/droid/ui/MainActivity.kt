@@ -895,6 +895,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             return
         }
 
+        if (dialog?.isShowing() == true) {
+            /*
+             * Skip scan if a dialog is still in front. This forces users to answer the questions asked.
+             */
+            return
+        }
+
         val result = if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.toUpperCase(Locale.getDefault()))) {
             /*
              * This is a bit of a hack. pretixSCAN 1.11+ supports checking digital COVID vaccination
