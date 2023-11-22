@@ -49,9 +49,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrognito.pinlockview.IndicatorDots
-import com.andrognito.pinlockview.PinLockListener
-import com.andrognito.pinlockview.PinLockView
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -179,6 +176,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
     private var searchFilter = ""
 
     private var syncMessage = ""
+
+    private var pendingPinAction: ((pin: String) -> Unit)? = null
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
@@ -501,6 +500,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         binding.recyclerViewSearch.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewSearch.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(binding.recyclerViewSearch.context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
+
+        supportFragmentManager.setFragmentResultListener(PinDialog.RESULT_PIN, this) { _, bundle ->
+            val pin = bundle.getString(PinDialog.RESULT_PIN)
+            if (pin != null && conf.verifyPin(pin)) {
+                (supportFragmentManager.findFragmentByTag(PinDialog.TAG) as? PinDialog)?.dismiss()
+                pendingPinAction?.let { it(pin) }
+            }
+        }
     }
 
     private fun eventButtonText(): String {
@@ -1367,35 +1374,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             valid("")
             return
         }
-        val view = layoutInflater.inflate(R.layout.dialog_pin, null)
-        val dialog = AlertDialog.Builder(this)
-                .setView(view)
-                .create()
-        dialog.setOnShowListener {
-            val mPinLockListener: PinLockListener = object : PinLockListener {
-                override fun onComplete(pin: String) {
-                    this.onPinChange(pin.length, pin)
-                }
-
-                override fun onEmpty() {
-                }
-
-                override fun onPinChange(pinLength: Int, intermediatePin: String) {
-                    if (conf.verifyPin(intermediatePin)) {
-                        dialog.dismiss()
-                        valid(intermediatePin)
-                    }
-                }
-            }
-
-            val lockView = view.findViewById(R.id.pin_lock_view) as PinLockView
-            lockView.pinLength = conf.getPinLength()
-            lockView.setPinLockListener(mPinLockListener)
-            val idots = view.findViewById(R.id.indicator_dots) as IndicatorDots
-            idots.pinLength = conf.getPinLength()
-            lockView.attachIndicatorDots(idots);
-        }
-        dialog.show()
+        pendingPinAction = valid
+        PinDialog().show(supportFragmentManager)
     }
 
     fun startWithPIN(intent: Intent, key: String, resultCode: Int? = null, bundle: Bundle? = null) {
