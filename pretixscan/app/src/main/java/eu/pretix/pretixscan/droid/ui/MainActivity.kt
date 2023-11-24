@@ -1105,6 +1105,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.REVOKED -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.UNAPPROVED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.BLOCKED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
@@ -1144,6 +1145,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
                 TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
                 TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
+                TicketCheckProvider.CheckResult.Type.UNAPPROVED -> getString(R.string.scan_result_unapproved)
                 TicketCheckProvider.CheckResult.Type.INVALID_TIME -> getString(R.string.scan_result_invalid_time)
                 TicketCheckProvider.CheckResult.Type.BLOCKED -> getString(R.string.scan_result_blocked)
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
@@ -1167,6 +1169,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             TicketCheckProvider.CheckResult.Type.RULES -> ERROR
             TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> ERROR
             TicketCheckProvider.CheckResult.Type.REVOKED -> ERROR
+            TicketCheckProvider.CheckResult.Type.UNAPPROVED -> ERROR
             TicketCheckProvider.CheckResult.Type.INVALID_TIME -> ERROR
             TicketCheckProvider.CheckResult.Type.BLOCKED -> ERROR
             TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR

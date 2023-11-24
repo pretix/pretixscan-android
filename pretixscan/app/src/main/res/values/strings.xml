@@ -133,6 +133,7 @@
     <string name="scan_result_rules">Entry not allowed</string>
     <string name="scan_result_ambiguous">Ticket code is ambiguous on list</string>
     <string name="scan_result_revoked">Ticket code revoked/changed</string>
+    <string name="scan_result_unapproved">Order not approved</string>
     <string name="scan_result_invalid_time">Ticket currently not valid</string>
     <string name="scan_result_blocked">Ticket blocked</string>
     <string name="scan_result_canceled">Order canceled</string>
