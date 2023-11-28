@@ -16,23 +16,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.zxing.Result
 import eu.pretix.libpretixsync.setup.*
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
-import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivitySetupBinding
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
 import javax.net.ssl.SSLException
 
-class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
+class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     lateinit var binding: ActivitySetupBinding
     val bgScope = CoroutineScope(Dispatchers.IO)
     var lastScanTime = 0L
@@ -136,7 +137,8 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
         }
     }
 
-    override fun handleResult(rawResult: ScannerView.Result) {
+    override fun handleResult(rawResult: Result) {
+        binding.scannerView.resumeCameraPreview(this)
         if (lastScanValue == rawResult.text && lastScanTime > System.currentTimeMillis() - 3000) {
             return
         }
@@ -188,6 +190,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
 
         fun resume() {
             pdialog.dismiss()
+            binding.scannerView.resumeCameraPreview(this)
             ongoing_setup = false
         }
 

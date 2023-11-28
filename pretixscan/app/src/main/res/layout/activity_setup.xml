@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView2">
 
-            <eu.pretix.libpretixui.android.scanning.ScannerView
+            <eu.pretix.pretixscan.droid.ui.ScannerView
                 android:id="@+id/scanner_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
