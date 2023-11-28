@@ -54,7 +54,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.zxing.Result
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -71,6 +70,7 @@ import eu.pretix.libpretixui.android.covid.SAMPLE_SETTINGS
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
+import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
@@ -80,7 +80,6 @@ import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.json.JSONArray
 import org.json.JSONObject
 import splitties.toast.toast
@@ -91,7 +90,6 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
-import splitties.toast.toast
 
 
 interface ReloadableActivity {
@@ -146,7 +144,7 @@ class ViewDataHolder(private val ctx: Context) {
     }
 }
 
-class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
+class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
 
     private val REQ_EVENT = 1
 
@@ -857,13 +855,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     fun reloadCameraState() {
         try {
-            binding.scannerView.flash = conf.scanFlash
+            binding.scannerView.torch = conf.scanFlash
             if (conf.scanFlash) {
                 binding.fabFlash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
             } else {
                 binding.fabFlash.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.fab_disable))
             }
-            binding.scannerView.setAutoFocus(conf.scanFocus)
+            binding.scannerView.autofocus = conf.scanFocus
             if (conf.scanFocus) {
                 binding.fabFocus.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.pretix_brand_green))
             } else {
@@ -1270,9 +1268,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     }
 
-    override fun handleResult(rawResult: Result) {
-        binding.scannerView.resumeCameraPreview(this@MainActivity)
-
+    override fun handleResult(rawResult: ScannerView.Result) {
         if ((dialog != null && dialog!!.isShowing()) || view_data.resultState.get() == LOADING) {
             return
         }
