@@ -20,7 +20,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 84
-        versionName "2.5.1"
+        versionName "2.5.2-beta1"
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
