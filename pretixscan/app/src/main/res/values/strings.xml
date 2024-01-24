@@ -19,6 +19,7 @@
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
     <string name="scantype_entry_kiosk">Scan your ticket to check in</string>
+    <string name="scantype_entry_kiosk_print">Scan your ticket to print your badge</string>
     <string name="scantype_exit_kiosk">Scan your ticket to check out</string>
     <string name="checktype_online">Online verification</string>
     <string name="checktype_offline">Offline verification</string>

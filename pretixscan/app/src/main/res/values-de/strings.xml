@@ -159,8 +159,9 @@
     <string name="settings_label_verification">Ticketkontrolle</string>
     <string name="settings_label_sync">Synchronisierung</string>
     <string name="settings_label_ui">Benutzeroberfläche</string>
-    <string name="scantype_entry_kiosk">Scannen Sie Ihr Ticket um sich anzumelden</string>
-    <string name="scantype_exit_kiosk">Scannen Sie Ihr Ticket um sich abzumelden</string>
+    <string name="scantype_entry_kiosk">Scannen Sie Ihr Ticket, um sich anzumelden.</string>
+    <string name="scantype_entry_kiosk_print">Scannen Sie Ihr Ticket, um Ihr Badge zu drucken.</string>
+    <string name="scantype_exit_kiosk">Scannen Sie Ihr Ticket, um sich abzumelden.</string>
     <string name="settings_label_datawedge">DataWedge-Profil installieren</string>
     <string name="settings_label_search_disable">Suche deaktivieren</string>
     <string name="settings_label_kioskmode">Kiosk-Modus</string>
