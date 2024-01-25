@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.RestrictionsManager
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.ConnectivityManager
@@ -35,7 +36,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
@@ -49,6 +49,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -91,7 +93,6 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
-import splitties.toast.toast
 
 
 interface ReloadableActivity {
@@ -104,6 +105,7 @@ enum class ResultCardState {
 }
 
 enum class ResultState {
+    EMPTY,
     LOADING,
     ERROR,
     DIALOG,
@@ -130,6 +132,8 @@ class ViewDataHolder(private val ctx: Context) {
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
     val kioskMode = ObservableField<Boolean>()
+    val kioskWithAnimation = ObservableField<Boolean>()
+    val badgePrintEnabled = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
     val isOffline = ObservableField<Boolean>()
@@ -138,7 +142,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            DIALOG, LOADING -> R.color.pretix_brand_lightgrey
+            EMPTY, DIALOG, LOADING -> R.color.pretix_brand_lightgrey
             ERROR -> R.color.pretix_brand_red
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
@@ -453,7 +457,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         getRestrictions(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        view_data.resultState.set(ERROR)
+        view_data.resultState.set(EMPTY)
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
         binding.data = view_data
@@ -777,6 +781,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         }
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
+        view_data.badgePrintEnabled.set(conf.printBadges && conf.autoPrintBadges)
+
+        setKioskAnimation()
+
         reloadCameraState()
 
         (application as PretixScan).connectivityHelper.addListener(this)
@@ -804,6 +812,40 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
     }
 
+    private fun setKioskAnimation() {
+        if (!conf.kioskMode) return
+
+        val drawable = when (Build.BRAND) {
+            "Zebra" -> if (Build.MODEL.startsWith("CC6")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
+            "NewLand" -> if (Build.MODEL.startsWith("NQ")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
+            "SEUIC" -> if (Build.MODEL.startsWith("AUDOID Pad Air")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
+            else -> null
+        } ?: return
+
+        view_data.kioskWithAnimation.set(true)
+        val animated = AnimatedVectorDrawableCompat.create(this, drawable)
+        animated?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable?) {
+                animated.start()
+            }
+
+        })
+        binding.ivKioskAnimation.setImageDrawable(animated)
+        animated?.start()
+    }
+
     fun hideSearchCard() {
         binding.cardSearch.visibility = View.GONE
     }
@@ -812,7 +854,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         card_state = ResultCardState.HIDDEN
         binding.cardResult.clearAnimation()
         binding.cardResult.visibility = View.GONE
-        view_data.resultState.set(ERROR)
+        view_data.resultState.set(EMPTY)
         view_data.resultText.set(null)
         view_data.resultOffline.set(false)
     }

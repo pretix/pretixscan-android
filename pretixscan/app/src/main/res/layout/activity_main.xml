@@ -83,7 +83,7 @@
                     android:layout_margin="32dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{data.hardwareScan &amp;&amp; !data.kioskWithAnimation ? View.VISIBLE : View.GONE}"
                     tools:visibility="gone">
 
                     <ImageView
@@ -107,7 +107,6 @@
                         android:layout_marginBottom="16dp"
                         android:gravity="center"
                         android:text="@{data.scanType.equals(&quot;exit&quot;) ? (data.kioskMode ? @string/scantype_exit_kiosk : @string/scantype_exit) : (data.kioskMode ? @string/scantype_entry_kiosk : @string/scantype_entry)}"
-                        android:textAllCaps="true"
                         android:textSize="32sp"
                         android:textStyle="bold" />
 
@@ -130,11 +129,72 @@
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/vKioskHardwareScan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="32dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="@{data.hardwareScan &amp;&amp; data.kioskWithAnimation ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/iv_kioskAnimation"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="@{data.resultState == ResultState.EMPTY ? View.VISIBLE : View.INVISIBLE}"
+                        app:layout_constraintBottom_toTopOf="@+id/tv_kioskconfig"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_kioskscanmode"
+                        app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom" />
+
+                    <TextView
+                        android:id="@+id/tv_kioskscanmode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="@{data.resultState == ResultState.EMPTY ? View.VISIBLE : View.INVISIBLE}"
+                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_exit_kiosk : (data.badgePrintEnabled ? @string/scantype_entry_kiosk_print : @string/scantype_entry_kiosk)}"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:visibility="@{data.scanType.equals(&quot;entry&quot;) ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/iv_kioskAnimation"
+                        app:srcCompat="@drawable/ic_entry_gray_24dp" />
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:visibility="@{data.scanType.equals(&quot;exit&quot;) ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/iv_kioskAnimation"
+                        app:srcCompat="@drawable/ic_exit_orange_24dp" />
+
+                    <TextView
+                        android:id="@+id/tv_kioskconfig"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{data.configDetails}"
+                        android:textColor="@color/text_color"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cl_main"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:keepScreenOn="true"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <ImageView
                         android:id="@+id/iv_entry"
@@ -170,10 +230,10 @@
                         android:maxLines="12"
                         android:singleLine="true"
                         android:text=""
-                        tools:text="synchronization status message"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/fab_flash"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="synchronization status message" />
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/fab_focus"
@@ -305,8 +365,8 @@
                                         android:id="@+id/fl_statusicon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:paddingTop="@dimen/card_result_icon_padding"
                                         android:paddingStart="@dimen/card_result_icon_padding"
+                                        android:paddingTop="@dimen/card_result_icon_padding"
                                         android:paddingEnd="@dimen/card_result_icon_padding"
                                         android:paddingBottom="4dp"
                                         app:layout_constraintEnd_toEndOf="parent"
@@ -452,8 +512,8 @@
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/transparent"
                                     android:layout_marginBottom="12dp"
+                                    android:background="@color/transparent"
                                     android:visibility="@{data.attendeeName != null || data.orderCodeAndPositionId != null || data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null ? View.VISIBLE : View.GONE}">
 
                                     <TextView
@@ -498,10 +558,10 @@
                                         android:layout_marginTop="4dp"
                                         android:layout_marginEnd="16dp"
                                         android:orientation="vertical"
+                                        android:visibility="@{((data.seat != null &amp;&amp; !&quot;null&quot;.equals(data.seat)) || (data.questionAndAnswers != null &amp;&amp; !&quot;null&quot;.equals(data.questionAndAnswers)) || (data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts))) ? View.VISIBLE : View.GONE}"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
-                                        android:visibility="@{((data.seat != null &amp;&amp; !&quot;null&quot;.equals(data.seat)) || (data.questionAndAnswers != null &amp;&amp; !&quot;null&quot;.equals(data.questionAndAnswers)) || (data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts))) ? View.VISIBLE : View.GONE}"
                                         app:layout_constraintTop_toBottomOf="@id/tvAttendeeName">
 
                                         <TextView
@@ -621,10 +681,10 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="4dp"
-                        android:visibility="@{data.hideTimerVisible ? View.VISIBLE : View.GONE}"
                         android:progress="@{data.hideTimerProgress}"
-                        android:progressTint="@color/pretix_brand_light"
                         android:progressBackgroundTint="@color/pretix_brand_lightgrey"
+                        android:progressTint="@color/pretix_brand_light"
+                        android:visibility="@{data.hideTimerVisible ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
