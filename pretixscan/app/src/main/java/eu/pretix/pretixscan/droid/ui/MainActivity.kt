@@ -826,7 +826,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             } else {
                 null
             }
-            "SEUIC" -> if (Build.MODEL.startsWith("AUDOID Pad Air")) {
+            "SEUIC" -> if (Build.MODEL.startsWith("AUTOID Pad Air")) {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
             } else {
                 null
