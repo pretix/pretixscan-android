@@ -115,6 +115,7 @@
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Jedes Badge doppelt drucken</string>
     <string name="pref_unpaid_ask">Abfrage beim Check-in unbezahlter Bestellungen</string>
+    <string name="pref_ignore_questions">Keine Fragen beim Check-in stellen</string>
     <string name="pref_unpaid_ask_summary">Wenn die Check-in-Liste unbezahlte Bestellungen enthält, steuert diese Einstellung ob vor dem Einchecken dieser ein Bestätigungsdialog erscheint.</string>
     <string name="already_scanned">bereits gescannt</string>
     <string name="total_tickets_sold">Tickets (gesamt)</string>

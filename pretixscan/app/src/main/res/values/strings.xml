@@ -113,6 +113,7 @@
     <string name="preference_badges_twice">Print every badge twice</string>
     <string name="settings_label_details">Details</string>
     <string name="pref_unpaid_ask">Ask before checking in unpaid tickets</string>
+    <string name="pref_ignore_questions">Do not ask questions during check-in</string>
     <string name="pref_unpaid_ask_summary">When the check-in list is set to include pending orders, this setting controls whether you will be asked before they are being checked in.</string>
     <string name="question_validation_error">Some of your input could not be validated.</string>
     <string name="question_input_required">This field is required.</string>

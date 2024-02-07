@@ -332,6 +332,9 @@ class AppConfig(ctx: Context) : ConfigStore {
     val hideNames: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_HIDE_NAMES, false)
 
+    val ignoreQuestions: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_IGNORE_QUESTIONS, false)
+
     var sounds: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_SOUNDS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SOUNDS, value).apply()
@@ -430,6 +433,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_PRINTBADGESTWICE = "pref_print_badges_twice"
         val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
+        val PREFS_KEY_IGNORE_QUESTIONS = "pref_ignore_questions"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
         val PREFS_KEY_SOUNDS = "pref_sounds"
         val PREFS_KEY_HIDE_NAMES = "pref_hide_names"

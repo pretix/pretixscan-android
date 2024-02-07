@@ -1014,7 +1014,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 checkResult = provider.check(conf.eventSelectionToMap(), result, "barcode", answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                     "exit" -> TicketCheckProvider.CheckInType.EXIT
                     else -> TicketCheckProvider.CheckInType.ENTRY
-                })
+                }, allowQuestions = !conf.ignoreQuestions)
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
                         (application as PretixScan).connectivityHelper.recordError()

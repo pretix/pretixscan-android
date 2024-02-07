@@ -72,6 +72,10 @@
             android:key="pref_unpaid_ask"
             android:summary="@string/pref_unpaid_ask_summary"
             android:title="@string/pref_unpaid_ask" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_ignore_questions"
+            android:title="@string/pref_ignore_questions" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_covid_check">
         <CheckBoxPreference
