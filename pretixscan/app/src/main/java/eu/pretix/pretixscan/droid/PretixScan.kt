@@ -68,11 +68,13 @@ class PretixScan : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        SoLoader.init(this, false)
+        if (Build.VERSION.SDK_INT > 26) {
+            SoLoader.init(this, false)
 
-        val client: FlipperClient = AndroidFlipperClient.getInstance(this)
-        flipperInit = FlipperInitializer.initFlipperPlugins(this, client)
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+            val client: FlipperClient = AndroidFlipperClient.getInstance(this)
+            flipperInit = FlipperInitializer.initFlipperPlugins(this, client)
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        }
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
 
