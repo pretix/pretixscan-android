@@ -1,5 +1,6 @@
 package eu.pretix.pretixscan.droid
 
+import android.os.Build
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import eu.pretix.libpretixsync.api.RateLimitInterceptor
 import okhttp3.OkHttpClient
@@ -52,6 +53,9 @@ class AndroidHttpClientFactory(val app: PretixScan) : HttpClientFactory {
 
             builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0])
             builder.hostnameVerifier(HostnameVerifier { hostname, session -> true })
+        } else if (Build.VERSION.SDK_INT < 26) {  // Android 7.0 or lower
+            val certificates = CustomTrust().getCertificates()
+            builder.sslSocketFactory(certificates.sslSocketFactory(), certificates.trustManager)
         }
 
         return builder.build()
