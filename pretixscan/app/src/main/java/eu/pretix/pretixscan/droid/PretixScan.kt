@@ -15,10 +15,10 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixui.android.covid.DGC
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
+import eu.pretix.pretixscan.droid.db.SqlCipherDatabaseSource
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
 import java.util.concurrent.locks.ReentrantLock

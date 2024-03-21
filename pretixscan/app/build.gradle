@@ -125,6 +125,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation 'androidx.sqlite:sqlite:2.2.0'  // 2.4.0 requires compileSDK 34
 
     implementation 'com.louiscad.splitties:splitties-toast:3.0.0'
     implementation 'com.github.traex.rippleeffect:library:1.3'
@@ -139,7 +140,7 @@ dependencies {
     implementation 'io.requery:requery:1.6.0'
     implementation 'io.requery:requery-android:1.6.0'
     implementation 'io.requery:requery-kotlin:1.6.0'
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.9'
+    implementation 'net.zetetic:sqlcipher-android:4.5.5'
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.3'
     implementation "com.fasterxml.jackson.core:jackson-databind:2.13.0"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0"
