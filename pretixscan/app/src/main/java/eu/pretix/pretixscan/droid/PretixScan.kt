@@ -71,7 +71,6 @@ class PretixScan : MultiDexApplication() {
                         dbPass,
                         Migrations.CURRENT_VERSION
                     )
-                    source.setLoggingEnabled(false)
                     try {
                         // check if database has been decrypted
                         source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
@@ -92,6 +91,7 @@ class PretixScan : MultiDexApplication() {
                             )
                         }
                     }
+                    source.setLoggingEnabled(false)
 
                     val configuration = source.configuration
                     dataStore = EntityDataStore(configuration)
