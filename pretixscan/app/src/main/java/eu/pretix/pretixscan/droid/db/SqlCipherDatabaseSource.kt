@@ -38,7 +38,7 @@ import java.sql.Connection
 open class SqlCipherDatabaseSource(context: Context,
                                    private val model: EntityModel,
                                    name: String,
-                                   private val password: String,
+                                   password: String?,
                                    version: Int)
     : SQLiteOpenHelper(context, name, password, null, version,  0, null, null, true), DatabaseProvider<SQLiteDatabase> {
 
