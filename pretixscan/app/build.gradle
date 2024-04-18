@@ -145,7 +145,7 @@ dependencies {
     implementation "net.sourceforge.streamsupport:streamsupport-cfuture:$cfuture_version"
     implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_core_version"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_core_version"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_kotlin_version"
     implementation "net.i2p.crypto:eddsa:$eddsa_version"
     implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
 
