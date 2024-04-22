@@ -15,12 +15,15 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixui.android.covid.DGC
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
+import eu.pretix.pretixscan.droid.db.SqlCipherDatabaseSource
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import io.requery.android.sqlcipher.SqlCipherDatabaseSource
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
+import net.zetetic.database.sqlcipher.SQLiteConnection
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -30,6 +33,23 @@ class PretixScan : MultiDexApplication() {
     val syncLock = ReentrantLock()
     var flipperInit: FlipperInitializer.IntializationResult? = null
     lateinit var connectivityHelper: ConnectivityHelper
+
+    private fun migrateSqlCipher(name: String, dbPass: String) {
+        System.loadLibrary("sqlcipher")
+
+        val databaseFile = getDatabasePath(name)
+        SQLiteDatabase.openOrCreateDatabase(databaseFile, dbPass, null, null, object: SQLiteDatabaseHook {
+            override fun preKey(connection: SQLiteConnection) {
+            }
+
+            override fun postKey(connection: SQLiteConnection) {
+                val result = connection.executeForLong("PRAGMA cipher_migrate;", emptyArray(), null)
+                if (result != 0L) {
+                    throw SQLiteException("cipher_migrate failed")
+                }
+            }
+        }).close()
+    }
 
     val data: BlockingEntityStore<Persistable>
         get() {
@@ -44,19 +64,42 @@ class PretixScan : MultiDexApplication() {
                     val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
                     else KEYSTORE_PASSWORD
 
-                    var source = SqlCipherDatabaseSource(this,
-                            Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
-                    source.setLoggingEnabled(false)
+                    var source = SqlCipherDatabaseSource(
+                        this,
+                        Models.DEFAULT,
+                        Models.DEFAULT.name,
+                        dbPass,
+                        Migrations.CURRENT_VERSION
+                    )
                     try {
                         // check if database has been decrypted
-                        source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray()) //source.getReadableDatabase().getSyncedTables() ???
+                        source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
                     } catch (e: SQLiteException) {
-                        // if not, delete it
-                        this.deleteDatabase(Models.DEFAULT.getName())
-                        // and create a new one
-                        source = SqlCipherDatabaseSource(this,
-                                Models.DEFAULT, Models.DEFAULT.getName(), dbPass, Migrations.CURRENT_VERSION)
+                        try {
+                            source.close()
+                            migrateSqlCipher(Models.DEFAULT.name, dbPass)
+                            source = SqlCipherDatabaseSource(
+                                this,
+                                Models.DEFAULT,
+                                Models.DEFAULT.name,
+                                dbPass,
+                                Migrations.CURRENT_VERSION
+                            )
+                            source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
+                        } catch (e: SQLiteException) {
+                            // still not decrypted? then we probably lost the key due to a keystore issue
+                            // let's start fresh, there's no reasonable other way to let the user out of this
+                            this.deleteDatabase(Models.DEFAULT.getName())
+                            source = SqlCipherDatabaseSource(
+                                this,
+                                Models.DEFAULT,
+                                Models.DEFAULT.name,
+                                dbPass,
+                                Migrations.CURRENT_VERSION
+                            )
+                        }
                     }
+                    source.setLoggingEnabled(false)
 
                     val configuration = source.configuration
                     dataStore = EntityDataStore(configuration)
