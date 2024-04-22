@@ -46,7 +46,10 @@ class PretixScan : MultiDexApplication() {
             }
 
             override fun postKey(connection: SQLiteConnection) {
-                connection.execute("PRAGMA cipher_migrate;", emptyArray(), null)
+                val result = connection.executeForLong("PRAGMA cipher_migrate;", emptyArray(), null)
+                if (result != 0L) {
+                    throw SQLiteException("cipher_migrate failed")
+                }
             }
         })
     }
