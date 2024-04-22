@@ -34,13 +34,10 @@ class PretixScan : MultiDexApplication() {
     var flipperInit: FlipperInitializer.IntializationResult? = null
     lateinit var connectivityHelper: ConnectivityHelper
 
-    private fun migrateSqlCipher() {
-        val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
-        else KEYSTORE_PASSWORD
-
+    private fun migrateSqlCipher(name: String, dbPass: String) {
         System.loadLibrary("sqlcipher")
 
-        val databaseFile = getDatabasePath(Models.DEFAULT.name)
+        val databaseFile = getDatabasePath(name)
         SQLiteDatabase.openOrCreateDatabase(databaseFile, dbPass, null, null, object: SQLiteDatabaseHook {
             override fun preKey(connection: SQLiteConnection) {
             }
@@ -51,7 +48,7 @@ class PretixScan : MultiDexApplication() {
                     throw SQLiteException("cipher_migrate failed")
                 }
             }
-        })
+        }).close()
     }
 
     val data: BlockingEntityStore<Persistable>
@@ -79,7 +76,15 @@ class PretixScan : MultiDexApplication() {
                         source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
                     } catch (e: SQLiteException) {
                         try {
-                            migrateSqlCipher()
+                            source.close()
+                            migrateSqlCipher(Models.DEFAULT.name, dbPass)
+                            source = SqlCipherDatabaseSource(
+                                this,
+                                Models.DEFAULT,
+                                Models.DEFAULT.name,
+                                dbPass,
+                                Migrations.CURRENT_VERSION
+                            )
                             source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
                         } catch (e: SQLiteException) {
                             // still not decrypted? then we probably lost the key due to a keystore issue
