@@ -142,7 +142,7 @@ dependencies {
     implementation "io.requery:requery:$requery_version"
     implementation "io.requery:requery-android:$requery_version"
     implementation "io.requery:requery-kotlin:$requery_version"
-    implementation 'net.zetetic:sqlcipher-android:4.5.5'
+    implementation 'net.zetetic:sqlcipher-android:4.5.6'
     implementation "net.sourceforge.streamsupport:streamsupport-cfuture:$cfuture_version"
     implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_core_version"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
