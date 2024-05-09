@@ -138,7 +138,9 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
 
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-    if (isPackageInstalled("eu.pretix.pretixprint", context.packageManager)) {
+    if (BuildConfig.DEBUG && isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
+        intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
+    } else if (isPackageInstalled("eu.pretix.pretixprint", context.packageManager)) {
         intent.component = ComponentName("eu.pretix.pretixprint", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
         intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
