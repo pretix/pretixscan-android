@@ -49,21 +49,10 @@ fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: Str
         }
     }
 
-    /* Legacy mechanism: Keep around until pretix 2.5 is end of life */
-    val item = application.data.select(Item::class.java)
-            .where(Item.SERVER_ID.eq(itemid_server))
-            .get().firstOrNull() ?: return getDefaultBadgeLayout()
-    if (item.getBadge_layout_id() != null) {
-        return application.data.select(BadgeLayout::class.java)
-                .where(BadgeLayout.SERVER_ID.eq(item.getBadge_layout_id()))
-                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-                .get().firstOrNull() ?: getDefaultBadgeLayout()
-    } else { // Also used for current pretix versions for obtaining the event's default badge layout
-        return application.data.select(BadgeLayout::class.java)
-                .where(BadgeLayout.IS_DEFAULT.eq(true))
-                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-                .get().firstOrNull() ?: getDefaultBadgeLayout()
-    }
+    return application.data.select(BadgeLayout::class.java)
+            .where(BadgeLayout.IS_DEFAULT.eq(true))
+            .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
+            .get().firstOrNull() ?: getDefaultBadgeLayout()
 }
 
 fun isPackageInstalled(packagename: String, packageManager: PackageManager): Boolean {
@@ -149,7 +138,9 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
 
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-    if (isPackageInstalled("eu.pretix.pretixprint", context.packageManager)) {
+    if (BuildConfig.DEBUG && isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
+        intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
+    } else if (isPackageInstalled("eu.pretix.pretixprint", context.packageManager)) {
         intent.component = ComponentName("eu.pretix.pretixprint", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
         intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
