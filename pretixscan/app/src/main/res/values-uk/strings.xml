@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cont">ДАЛІ</string>
+    <string name="status_canceled">Скасовано</string>
+    <string name="scan_result_revoked">Код квитка відкликаний/змінений</string>
+    <string name="scan_result_blocked">Квиток заблокований</string>
 </resources>
