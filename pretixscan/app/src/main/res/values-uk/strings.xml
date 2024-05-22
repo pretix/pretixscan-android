@@ -4,4 +4,11 @@
     <string name="status_canceled">Скасовано</string>
     <string name="scan_result_revoked">Код квитка відкликаний/змінений</string>
     <string name="scan_result_blocked">Квиток заблокований</string>
+    <string name="action_label_settings">Налаштування</string>
+    <string name="setup_error_io">Помилка зв\'язку під час спроби під\'єднання до сервера.</string>
+    <string name="setup_error_ssl">Помилка безпеки під час спроби під\'єднання до сервера.</string>
+    <string name="setup_error_server">Серверна помилка під час спроби реєстрації пристрою.</string>
+    <string name="setup_error_response">Сервер надіслав недійсну відповідь.</string>
+    <string name="cancel">Скасувати</string>
+    <string name="settings_label_version">Версія</string>
 </resources>
