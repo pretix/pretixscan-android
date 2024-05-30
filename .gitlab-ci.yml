@@ -16,9 +16,9 @@ test:
 release:
   stage: release
   script:
-    - ln -s /keys/release.keystore release.keystore
+    - cat $KSTORE | base64 -d > release.keystore
     - cd pretixscan
-    - cat /keys/local.properties > local.properties
+    - cat $LOCALPROP > local.properties
     - git submodule init
     - git submodule update
     - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew --no-daemon -Dmaven.repo.local=$(pwd)/repo assemblePretixRelease --stacktrace
@@ -28,7 +28,5 @@ release:
     expire_in: '6 weeks'
   only:
     - '/^v.*$/'
-  tags:
-    - release
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
