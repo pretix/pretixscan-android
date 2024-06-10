@@ -6,4 +6,8 @@
         android:icon="@drawable/ic_check_24"
         android:title="@string/action_label_ok"
         app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_disable"
+        android:title="@string/action_multievent_disable"
+        app:showAsAction="never" />
 </menu>
