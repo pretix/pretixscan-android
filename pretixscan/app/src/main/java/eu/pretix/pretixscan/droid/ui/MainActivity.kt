@@ -67,9 +67,6 @@ import eu.pretix.libpretixsync.serialization.JSONArraySerializer
 import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
 import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixsync.sync.SyncManager
-import eu.pretix.libpretixui.android.covid.CovidCheckSettings
-import eu.pretix.libpretixui.android.covid.DGC
-import eu.pretix.libpretixui.android.covid.SAMPLE_SETTINGS
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
@@ -629,7 +626,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
             try {
                 if (prefs.getBoolean("pref_sync_auto", true)) {
-                    DGC().backgroundDscListUpdater.update()
                     val result = sm.sync(false) {
                         runOnUiThread {
                             syncMessage = it
@@ -953,7 +949,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         val result = if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.toUpperCase(Locale.getDefault()))) {
             /*
-             * This is a bit of a hack. pretixSCAN 1.11+ supports checking digital COVID vaccination
+             * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supports checking digital COVID vaccination
              * certificates. When scanning them at the correct time, we have a high level of privacy
              * since we do not store any personal data contained in the certificate. However, if you
              * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
@@ -979,31 +975,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
-        }
-
-        if (conf.covidAutoCheckin && answers == null) {
-            val questions = (application as PretixScan).data.select(Question::class.java)
-                    .where(Question.EVENT_SLUG.`in`(conf.synchronizedEvents))
-                    .get()
-            // This gets a little too many answers but it does not seem to hurt
-
-            for (q in questions) {
-                if (q.json.getString("identifier") == "pretix_covid_certificates_question") {
-                    val answers = mutableListOf<Answer>()
-                    val validityTime = java.time.LocalDate.now().atStartOfDay(ZoneId.systemDefault()).plusDays(1)
-                    answers.add(
-                            Answer(
-                                    q,
-                                    String.format(
-                                            "provider: automatic, proof: withheld, expires: %s",
-                                            validityTime.toOffsetDateTime().toString()
-                                    )
-                            )
-                    )
-                    handleScan(raw_result, answers, ignore_unpaid)
-                    return
-                }
-            }
         }
 
         bgScope.launch {
@@ -1070,34 +1041,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 .where(Settings.SLUG.eq(res.eventSlug))
                 .get()
                 .firstOrNull()
-
-        val covidchecksettings = CovidCheckSettings(
-                settings.covid_certificates_record_proof ?: true,
-                settings.covid_certificates_allow_vaccinated,
-                settings.covid_certificates_allow_vaccinated_min,
-                settings.covid_certificates_allow_vaccinated_max,
-                settings.covid_certificates_allow_vaccinated_products?.split(",")?.toSet()
-                        ?: SAMPLE_SETTINGS.allow_vaccinated_products,
-                settings.covid_certificates_record_proof_vaccinated,
-                settings.covid_certificates_allow_cured,
-                settings.covid_certificates_allow_cured_min,
-                settings.covid_certificates_allow_cured_max,
-                settings.covid_certificates_record_proof_cured,
-                settings.covid_certificates_allow_tested_pcr,
-                settings.covid_certificates_allow_tested_pcr_min,
-                settings.covid_certificates_allow_tested_pcr_max,
-                settings.covid_certificates_record_proof_tested_pcr,
-                settings.covid_certificates_allow_tested_antigen_unknown,
-                settings.covid_certificates_allow_tested_antigen_unknown_min,
-                settings.covid_certificates_allow_tested_antigen_unknown_max,
-                settings.covid_certificates_record_proof_tested_antigen_unknown,
-                settings.covid_certificates_allow_other,
-                settings.covid_certificates_record_proof_other,
-                settings.covid_certificates_record_validity_time,
-                settings.covid_certificates_accept_eudgc,
-                settings.covid_certificates_accept_manual,
-                settings.covid_certificates_combination_rules,
-        )
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
                 this,
                 questions,
@@ -1106,7 +1049,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
                 null,
                 { answers -> retryHandler(secret, answers, ignore_unpaid) },
                 null,
-                covidchecksettings,
                 attendeeName,
                 attendeeDOB,
                 res.orderCodeAndPositionId(),
@@ -1529,9 +1471,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
         // Currently, in most cases we don't need to care if Android kills MainActivity, since it
         // does not carry much state when you don't actively use it. The prominent exception is
-        // if the questions dialog starts sub-activities, e.g. for taking photos or checking covid
-        // passes. In these case, we try to serialize all state required to re-create the dialog
-        // if the user returns.
+        // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
+        // we try to serialize all state required to re-create the dialog if the user returns.
 
         if (view_data.resultState.get() == DIALOG && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
