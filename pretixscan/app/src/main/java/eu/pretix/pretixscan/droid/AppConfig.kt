@@ -383,10 +383,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
 
-    var covidAutoCheckin: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_COVID_AUTOCHECKIN, false)
-        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_COVID_AUTOCHECKIN, value).apply()
-
     override fun getKnownLiveEventSlugs(): Set<String> {
         return default_prefs.getStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, emptySet()) as Set<String>
     }
@@ -439,7 +435,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
-        val PREFS_KEY_COVID_AUTOCHECKIN = "pref_covid_autocheckin"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
     }

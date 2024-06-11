@@ -13,13 +13,10 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
-import eu.pretix.libpretixui.android.covid.DGC
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
-import eu.pretix.pretixscan.droid.db.SqlCipherDatabaseSource
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
-import io.requery.android.sqlite.DatabaseSource
 import io.requery.sql.EntityDataStore
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -56,7 +53,7 @@ class PretixScan : MultiDexApplication() {
             if (dataStore == null) {
                 if (BuildConfig.DEBUG) {
                     // Do not encrypt on debug, because it breaks Stetho
-                    val source = DatabaseSource(this, Models.DEFAULT, Migrations.CURRENT_VERSION)
+                    val source = AndroidDatabaseSource(this, Models.DEFAULT, Migrations.CURRENT_VERSION)
                     source.setLoggingEnabled(BuildConfig.DEBUG)
                     val configuration = source.configuration
                     dataStore = EntityDataStore(configuration)
@@ -64,7 +61,7 @@ class PretixScan : MultiDexApplication() {
                     val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
                     else KEYSTORE_PASSWORD
 
-                    var source = SqlCipherDatabaseSource(
+                    var source = AndroidSqlCipherDatabaseSource(
                         this,
                         Models.DEFAULT,
                         Models.DEFAULT.name,
@@ -78,7 +75,7 @@ class PretixScan : MultiDexApplication() {
                         try {
                             source.close()
                             migrateSqlCipher(Models.DEFAULT.name, dbPass)
-                            source = SqlCipherDatabaseSource(
+                            source = AndroidSqlCipherDatabaseSource(
                                 this,
                                 Models.DEFAULT,
                                 Models.DEFAULT.name,
@@ -90,7 +87,7 @@ class PretixScan : MultiDexApplication() {
                             // still not decrypted? then we probably lost the key due to a keystore issue
                             // let's start fresh, there's no reasonable other way to let the user out of this
                             this.deleteDatabase(Models.DEFAULT.getName())
-                            source = SqlCipherDatabaseSource(
+                            source = AndroidSqlCipherDatabaseSource(
                                 this,
                                 Models.DEFAULT,
                                 Models.DEFAULT.name,
@@ -120,8 +117,6 @@ class PretixScan : MultiDexApplication() {
         }
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
-
-        DGC().init(this@PretixScan)
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
