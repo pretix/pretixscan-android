@@ -16,6 +16,8 @@
     <string name="action_search">Suchen</string>
     <string name="action_manual">Manuelles Setup</string>
     <string name="action_multievent_enable">Experten-Modus (mehrere Events auswählbar)</string>
+    <string name="action_multievent_disable">Experten-Modus deaktivieren</string>
+    <string name="action_multievent_disable_error">Experten-Modus kann nicht deaktiviert werden, solange mehrere Events ausgewählt sind.</string>
     <string name="operation_select_event">Veranstaltung auswählen</string>
     <string name="operation_select_events">Veranstaltungen auswählen</string>
     <string name="events_selected">%s Veranstaltungen ausgewählt</string>

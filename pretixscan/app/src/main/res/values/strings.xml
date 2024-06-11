@@ -16,6 +16,8 @@
     <string name="action_label_scantype_entry">Switch to entry scanning</string>
     <string name="action_label_scantype_exit">Switch to exit scanning</string>
     <string name="action_multievent_enable">Expert mode (select multiple events)</string>
+    <string name="action_multievent_disable">Disable expert mode</string>
+    <string name="action_multievent_disable_error">Expert mode cannot be disabled if multiple events are selected.</string>
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
     <string name="scantype_entry_kiosk">Scan your ticket to check in</string>

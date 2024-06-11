@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.EventSelection
@@ -192,6 +193,15 @@ class EventConfigActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_ok -> {
                 if (conf.synchronizedEvents.isNotEmpty()) {
+                    supportFinishAfterTransition()
+                }
+                return true
+            }
+            R.id.action_disable -> {
+                if (conf.synchronizedEvents.size != 1) {
+                    MaterialAlertDialogBuilder(this).setMessage(R.string.action_multievent_disable_error).create().show()
+                } else {
+                    conf.multiEventMode = false
                     supportFinishAfterTransition()
                 }
                 return true
