@@ -822,6 +822,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             } else {
                 null
             }
+            "Newland" -> if (Build.MODEL.startsWith("NLS-NQ")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
             "SEUIC" -> if (Build.MODEL.startsWith("AUTOID Pad Air")) {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
             } else {
