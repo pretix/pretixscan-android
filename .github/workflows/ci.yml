@@ -15,10 +15,10 @@ jobs:
     - name: local.properties pretixscan
       run: echo "github.token=${{ secrets.GITHUB_TOKEN }}" > local.properties
       working-directory: ./pretixscan
-    - name: set up JDK 11
+    - name: set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: 17
     - name: Submodules
       run: git submodule update --init
       working-directory: ./pretixscan

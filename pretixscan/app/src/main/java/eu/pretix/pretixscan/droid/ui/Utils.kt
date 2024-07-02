@@ -1,5 +1,6 @@
 package eu.pretix.pretixscan.droid.ui
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -9,6 +10,7 @@ import eu.pretix.libpretixsync.Models
 import eu.pretix.pretixscan.droid.AppConfig
 import kotlin.system.exitProcess
 
+@SuppressLint("UnspecifiedImmutableFlag")
 fun wipeApp(ctx: Context) {
     val conf = AppConfig(ctx)
     conf.resetDeviceConfig()

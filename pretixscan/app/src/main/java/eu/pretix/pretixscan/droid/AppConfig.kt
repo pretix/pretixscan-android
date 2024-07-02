@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.preference.PreferenceManager
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -109,7 +108,7 @@ class AppConfig(ctx: Context) : ConfigStore {
                     return emptyList()
                 }
             }
-            return om.readValue(s, object : TypeReference<List<EventSelection>>() {})
+            return om.readerForListOf(EventSelection::class.java).readValue(s)
         }
         set (value) {
             prefs.edit().putString(PREFS_KEY_EVENT_SELECTION, om.writeValueAsString(value)).apply()

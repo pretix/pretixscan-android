@@ -1,3 +1,17 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
 include ':app', ':libpretixsync', ':libpretixui-android', ':android-libserenegiantcommon', ':android-libusbcameracommon', ':android-libuvccamera'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
 project(':libpretixui-android').projectDir = new File('libpretixui-repo/libpretixui-android')
