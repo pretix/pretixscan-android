@@ -462,6 +462,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         setSupportActionBar(binding.mainToolbar.toolbar)
         supportActionBar?.setDisplayUseLogoEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setLogo(R.drawable.ic_logo)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
