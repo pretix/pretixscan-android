@@ -176,4 +176,5 @@
     <string name="currently_inside">currently attending</string>
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
     <string name="event_select_calendar">Show calendar</string>
+    <string name="setup_grant_camera_permission">Please grant camera permission to use the QR Scanner</string>
 </resources>

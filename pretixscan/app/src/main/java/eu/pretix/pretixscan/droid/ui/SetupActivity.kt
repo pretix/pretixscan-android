@@ -118,7 +118,7 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     }
                     checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.setup_grant_camera_permission), Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -229,7 +229,6 @@ class SetupActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                     pdialog.dismiss()
 
                     val intent = Intent(this@SetupActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK.or(Intent.FLAG_ACTIVITY_TASK_ON_HOME)
                     startActivity(intent)
                     finish()
                 }

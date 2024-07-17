@@ -177,4 +177,5 @@
     <string name="error_no_available_events">Es wurde kein gegenwärtiges oder zukünftiges Event gefunden. Bitte prüfen Sie das Datum und die Zugriffsrechte Ihrer Veranstaltungen.</string>
     <string name="event_select_calendar">Kalender anzeigen</string>
     <string name="action_label_ok">OK</string>
+    <string name="setup_grant_camera_permission">Bitte erteilen Sie die Kamera-Berechtigung für den QR-Code-Scanner</string>
 </resources>
