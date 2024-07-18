@@ -32,4 +32,9 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
+
+    <!-- NOTE: this has an override in values-land/styles.xml -->
+    <style name="AppTheme.Actionbar" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="displayOptions">showHome|useLogo</item>
+    </style>
 </resources>

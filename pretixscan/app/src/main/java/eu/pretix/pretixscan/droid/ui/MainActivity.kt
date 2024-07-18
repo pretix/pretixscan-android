@@ -88,7 +88,6 @@ import java.lang.Integer.max
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.time.ZoneId
 import java.util.*
 
 
@@ -460,8 +459,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
         binding.data = view_data
 
         setSupportActionBar(binding.mainToolbar.toolbar)
-        supportActionBar?.setDisplayUseLogoEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        // the toolbar should show/hide the title based on displayOptions in the different style variations
+        // the used ToolbarActionBar class is explicitly *not* interpreting the style definitions
+        // so we're doing that ourselves here:
+        val ta = theme.obtainStyledAttributes(R.style.AppTheme_Actionbar, intArrayOf(R.attr.displayOptions))
+        supportActionBar?.displayOptions = ta.getInt(0, 0)
+        ta.recycle()
 
         volumeControlStream = AudioManager.STREAM_MUSIC
         buildMediaPlayer()
@@ -572,7 +575,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
 
     private fun registerDevice() {
         val intent = Intent(this, WelcomeActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK.or(Intent.FLAG_ACTIVITY_TASK_ON_HOME)
         startActivity(intent)
         finish()
     }
@@ -1207,7 +1209,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ZXingScannerView.R
             result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
                 qanda.bold { append(questionAnswer.question.question + ":") }
                 qanda.append(" ")
-                qanda.append(questionAnswer.currentValue)
+                qanda.append(questionAnswer.currentValue) // FIXME: yes/no is written here as true/false
                 if (index != result.shownAnswers!!.lastIndex) {
                     qanda.append("\n")
                 }
