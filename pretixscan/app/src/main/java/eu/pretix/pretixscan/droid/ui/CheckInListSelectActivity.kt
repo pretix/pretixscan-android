@@ -53,7 +53,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     conf,
                     api,
                     AndroidSentryImplementation(),
-                    (application as PretixScan).data,
+                    (application as PretixScan).db,
                     (application as PretixScan).fileStorage,
                     1000L,
                     1000L,
