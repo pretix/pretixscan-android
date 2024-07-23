@@ -4,6 +4,8 @@ import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import androidx.sqlite.db.SupportSQLiteDatabase
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.soloader.SoLoader
@@ -13,14 +15,21 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
+import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
+import eu.pretix.libpretixsync.sqldelight.BigDecimalAdapter
+import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.utils.KeystoreHelper
+import eu.pretix.pretixscan.utils.createSyncDatabase
+import eu.pretix.pretixscan.utils.readVersionPragma
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
 import io.requery.sql.EntityDataStore
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.locks.ReentrantLock
 
 
@@ -105,6 +114,57 @@ class PretixScan : MultiDexApplication() {
             return dataStore!!
         }
 
+    val db: SyncDatabase by lazy {
+        // Access data to init schema through requery if it hasn't been created already
+        data.raw("PRAGMA user_version;").first()
+
+        val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
+        else KEYSTORE_PASSWORD
+
+        val androidDriver = if (BuildConfig.DEBUG) {
+            AndroidSqliteDriver(
+                schema = SyncDatabase.Schema,
+                context = this.applicationContext,
+                name = "default",
+                callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
+                    override fun onOpen(db: SupportSQLiteDatabase) {
+                        db.setForeignKeyConstraintsEnabled(true)
+                    }
+                },
+            )
+        } else {
+            System.loadLibrary("sqlcipher")
+            AndroidSqliteDriver(
+                schema = SyncDatabase.Schema,
+                context = this.applicationContext,
+                name = "default",
+                callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
+                    override fun onOpen(db: SupportSQLiteDatabase) {
+                        db.setForeignKeyConstraintsEnabled(true)
+                    }
+                },
+                factory = SupportOpenHelperFactory(dbPass.toByteArray())
+            )
+        }
+
+        // Uncomment LogSqliteDriver for verbose logging
+        val driver = if(BuildConfig.DEBUG) {
+//            LogSqliteDriver(androidDriver) {
+//                Log.d("SQLDelight", it)
+//            }
+            androidDriver
+        } else {
+            androidDriver
+        }
+
+        createSyncDatabase(
+            driver = driver,
+            version = readVersionPragma(driver),
+            dateAdapter = AndroidUtilDateAdapter(),
+            bigDecimalAdapter = BigDecimalAdapter(),
+        )
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -123,7 +183,7 @@ class PretixScan : MultiDexApplication() {
         if (conf.proxyMode) {
             return ProxyCheckProvider(conf, AndroidHttpClientFactory(this))
         } else if (conf.offlineMode) {
-            return AsyncCheckProvider(conf, data)
+            return AsyncCheckProvider(conf, db)
         } else {
             var fallback: TicketCheckProvider? = null
             var fallbackTimeout = 30000
@@ -138,9 +198,9 @@ class PretixScan : MultiDexApplication() {
                     "20s" -> 20000
                     else -> throw Exception("Unknown offline mode ")
                 }
-                fallback = AsyncCheckProvider(conf, data)
+                fallback = AsyncCheckProvider(conf, db)
             }
-            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), data, fileStorage, fallback, fallbackTimeout)
+            return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), db, fileStorage, fallback, fallbackTimeout)
         }
     }
 
