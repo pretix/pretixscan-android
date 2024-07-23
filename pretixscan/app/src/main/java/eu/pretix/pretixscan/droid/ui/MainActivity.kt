@@ -61,7 +61,15 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.*
+import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.db.Event
+import eu.pretix.libpretixsync.db.QueuedCall
+import eu.pretix.libpretixsync.db.QueuedCheckIn
+import eu.pretix.libpretixsync.db.Settings
+import eu.pretix.libpretixsync.db.SubEvent
+import eu.pretix.libpretixsync.models.Question
+import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
 import eu.pretix.libpretixsync.serialization.JSONArraySerializer
 import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
@@ -512,7 +520,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 conf,
                 api,
                 AndroidSentryImplementation(),
-                (application as PretixScan).data,
+                (application as PretixScan).db,
                 (application as PretixScan).fileStorage,
                 60000L,
                 5 * 60000L,
@@ -526,6 +534,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 Build.VERSION.RELEASE,
             "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
+                null,
                 null,
                 (application as PretixScan).connectivityHelper
         )
@@ -994,15 +1003,23 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
                             values: Map<String, String>?, isResumed: Boolean,
                             retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
-        val questions = res.requiredAnswers!!.map { it.question }
+        val questionServerIds = res.requiredAnswers!!.map { it.question.server_id }
+        val questions = (application as PretixScan).db.questionQueries.selectByServerIdList(questionServerIds)
+            .executeAsList()
+            .map { it.toModel() }
+
+        val questionsByServerId = mutableMapOf<Long, Question>()
         for (q in questions) {
             q.resolveDependency(questions)
+            questionsByServerId[q.serverId] = q
         }
+
         val values_ = if (values == null) {
             val v = mutableMapOf<String, String>()
             res.requiredAnswers!!.forEach {
-                if (!it.currentValue.isNullOrBlank()) {
-                    v[it.question.identifier] = it.currentValue!!
+                val q = questionsByServerId[it.question.server_id]
+                if (!it.currentValue.isNullOrBlank() && q != null) {
+                    v[q.identifier] = it.currentValue!!
                 }
             }
             v
@@ -1184,7 +1201,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         if (!isExit && !result.shownAnswers.isNullOrEmpty()) {
             val qanda = SpannableStringBuilder()
             result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
-                qanda.bold { append(questionAnswer.question.question + ":") }
+                val question = (application as PretixScan).db.questionQueries.selectByServerId(questionAnswer.question.server_id)
+                    .executeAsOne()
+                    .toModel()
+                qanda.bold { append(question.question + ":") }
                 qanda.append(" ")
                 qanda.append(questionAnswer.currentValue) // FIXME: yes/no is written here as true/false
                 if (index != result.shownAnswers!!.lastIndex) {
@@ -1481,10 +1501,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             val answers = savedInstanceState.getBundle("answers")!!
             val values = mutableMapOf<String, String>()
-            lastScanResult!!.requiredAnswers!!.forEach {
-                val v = answers.getString(it.question.identifier, "")
+
+            val questionServerIds = lastScanResult!!.requiredAnswers!!.map { it.question.server_id }
+            val questionIdentifiers = (application as PretixScan).db.questionQueries.selectByServerIdList(questionServerIds)
+                    .executeAsList()
+                    .map { it.toModel().identifier }
+            questionIdentifiers.forEach { identifier ->
+                val v = answers.getString(identifier, "")
                 if (v.isNotBlank()) {
-                    values[it.question.identifier] = v
+                    values[identifier] = v
                 }
             }
 

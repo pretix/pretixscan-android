@@ -107,12 +107,12 @@ internal class SqlCipherConnection(val database: SQLiteDatabase) : BaseConnectio
 
     @Throws(SQLException::class)
     override fun isClosed(): Boolean {
-        return !database.isOpen()
+        return !database.isOpen
     }
 
     @Throws(SQLException::class)
     override fun isReadOnly(): Boolean {
-        return database.isReadOnly()
+        return database.isReadOnly
     }
 
     @Throws(SQLException::class)
