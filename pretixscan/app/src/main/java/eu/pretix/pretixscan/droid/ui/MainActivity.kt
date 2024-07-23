@@ -535,6 +535,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 api,
                 AndroidSentryImplementation(),
                 (application as PretixScan).data,
+                (application as PretixScan).db,
                 (application as PretixScan).fileStorage,
                 60000L,
                 5 * 60000L,
