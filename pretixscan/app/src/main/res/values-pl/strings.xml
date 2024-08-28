@@ -61,7 +61,7 @@
     <string name="sync_status_progress">synchronizacja jest w trakcie</string>
     <string name="sync_status_now">zsynchronizowano przed chwilą</string>
     <string name="sync_status_date_format">rrrr-MM-dd GG:mm:ss</string>
-    <string name="short_datetime_format">MM/dd GG:mm</string>
+    <string name="short_datetime_format">MM/dd HH:mm</string>
     <string name="first_scanned">Pierwsze skanowanie: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
@@ -109,7 +109,7 @@
     <string name="scan_result_canceled">Zamówienie anulowane</string>
     <string name="error_sync_in_background">Synchronizacja jest już uruchomiona w tle.</string>
     <string name="dialog_unpaid_title">Nieopłacone zamówienie</string>
-    <string name="dialog_unpaid_retry">Zamelduj mimo wszystko</string>
+    <string name="dialog_unpaid_retry">Zamelduj się mimo wszystko</string>
     <string name="preference_badgeprint_enable">Włącz drukowanie identyfikatorów</string>
     <string name="preference_badgeprint_install_pretixprint">Drukowanie identyfikatorów wymaga osobnej aplikacji pretixPRINT. Czy chcesz ją zainstalować?</string>
     <string name="already_scanned">już zeskanowany</string>
