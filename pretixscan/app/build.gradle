@@ -17,12 +17,12 @@ apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 android {
     namespace 'eu.pretix.pretixscan.droid'
 
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 95
         versionName "2.9.0"
         vectorDrawables.useSupportLibrary = true
