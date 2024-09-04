@@ -2,16 +2,24 @@ package eu.pretix.pretixscan.droid
 
 
 import eu.pretix.libpretixsync.SentryInterface
+import io.sentry.Breadcrumb
 import io.sentry.Sentry
 
 
 class AndroidSentryImplementation : SentryInterface {
     override fun addHttpBreadcrumb(url: String, method: String, statusCode: Int) {
-        Sentry.addBreadcrumb("$method $url [$statusCode]")
+        val breadcrumb = Breadcrumb().apply {
+            category = "http"
+            message = "$method $url [$statusCode]"
+        }
+        Sentry.addBreadcrumb(breadcrumb)
     }
 
     override fun addBreadcrumb(a: String, b: String) {
-        Sentry.addBreadcrumb("$a $b")
+        val breadcrumb = Breadcrumb().apply {
+            message = "$a $b"
+        }
+        Sentry.addBreadcrumb(breadcrumb)
     }
 
     override fun captureException(t: Throwable) {
@@ -19,7 +27,7 @@ class AndroidSentryImplementation : SentryInterface {
     }
 
     override fun captureException(t: Throwable, message: String) {
-        Sentry.addBreadcrumb(message)
+        Sentry.captureMessage(message)
         Sentry.captureException(t)
     }
 }

@@ -146,7 +146,7 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "com.squareup.okhttp3:okhttp-tls:$okhttp_version"
-    implementation 'io.sentry:sentry-android:6.29.0'
+    implementation 'io.sentry:sentry-android:7.14.0'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation "joda-time:joda-time:$joda_version"
     implementation "io.requery:requery:$requery_version"

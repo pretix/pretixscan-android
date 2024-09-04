@@ -108,6 +108,8 @@
         <meta-data android:name="io.sentry.breadcrumbs.network-events" android:value="false" />
         <meta-data android:name="io.sentry.breadcrumbs.app-components" android:value="false" />
         <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="false" />
+        <meta-data android:name="io.sentry.attach-screenshot" android:value="false" />
+        <meta-data android:name="io.sentry.attach-view-hierarchy" android:value="false" />
     </application>
 
 </manifest>
