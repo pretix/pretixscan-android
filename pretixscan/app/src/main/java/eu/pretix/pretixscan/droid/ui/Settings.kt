@@ -162,6 +162,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             return@setOnPreferenceChangeListener true
         }
+        findPreference<EditTextPreference>("pref_print_layout_override")?.setOnBindEditTextListener { editText ->
+            editText.inputType = InputType.TYPE_CLASS_NUMBER
+        }
 
         findPreference<Preference>("datawedge_install")?.apply {
             isEnabled =

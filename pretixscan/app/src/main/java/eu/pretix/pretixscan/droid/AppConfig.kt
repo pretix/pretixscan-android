@@ -362,6 +362,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_PRINTBADGESTWICE, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGESTWICE, value).apply()
 
+    var printLayoutOverride: Long
+        get() = default_prefs.getString(PREFS_KEY_PRINTLAYOUTOVERRIDE, "0")!!.toLong()
+        set(value) = default_prefs.edit().putString(PREFS_KEY_PRINTLAYOUTOVERRIDE, value.toString()).apply()
+
     var scanType: String
         get() = default_prefs.getString(PREFS_KEY_SCAN_TYPE, "entry") ?: "entry"
         set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_TYPE, value).apply()
@@ -426,6 +430,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"
         val PREFS_KEY_PRINTBADGES = "pref_print_badges"
         val PREFS_KEY_PRINTBADGESTWICE = "pref_print_badges_twice"
+        val PREFS_KEY_PRINTLAYOUTOVERRIDE = "pref_print_layout_override"
         val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
         val PREFS_KEY_IGNORE_QUESTIONS = "pref_ignore_questions"

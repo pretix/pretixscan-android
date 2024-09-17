@@ -76,9 +76,10 @@ fun receiverForSending(actualReceiver: ResultReceiver): ResultReceiver {
 
 
 fun printBadge(context: Context, application: PretixScan, position: JSONObject, eventSlug: String, recv: ResultReceiver?) {
+    val config = AppConfig(context)
     val positions = JSONArray()
     positions.put(position)
-    if (AppConfig(context).printBadgesTwice) {
+    if (config.printBadgesTwice) {
         positions.put(position)
     }
     val store = application.data
@@ -92,7 +93,13 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     val dataFile = File(dir, "order.json")
     val mediaFiles = ArrayList<File>()
 
-    val badgelayout = getBadgeLayout(application, position, eventSlug) ?: return
+    val badgelayout = if (config.printLayoutOverride != 0L) {
+        application.data.select(BadgeLayout::class.java)
+            .where(BadgeLayout.SERVER_ID.eq(config.printLayoutOverride))
+            .get().firstOrNull()
+    } else {
+        getBadgeLayout(application, position, eventSlug) ?: return
+    }
     position.put("__layout", badgelayout.json.getJSONArray("layout"))
 
     if (badgelayout.getBackground_filename() != null) {
