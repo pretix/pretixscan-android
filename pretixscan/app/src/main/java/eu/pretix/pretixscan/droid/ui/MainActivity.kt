@@ -948,8 +948,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
         if (dialog?.isShowing() == true) {
             /*
-             * Skip scan if a dialog is still in front. This forces users to answer the questions asked.
+             * Skip scan if a dialog is still in front.
+             * This forces users to answer the questions asked.
+             * The scan data is passed to the dialog, maybe it wants to fill a field with it.
              */
+            dialog!!.handleScan(raw_result)
             return
         }
 

@@ -29,6 +29,9 @@ class UnpaidDialog(ctx: Activity, val secret: String, val answers: MutableList<A
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return false
     }
+    override fun handleScan(rawResult: String) {
+        // ignore scan
+    }
 }
 
 fun showUnpaidDialog(ctx: Activity, res: TicketCheckProvider.CheckResult,
