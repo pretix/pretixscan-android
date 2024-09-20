@@ -21,6 +21,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.ResultReceiver
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.util.Base64
@@ -1209,17 +1210,54 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
         view_data.attention.set(result.isRequireAttention)
 
-        if (result.scanType != TicketCheckProvider.CheckInType.EXIT) {
-            if (result.position != null && result.type == TicketCheckProvider.CheckResult.Type.VALID && conf.printBadges && conf.autoPrintBadges) {
-                printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
-            }
-            if (result.position != null && conf.printBadges) {
-                view_data.showPrint.set(getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
-                binding.ibPrint.setOnClickListener {
-                    printBadge(this@MainActivity, application as PretixScan, result.position!!, result.eventSlug!!, null)
+        val isPrintable = (conf.printBadges &&
+                result.scanType != TicketCheckProvider.CheckInType.EXIT &&
+                result.position != null &&
+                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+
+        if (isPrintable) {
+
+            val recv = object : ResultReceiver(null) {
+                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                    super.onReceiveResult(resultCode, resultData)
+                    if (resultCode == 0) {
+                        val api = PretixApi.fromConfig(
+                            conf,
+                            AndroidHttpClientFactory(application as PretixScan)
+                        )
+                        logSuccessfulPrint(
+                            api,
+                            (application as PretixScan).data,
+                            result.eventSlug!!,
+                            result.position!!.getLong("id"),
+                            "badge"
+                        )
+                    }
                 }
-            } else {
-                view_data.showPrint.set(false)
+            }
+
+            val shouldAutoPrint = (conf.autoPrintBadges &&
+                    result.type == TicketCheckProvider.CheckResult.Type.VALID &&
+                    !isPreviouslyPrinted((application as PretixScan).data, result.position!!))
+
+            if (shouldAutoPrint) {
+                printBadge(
+                    this@MainActivity,
+                    application as PretixScan,
+                    result.position!!,
+                    result.eventSlug!!,
+                    recv
+                )
+            }
+            view_data.showPrint.set(true)
+            binding.ibPrint.setOnClickListener {
+                printBadge(
+                    this@MainActivity,
+                    application as PretixScan,
+                    result.position!!,
+                    result.eventSlug!!,
+                    recv
+                )
             }
         } else {
             view_data.showPrint.set(false)
