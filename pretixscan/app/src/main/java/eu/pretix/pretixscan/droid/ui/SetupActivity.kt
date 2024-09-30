@@ -44,7 +44,6 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
-        const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
     }
 
     private val hardwareScanner = HardwareScanner(object : ScanReceiver {
@@ -61,16 +60,10 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
 
         checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
         if (dataWedgeHelper.isInstalled) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        PERMISSIONS_REQUEST_WRITE_STORAGE)
-            } else {
-                try {
-                    dataWedgeHelper.install()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
+            try {
+                dataWedgeHelper.install()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
         binding.btSwitchCamera.setOnClickListener {
@@ -115,20 +108,10 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         binding.scannerView.setResultHandler(this)
                         binding.scannerView.startCamera()
                     }
-                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
                 } else {
                     Toast.makeText(this, getString(R.string.setup_grant_camera_permission), Toast.LENGTH_SHORT).show()
                 }
                 return
-            }
-            PERMISSIONS_REQUEST_WRITE_STORAGE -> {
-                try {
-                    if (dataWedgeHelper.isInstalled) {
-                        dataWedgeHelper.install()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
             }
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)

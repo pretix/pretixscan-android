@@ -180,7 +180,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
-        const val PERMISSIONS_REQUEST_WRITE_STORAGE = 1338
     }
 
     private val hardwareScanner = HardwareScanner(object : ScanReceiver {
@@ -350,24 +349,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSIONS_REQUEST_CAMERA -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSIONS_REQUEST_WRITE_STORAGE)
-                } else {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this,"Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-            PERMISSIONS_REQUEST_WRITE_STORAGE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    try {
-                        if (dataWedgeHelper.isInstalled) {
-                            dataWedgeHelper.install()
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                } else {
-                    Toast.makeText(this, "Please grant storage permission for full functionality", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -488,16 +471,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         binding.cardResult.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
         if (dataWedgeHelper.isInstalled) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        PERMISSIONS_REQUEST_WRITE_STORAGE);
-            } else {
-                try {
-                    dataWedgeHelper.install()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
+            try {
+                dataWedgeHelper.install()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
 
