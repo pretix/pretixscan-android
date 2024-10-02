@@ -6,14 +6,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.setup.*
@@ -31,6 +32,8 @@ import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
 import javax.net.ssl.SSLException
+import android.text.method.TextKeyListener.Capitalize
+import android.text.method.TextKeyListener
 
 class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
     lateinit var binding: ActivitySetupBinding
@@ -38,6 +41,8 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
     var lastScanTime = 0L
     var lastScanValue = ""
     var conf: AppConfig? = null
+    var tkl = TextKeyListener(Capitalize.NONE, false)
+    var keyboardEditable = Editable.Factory.getInstance().newEditable("")
     private var ongoing_setup = false
     private val dataWedgeHelper = DataWedgeHelper(this)
     private val LOG_TAG = this::class.java.name
@@ -126,6 +131,25 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
         lastScanValue = rawResult.text
         lastScanTime = System.currentTimeMillis()
         handleScan(rawResult.text)
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_ENTER) {
+            if (event.action == KeyEvent.ACTION_UP) {
+                handleScan(keyboardEditable.toString())
+                keyboardEditable.clear()
+            }
+            return true
+        }
+        val processed = when (event.action) {
+            KeyEvent.ACTION_DOWN -> tkl.onKeyDown(null, keyboardEditable, event.keyCode, event)
+            KeyEvent.ACTION_UP -> tkl.onKeyUp(null, keyboardEditable, event.keyCode, event)
+            else -> tkl.onKeyOther(null, keyboardEditable, event)
+        }
+        if (processed) {
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     fun handleScan(res: String) {
