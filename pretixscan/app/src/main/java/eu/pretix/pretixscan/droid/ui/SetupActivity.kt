@@ -13,7 +13,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatDialog
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.setup.*
@@ -38,6 +38,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
     var lastScanTime = 0L
     var lastScanValue = ""
     var conf: AppConfig? = null
+    var currentOpenAlert: AppCompatDialog? = null
     private var ongoing_setup = false
     private val dataWedgeHelper = DataWedgeHelper(this)
     private val LOG_TAG = this::class.java.name
@@ -132,24 +133,24 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
         try {
             val jd = JSONObject(res)
             if (jd.has("version")) {
-                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_legacy_qr_code).create().show()
+                alert(R.string.setup_error_legacy_qr_code)
                 return
             }
             if (!jd.has("handshake_version")) {
-                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
+                alert(R.string.setup_error_invalid_qr_code)
                 return
             }
             if (jd.getInt("handshake_version") > 1) {
-                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_version_too_high).create().show()
+                alert(R.string.setup_error_version_too_high)
                 return
             }
             if (!jd.has("url") || !jd.has("token")) {
-                MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
+                alert(R.string.setup_error_invalid_qr_code)
                 return
             }
             initialize(jd.getString("url"), jd.getString("token"))
         } catch (e: JSONException) {
-            MaterialAlertDialogBuilder(this).setMessage(R.string.setup_error_invalid_qr_code).create().show()
+            alert(R.string.setup_error_invalid_qr_code)
             return
         }
     }
@@ -219,7 +220,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_request).create().show()
+                    alert(R.string.setup_error_request)
                 }
                 return@launch
             } catch (e: SSLException) {
@@ -229,7 +230,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_ssl).create().show()
+                    alert(R.string.setup_error_ssl)
                 }
                 return@launch
             } catch (e: IOException) {
@@ -239,7 +240,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_io).create().show()
+                    alert(R.string.setup_error_io)
                 }
                 return@launch
             } catch (e: SetupServerErrorException) {
@@ -248,7 +249,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_server).create().show()
+                    alert(R.string.setup_error_server)
                 }
             } catch (e: SetupBadResponseException) {
                 e.printStackTrace()
@@ -257,7 +258,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(R.string.setup_error_response).create().show()
+                    alert(R.string.setup_error_response)
                 }
             } catch (e: SetupException) {
                 e.printStackTrace()
@@ -266,7 +267,7 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(e.message ?: "Unknown error").create().show()
+                    alert(e.message ?: "Unknown error")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -276,10 +277,19 @@ class SetupActivity : AppCompatActivity(), ScannerView.ResultHandler {
                         return@runOnUiThread
                     }
                     resume()
-                    MaterialAlertDialogBuilder(activity).setMessage(e.message ?: "Unknown error").create().show()
+                    alert(e.message ?: "Unknown error")
                 }
             }
         }
+    }
+
+    fun alert(id: Int) { alert(getString(id)) }
+    fun alert(message: CharSequence) {
+        if (currentOpenAlert != null) {
+            currentOpenAlert!!.dismiss()
+        }
+        currentOpenAlert = MaterialAlertDialogBuilder(this).setMessage(message).create()
+        currentOpenAlert!!.show()
     }
 
 
