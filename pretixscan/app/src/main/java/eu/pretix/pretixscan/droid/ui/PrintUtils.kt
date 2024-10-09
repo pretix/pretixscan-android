@@ -9,14 +9,22 @@ import android.os.Build
 import android.os.Parcel
 import android.os.ResultReceiver
 import androidx.core.content.FileProvider
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.db.*
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
+import io.requery.Persistable
+import io.requery.BlockingEntityStore
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.nio.charset.Charset
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
@@ -39,8 +47,8 @@ fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: Str
         .get().firstOrNull().getId()
 
     val litem = application.data.select(BadgeLayoutItem::class.java)
-            .where(BadgeLayoutItem.ITEM_ID.eq(itemid_local))
-            .get().firstOrNull()
+        .where(BadgeLayoutItem.ITEM_ID.eq(itemid_local))
+        .get().firstOrNull()
     if (litem != null) {
         if (litem.getLayout() == null) { // "Do not print badges" is configured for this product
             return null
@@ -50,9 +58,9 @@ fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: Str
     }
 
     return application.data.select(BadgeLayout::class.java)
-            .where(BadgeLayout.IS_DEFAULT.eq(true))
-            .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-            .get().firstOrNull() ?: getDefaultBadgeLayout()
+        .where(BadgeLayout.IS_DEFAULT.eq(true))
+        .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
+        .get().firstOrNull() ?: getDefaultBadgeLayout()
 }
 
 fun isPackageInstalled(packagename: String, packageManager: PackageManager): Boolean {
@@ -75,7 +83,13 @@ fun receiverForSending(actualReceiver: ResultReceiver): ResultReceiver {
 }
 
 
-fun printBadge(context: Context, application: PretixScan, position: JSONObject, eventSlug: String, recv: ResultReceiver?) {
+fun printBadge(
+    context: Context,
+    application: PretixScan,
+    position: JSONObject,
+    eventSlug: String,
+    recv: ResultReceiver?
+) {
     val positions = JSONArray()
     positions.put(position)
     if (AppConfig(context).printBadgesTwice) {
@@ -101,7 +115,8 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     }
 
     val etagMap = JSONObject()
-    val files = store.select(CachedPdfImage::class.java).where(CachedPdfImage.ORDERPOSITION_ID.eq(position.getLong("id"))).get().toList()
+    val files = store.select(CachedPdfImage::class.java)
+        .where(CachedPdfImage.ORDERPOSITION_ID.eq(position.getLong("id"))).get().toList()
     for (f in files) {
         mediaFiles.add(application.fileStorage.getFile("pdfimage_${f.getEtag()}.bin"))
         etagMap.put(f.key, mediaFiles.size)
@@ -120,32 +135,52 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     }
     intent.action = "eu.pretix.pretixpos.print.PRINT_BADGE"
     val dataUri = FileProvider.getUriForFile(
-            context,
-            "${BuildConfig.APPLICATION_ID}.fileprovider",
-            dataFile)
+        context,
+        "${BuildConfig.APPLICATION_ID}.fileprovider",
+        dataFile
+    )
 
-    context.grantUriPermission(intent.`package`, dataUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    context.grantUriPermission(
+        intent.`package`,
+        dataUri,
+        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+    )
     intent.clipData = ClipData.newRawUri(null, dataUri)
 
     for (mediaFile in mediaFiles) {
         val mediaUrl = FileProvider.getUriForFile(
-                context,
-                "${BuildConfig.APPLICATION_ID}.fileprovider",
-                mediaFile)
-        context.grantUriPermission(intent.`package`, mediaUrl, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            context,
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
+            mediaFile
+        )
+        context.grantUriPermission(
+            intent.`package`,
+            mediaUrl,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
         intent.clipData!!.addItem(ClipData.Item(mediaUrl))
     }
 
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-    if (BuildConfig.DEBUG && isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
-        intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
+    if (BuildConfig.DEBUG && isPackageInstalled(
+            "eu.pretix.pretixprint.debug",
+            context.packageManager
+        )
+    ) {
+        intent.component =
+            ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("eu.pretix.pretixprint", context.packageManager)) {
-        intent.component = ComponentName("eu.pretix.pretixprint", "eu.pretix.pretixprint.print.PrintService")
+        intent.component =
+            ComponentName("eu.pretix.pretixprint", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("eu.pretix.pretixprint.debug", context.packageManager)) {
-        intent.component = ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
+        intent.component =
+            ComponentName("eu.pretix.pretixprint.debug", "eu.pretix.pretixprint.print.PrintService")
     } else if (isPackageInstalled("de.silpion.bleuartcompanion", context.packageManager)) {
-        intent.component = ComponentName("de.silpion.bleuartcompanion", "de.silpion.bleuartcompanion.services.print.PrintService")
+        intent.component = ComponentName(
+            "de.silpion.bleuartcompanion",
+            "de.silpion.bleuartcompanion.services.print.PrintService"
+        )
     } else {
         throw Exception("error_print_no_app");
     }
@@ -157,4 +192,53 @@ fun printBadge(context: Context, application: PretixScan, position: JSONObject, 
     } else {
         context.startService(intent)
     }
+}
+
+fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONObject): Boolean {
+    if (position.has("print_logs")) {
+        val arr = position.getJSONArray("print_logs")
+        val arrlen = arr.length()
+        for (i in 0 until arrlen) {
+            val printlog = arr.getJSONObject(i)
+            if (!printlog.getBoolean("successful")) {
+                continue
+            }
+            if (printlog.optString("type", "?") == "badge") {
+                return true
+            }
+        }
+    }
+    if (data.count(QueuedCall::class.java)
+            .where(QueuedCall.URL.like("%orderpositions/" + position.getLong("id") + "/printlog/"))
+            .get().value() > 0
+    ) {
+        return true
+    }
+    return false
+}
+
+fun logSuccessfulPrint(
+    api: PretixApi,
+    data: BlockingEntityStore<Persistable>,
+    eventSlug: String,
+    positionId: Long,
+    type: String
+) {
+    val logbody = JSONObject()
+    logbody.put("source", "pretixSCAN")
+    logbody.put("type", type)
+    logbody.put("info", JSONObject())
+    val tz = TimeZone.getTimeZone("UTC")
+    val df: DateFormat = SimpleDateFormat(
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        Locale.ENGLISH
+    ) // Quoted "Z" to indicate UTC, no timezone offset
+    df.timeZone = tz
+    logbody.put("datetime", df.format(Date()))
+
+    val log = QueuedCall()
+    log.setBody(logbody.toString())
+    log.setIdempotency_key(NonceGenerator.nextNonce())
+    log.setUrl(api.eventResourceUrl(eventSlug, "orderpositions") + positionId + "/printlog/")
+    data.insert(log)
 }
