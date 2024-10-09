@@ -200,6 +200,9 @@ fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONOb
         val arrlen = arr.length()
         for (i in 0 until arrlen) {
             val printlog = arr.getJSONObject(i)
+            if (!printlog.getBoolean("successful")) {
+                continue
+            }
             if (printlog.optString("type", "?") == "badge") {
                 return true
             }
