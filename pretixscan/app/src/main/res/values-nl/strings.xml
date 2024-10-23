@@ -133,7 +133,7 @@
     <string name="status_valid">Geldig</string>
     <string name="status_canceled">Geannuleerd</string>
     <string name="status_unpaid">Niet betaald</string>
-    <string name="status_redeemed">Gebruikt</string>
+    <string name="status_redeemed">Verzilverd</string>
     <string name="cancel">Annuleren</string>
     <string name="yes">Ja</string>
     <string name="question_input_invalid">Deze invoer is niet geldig.</string>
@@ -159,4 +159,12 @@
     <string name="scan_result_invalid_time">Ticket is momenteel niet geldig</string>
     <string name="scan_result_blocked">Ticket geblokkeerd</string>
     <string name="error_access_revoked">Apparaattoegang is ingetrokken, U moet het apparaat opnieuw aanmelden op de server.</string>
+    <string name="scantype_entry_kiosk_print">Scan uw ticket om uw badge te printen</string>
+    <string name="action_multievent_disable">Expertmodus uitschakelen</string>
+    <string name="action_multievent_disable_error">Expertmodus kan niet uitgeschakeld worden wanneer meerdere evenementen zijn geselecteerd.</string>
+    <string name="setup_grant_camera_permission">Verleen de camera-machtiging om de QR Scanner te kunnen gebruiken</string>
+    <string name="settings_label_auto_offline_help">Als u een van de onderstaande tijden selecteert, zal de app automatisch de offline-scanmodus gebruiken wanneer een online scan langer dan de geselecteerde tijd duurt. Daarnaast zal de app naar volledige offline-modus schakelen wanneer meerdere scans mislukt zijn of langer duurden dan de geselecteerde tijd. Zodra de verbinding weer enige tijd stabiel is, zal de app terugschakelen naar online-modus.</string>
+    <string name="scan_result_unapproved">Bestelling niet goedgekeurd</string>
+    <string name="pref_ignore_questions">Stel geen vragen tijdens check-in</string>
+    <string name="pin_protection_enter">Voer PIN in</string>
 </resources>
