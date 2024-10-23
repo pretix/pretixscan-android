@@ -48,7 +48,7 @@
     <string name="scantype_entry_kiosk">Scan je ticket om in te checken</string>
     <string name="scantype_exit">Uitgang</string>
     <string name="scantype_entry">Inkom</string>
-    <string name="action_label_scantype_entry">Overschakelen naar scannen voor de inkom</string>
+    <string name="action_label_scantype_entry">Overschakelen naar scannen voor de binnenkomst</string>
     <string name="action_label_scantype_exit">Overschakelen naar scanning voor de uitgang</string>
     <string name="action_label_statistics">Statistieken</string>
     <string name="action_label_settings">Instellingen</string>
