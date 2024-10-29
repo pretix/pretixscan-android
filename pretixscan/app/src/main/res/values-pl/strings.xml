@@ -175,4 +175,5 @@
     <string name="label_shop_inactive">Sklep dezaktywowany</string>
     <string name="label_shop_active">Aktywny</string>
     <string name="setup_grant_camera_permission">Zezwól na używanie kamery aby korzystać ze skanera QR</string>
+    <string name="preference_autobadgeprint_enable_help">Identyfikatory nie są drukowane automatycznie, jeśli system wie, że zostały już wcześniej wydrukowane.</string>
 </resources>
