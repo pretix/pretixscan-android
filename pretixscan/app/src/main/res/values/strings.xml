@@ -147,6 +147,7 @@
     <string name="dialog_unpaid_retry">Check in anyways</string>
     <string name="preference_badgeprint_enable">Enable badge printing</string>
     <string name="preference_autobadgeprint_enable">Print badges automatically after successful scan</string>
+    <string name="preference_autobadgeprint_enable_help">Badges are not automatically printed if the system knows they have been printed before.</string>
     <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do you want to install it?</string>
     <string name="already_scanned">already scanned</string>
     <string name="total_tickets_sold">total tickets sold</string>

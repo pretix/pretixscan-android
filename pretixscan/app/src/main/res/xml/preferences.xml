@@ -59,6 +59,7 @@
             android:defaultValue="false"
             android:dependency="pref_print_badges"
             android:key="pref_auto_print_badges"
+            android:summary="@string/preference_autobadgeprint_enable_help"
             android:title="@string/preference_autobadgeprint_enable" />
         <CheckBoxPreference
             android:defaultValue="false"

@@ -113,6 +113,7 @@
     <string name="dialog_unpaid_retry">Trotzdem einchecken</string>
     <string name="preference_badgeprint_enable">Badge-Druck aktivieren</string>
     <string name="preference_autobadgeprint_enable">Badges automatisch drucken</string>
+    <string name="preference_autobadgeprint_enable_help">Badges werden nicht automatisch gedruckt, wenn das System weiß, dass sie bereits zuvor gedruckt wurden.</string>
     <string name="preference_badgeprint_install_pretixprint">Badge-Druck benötigt die pretixPRINT-App. Wollen Sie diese installieren\?</string>
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Jedes Badge doppelt drucken</string>
