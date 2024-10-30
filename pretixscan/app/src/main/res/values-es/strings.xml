@@ -1,2 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">pretixSCAN</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">¡Bienvenido a pretixSCAN!</string>
+    <string name="action_sync">Sincronizar ahora</string>
+    <string name="progress_syncing_first">Descargando la configuración de eventos…</string>
+    <string name="progress_processing">Procesando…</string>
+    <string name="progress_syncing">Sincronizando con el servidor…</string>
+    <string name="progress_registering">Registrando el dispositivo con el servidor…</string>
+    <string name="error_access_revoked">El acceso para este dispositivo ha sido revocado, debe registrarlo de nuevo en el servidor.</string>
+    <string name="error_unknown_exception">Ha ocurrido un error desconocido</string>
+    <string name="error_not_synchronized">El dispositivo no se ha sincronizado correctamente con el servidor</string>
+    <string name="action_label_ok">OK</string>
+    <string name="action_label_settings">Configuración</string>
+    <string name="action_label_statistics">Estadísticas</string>
+    <string name="action_label_scantype_entry">Cambiar a escaneado de entradas</string>
+    <string name="action_label_scantype_exit">Cambiar a escaneo de salidas</string>
+    <string name="action_multievent_enable">Modo experto (selección de varios eventos)</string>
+    <string name="action_multievent_disable">Desactivar modo experto</string>
+    <string name="action_multievent_disable_error">El modo experto no puede desactivarse si se han seleccionado varios eventos.</string>
+    <string name="scantype_entry">Entrada</string>
+    <string name="scantype_exit">Salidas</string>
+    <string name="scantype_entry_kiosk">Escanear el billete para registrarse</string>
+    <string name="scantype_entry_kiosk_print">Escanear el billete para imprimir la tarjeta</string>
+    <string name="scantype_exit_kiosk">Escanear el billete para registrar la salida</string>
+    <string name="checktype_offline">Verificación sin conexión</string>
+    <string name="checktype_online">Verificación en línea</string>
+    <string name="checktype_proxy">Comprobación de la estación base</string>
+    <string name="debug_info_subevent">Fecha: %1$s (%2$s)</string>
+    <string name="debug_info_list">Lista: %1$s</string>
+    <string name="debug_info_event">Evento: %1$s</string>
+    <string name="debug_info_gate">Puerta: %1$s</string>
+    <string name="debug_info_device">Dispositivo: %1$s</string>
+    <string name="action_search">Buscar</string>
+    <string name="action_manual">Configuración manual</string>
+    <string name="operation_select_event">Seleccionar evento</string>
+    <string name="operation_select_events">Seleccionar eventos</string>
+    <string name="events_selected">%s eventos seleccionados</string>
+    <plurals name="sync_status_time_minutes">
+        <item quantity="one">sincronizado hace %d minutos</item>
+        <item quantity="many">sincronizado hace %d minutos</item>
+        <item quantity="other">sincronizado hace %d minutos</item>
+    </plurals>
+    <string name="operation_select_checkinlist">Seleccionar lista de registro</string>
+    <string name="settings_label_auto_sync">Sincronización automática</string>
+    <string name="settings_label_orders_sync">Descargar pedidos</string>
+    <string name="settings_summary_orders_sync">Sin esta opción, pretixSCAN no descargará los datos de los pedidos y no podrá escanear tickets sin conexión según la configuración predeterminada de pretix.</string>
+    <string name="settings_label_auto_switch">Selección automática de eventos</string>
+    <plurals name="sync_status_time_hours">
+        <item quantity="one">sincronizado hace %d horas</item>
+        <item quantity="many">sincronizado hace %d horas</item>
+        <item quantity="other">sincronizado hace %d horas</item>
+    </plurals>
+    <string name="sync_status">Estado de sincronización</string>
+    <plurals name="sync_status_time_days">
+        <item quantity="one">sincronizado hace %d día</item>
+        <item quantity="many">sincronizado hace %d días</item>
+        <item quantity="other">sincronizado hace %d días</item>
+    </plurals>
+    <string name="sync_status_last">Última sincronización realizada con éxito:</string>
+    <string name="sync_status_last_failed">Última sincronización fallida:</string>
+    <string name="sync_status_never">todavía no sincronizado</string>
+    <string name="sync_status_progress">sincronización está en curso</string>
+    <string name="short_datetime_format">HH:mm MM/dd</string>
+    <string name="sync_status_now">acaba de sincronizarse</string>
+    <plurals name="sync_status_pending">
+        <item quantity="one">%d pendiente de subida</item>
+        <item quantity="many">%d subidas pendientes</item>
+        <item quantity="other">%d subidas pendientes</item>
+    </plurals>
+    <string name="sync_status_date_format">HH:mm:ss yyyy-MM-dd</string>
+    <string name="first_scanned">Primer escaneo: %s</string>
+    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
+    <string name="ok">OK</string>
+    <string name="tutorial_setup">Para empezar, debe crear un nuevo dispositivo en la sección dispositivos de la cuenta del organizador en el backend de pretix. Una vez registrado, aparecerá un código QR de configuración que deberá escanear.</string>
+    <string name="setup_error_legacy_qr_code">El código QR escaneado sólo es valido para predecesores antiguos. Debe registrar un nuevo dispositivo en la sección «Dispositivos» de la cuenta de organizador pretix.</string>
+    <string name="setup_error_invalid_qr_code">El código QR que escaneado no es un código de configuración válido. Asegúrese de haber creado el código en la sección Dispositivos de la cuenta del organizador pretix.</string>
+    <string name="setup_error_version_too_high">El código QR que escaneado proviene de una versión más reciente de pretix. Por favor, verifique si puede obtener una actualización de la aplicación.</string>
+    <string name="setup_progress">Inicializando dispositivo…</string>
+    <string name="settings_summary_auto_switch">Con esta opción, pretixSCAN consultará al servidor durante la sincronización. Si el servidor sugiere cambia a una lista de eventos diferente, el cambio se realizará automáticamente.</string>
+</resources>
