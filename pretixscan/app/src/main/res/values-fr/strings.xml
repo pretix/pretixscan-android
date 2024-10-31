@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">pretixSCAN</string>
     <string name="title_activity_main">pretixSCAN</string>
-    <string name="headline_setup">Bienvenue sur pretixSCAN</string>
+    <string name="headline_setup">Bienvenue sur pretixSCAN !</string>
     <string name="action_sync">Synchroniser maintenant</string>
     <string name="progress_syncing_first">Téléchargement de la configuration de l\'événement…</string>
     <string name="progress_processing">Traitement…</string>
@@ -22,7 +22,7 @@
     <string name="debug_info_list">Liste : %1$s</string>
     <string name="debug_info_gate">Porte : %1$s</string>
     <string name="debug_info_device">Appareil : %1$s</string>
-    <string name="scantype_exit_kiosk">Scanner votre billet pour payer</string>
+    <string name="scantype_exit_kiosk">Scanner votre billet pour enregistrer la sortie</string>
     <string name="action_manual">Mise en place manuelle</string>
     <string name="operation_select_event">Sélectionner l\'évènement</string>
     <string name="events_selected">%s évènements sélectionnés</string>
@@ -163,4 +163,13 @@
     <string name="settings_summary_kioskmode">Le mode kiosque masque les menus qui ne sont pas censés être utilisés dans une installation en libre-service. Le mode kiosque n\'empêche pas les utilisateurs de quitter l\'application via les fonctionnalités du système. Pour accéder aux paramètres, vous devez scanner un QR code avec votre code PIN.</string>
     <string name="scan_result_invalid_time">Le billet n\'est pas valable actuellement</string>
     <string name="scan_result_blocked">Billet bloqué</string>
+    <string name="scantype_entry_kiosk_print">Scannez votre billet pour imprimer votre badge</string>
+    <string name="action_multievent_disable">Désactiver le mode expert</string>
+    <string name="action_multievent_disable_error">Le mode expert ne peut pas être désactivé si plusieurs événements sont sélectionnés.</string>
+    <string name="setup_grant_camera_permission">Veuillez autoriser la caméra à utiliser le scanner QR</string>
+    <string name="settings_label_auto_offline_help">Si vous sélectionnez l\'une des durées ci-dessous, l\'application basculera automatiquement vers un scan hors ligne lorsque le temps de validation est supérieur au temps sélectionné. Par ailleurs, l\'application passera en mode hors ligne intégral si plusieurs scans ont échoué, ou si ils ont duré plus longtemps que prévu. Une fois que la connexion redevient stable, l\'application rebasculera en mode en ligne.</string>
+    <string name="scan_result_unapproved">Commande non approuvée</string>
+    <string name="pin_protection_enter">Saisir le code PIN</string>
+    <string name="pref_ignore_questions">Ne pas poser de questions lors de l\'enregistrement</string>
+    <string name="preference_autobadgeprint_enable_help">Les badges ne sont pas imprimés automatiquement si ils ont déjà été imprimés.</string>
 </resources>
