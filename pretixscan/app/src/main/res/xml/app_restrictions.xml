@@ -23,8 +23,10 @@
         android:title="@string/preference_badgeprint_enable" />
     <restriction
         android:defaultValue="false"
-        android:key="pref_auto_print_badges"
+        android:key="pref_auto_print_badges_option"
         android:dependency="pref_print_badges"
-        android:restrictionType="bool"
+        android:restrictionType="choice"
+        android:entries="@array/settings_valuelabels_auto_print_badges"
+        android:entryValues="@array/settings_values_auto_print_badges"
         android:title="@string/preference_autobadgeprint_enable" />
 </restrictions>

@@ -11,4 +11,9 @@
         <item>20s</item>
         <item>errors</item>
     </string-array>
+    <string-array name="settings_values_auto_print_badges">
+        <item>false</item>
+        <item>once</item>
+        <item>true</item>
+    </string-array>
 </resources>

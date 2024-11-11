@@ -171,5 +171,4 @@
     <string name="scan_result_unapproved">Commande non approuvée</string>
     <string name="pin_protection_enter">Saisir le code PIN</string>
     <string name="pref_ignore_questions">Ne pas poser de questions lors de l\'enregistrement</string>
-    <string name="preference_autobadgeprint_enable_help">Les badges ne sont pas imprimés automatiquement si ils ont déjà été imprimés.</string>
 </resources>
