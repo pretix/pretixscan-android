@@ -178,7 +178,7 @@
     <string name="event_select_calendar">Show calendar</string>
     <string name="setup_grant_camera_permission">Please grant camera permission to use the QR Scanner</string>
     <string-array name="settings_valuelabels_auto_print_badges">
-        <item>Only when button pressed</item>
+        <item>No, only when button pressed</item>
         <item>Once, if not yet printed</item>
         <item>Always</item>
     </string-array>

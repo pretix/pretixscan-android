@@ -179,7 +179,7 @@
     <string name="action_label_ok">OK</string>
     <string name="setup_grant_camera_permission">Bitte erteilen Sie die Kamera-Berechtigung für den QR-Code-Scanner</string>
     <string-array name="settings_valuelabels_auto_print_badges">
-        <item>Nur auf Knopfdruck</item>
+        <item>Nein, nur auf Knopfdruck</item>
         <item>Nur, wenn noch nicht gedruckt</item>
         <item>Immer</item>
     </string-array>

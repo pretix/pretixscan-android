@@ -61,7 +61,6 @@ class AppConfig(ctx: Context) : ConfigStore {
                 .remove(PREFS_KEY_LEGACY_AUTOPRINTBADGES)
                 .commit()
         }
-        PREFS_KEY_LEGACY_AUTOPRINTBADGES
     }
 
     override fun isDebug(): Boolean {
