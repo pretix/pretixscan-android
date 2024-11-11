@@ -1449,7 +1449,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
 
         for (key in restrictions.keySet()) {
-            prefs.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
+            if (key == "pref_auto_print_badges_option") {
+                prefs.edit().putString(key, restrictions.getString(key)).apply()
+            } else {
+                prefs.edit().putBoolean(key, restrictions.getBoolean(key)).apply()
+            }
         }
     }
 
