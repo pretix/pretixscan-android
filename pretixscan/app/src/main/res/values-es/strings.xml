@@ -167,7 +167,6 @@
     <string name="currently_inside">asiste actualmente</string>
     <string name="event_select_calendar">Ver calendario</string>
     <string name="settings_label_kioskmode">Modo kiosco</string>
-    <string name="preference_autobadgeprint_enable_help">Las tarjetas no se imprimen automáticamente, si ya se imprimieron anteriormente.</string>
     <string name="settings_label_search_disable">Deshabilitar búsqueda</string>
     <string name="setup_grant_camera_permission">Debe conceder permisos para utilizar la cámara y escáner QR</string>
     <string name="error_no_available_events">No se ha encontrado ningún evento presente o futuro. Compruebe las fechas y los derechos de acceso de los eventos.</string>
