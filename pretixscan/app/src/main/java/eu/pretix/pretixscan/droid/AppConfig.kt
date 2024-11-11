@@ -51,6 +51,17 @@ class AppConfig(ctx: Context) : ConfigStore {
     init {
         prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         default_prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
+        migrate()
+    }
+
+    private fun migrate() {
+        if (prefs.contains(PREFS_KEY_LEGACY_AUTOPRINTBADGES)) {
+            prefs.edit()
+                .putString(PREFS_KEY_AUTOPRINTBADGES, if (prefs.getBoolean(PREFS_KEY_LEGACY_AUTOPRINTBADGES, false)) "true" else "false")
+                .remove(PREFS_KEY_LEGACY_AUTOPRINTBADGES)
+                .commit()
+        }
+        PREFS_KEY_LEGACY_AUTOPRINTBADGES
     }
 
     override fun isDebug(): Boolean {
@@ -354,9 +365,9 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_PRINTBADGES, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGES, value).apply()
 
-    var autoPrintBadges: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_AUTOPRINTBADGES, false)
-        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_AUTOPRINTBADGES, value).apply()
+    var autoPrintBadges: String
+        get() = default_prefs.getString(PREFS_KEY_AUTOPRINTBADGES, "false") ?: "false"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_AUTOPRINTBADGES, value).apply()
 
     var printBadgesTwice: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_PRINTBADGESTWICE, false)
@@ -426,7 +437,8 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"
         val PREFS_KEY_PRINTBADGES = "pref_print_badges"
         val PREFS_KEY_PRINTBADGESTWICE = "pref_print_badges_twice"
-        val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges"
+        val PREFS_KEY_AUTOPRINTBADGES = "pref_auto_print_badges_option"
+        val PREFS_KEY_LEGACY_AUTOPRINTBADGES = "pref_auto_print_badges"
         val PREFS_KEY_UNPAID_ASK = "pref_unpaid_ask"
         val PREFS_KEY_IGNORE_QUESTIONS = "pref_ignore_questions"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"

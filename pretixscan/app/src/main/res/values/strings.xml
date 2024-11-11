@@ -146,8 +146,7 @@
     <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
     <string name="dialog_unpaid_retry">Check in anyways</string>
     <string name="preference_badgeprint_enable">Enable badge printing</string>
-    <string name="preference_autobadgeprint_enable">Print badges automatically after successful scan</string>
-    <string name="preference_autobadgeprint_enable_help">Badges are not automatically printed if the system knows they have been printed before.</string>
+    <string name="preference_autobadgeprint_enable">Print badges automatically</string>
     <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do you want to install it?</string>
     <string name="already_scanned">already scanned</string>
     <string name="total_tickets_sold">total tickets sold</string>
@@ -178,4 +177,9 @@
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
     <string name="event_select_calendar">Show calendar</string>
     <string name="setup_grant_camera_permission">Please grant camera permission to use the QR Scanner</string>
+    <string-array name="settings_valuelabels_auto_print_badges">
+        <item>Only when button pressed</item>
+        <item>Once, if not yet printed</item>
+        <item>Always</item>
+    </string-array>
 </resources>

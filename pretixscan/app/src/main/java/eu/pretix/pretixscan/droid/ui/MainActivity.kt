@@ -756,7 +756,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         view_data.scanType.set(conf.scanType)
         view_data.hardwareScan.set(!conf.useCamera)
-        view_data.badgePrintEnabled.set(conf.printBadges && conf.autoPrintBadges)
+        view_data.badgePrintEnabled.set(conf.printBadges && conf.autoPrintBadges != "false")
 
         setKioskAnimation()
 
@@ -1236,9 +1236,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
             }
 
-            val shouldAutoPrint = (conf.autoPrintBadges &&
+            val shouldAutoPrint = when(conf.autoPrintBadges) {
+                "false" -> false
+                "true" -> {
+                    result.type == TicketCheckProvider.CheckResult.Type.VALID
+                }
+                "once" -> {
                     result.type == TicketCheckProvider.CheckResult.Type.VALID &&
-                    !isPreviouslyPrinted((application as PretixScan).data, result.position!!))
+                    !isPreviouslyPrinted((application as PretixScan).data, result.position!!)
+                }
+                else -> false
+            }
 
             if (shouldAutoPrint) {
                 printBadge(
