@@ -16,8 +16,16 @@
         <package android:name="com.symbol.datawedge" />
     </queries>
 
+    <!-- The following are added as "required" by the permissions, but we want them to be optional -->
+    <!-- See https://developer.android.com/guide/topics/manifest/uses-feature-element#permissions -->
     <uses-feature
         android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
         android:required="false" />
 
     <application
