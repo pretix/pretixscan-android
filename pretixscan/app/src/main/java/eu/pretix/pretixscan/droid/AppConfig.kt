@@ -365,7 +365,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_PRINTBADGES, value).apply()
 
     var autoPrintBadges: String
-        get() = default_prefs.getString(PREFS_KEY_AUTOPRINTBADGES, "false") ?: "false"
+        get() = default_prefs.getString(PREFS_KEY_AUTOPRINTBADGES, "once") ?: "once"
         set(value) = default_prefs.edit().putString(PREFS_KEY_AUTOPRINTBADGES, value).apply()
 
     var printBadgesTwice: Boolean
