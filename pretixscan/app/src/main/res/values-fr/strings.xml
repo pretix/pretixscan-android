@@ -47,7 +47,7 @@
     </plurals>
     <string name="sync_status_last">Dernière synchronisation réussie :</string>
     <string name="sync_status">Statut de la synchronisation</string>
-    <string name="sync_status_last_failed">Dernier échec de la synchronisation :</string>
+    <string name="sync_status_last_failed">Dernier échec de synchronisation :</string>
     <string name="sync_status_never">pas encore synchronisé</string>
     <string name="sync_status_progress">la synchronisation est en cours</string>
     <string name="sync_status_now">synchronisé à l\'instant</string>
@@ -58,14 +58,14 @@
     <string name="ok">OK</string>
     <string name="setup_error_version_too_high">Le QR code que vous avez scanné provient d\'une version de pretix plus récente que celle pour laquelle cette application a été conçue. Veuillez vérifier si vous pouvez obtenir une mise à jour pour cette application !</string>
     <string name="setup_error_request">Demande rejetée par le serveur. Veuillez revérifier votre saisie.</string>
-    <string name="setup_error_ssl">Erreur de sécurité lors de la tentative de joindre le serveur.</string>
-    <string name="setup_error_response">Le serveur a renvoyé une réponse non valide.</string>
+    <string name="setup_error_ssl">Erreur de sécurité lors de la tentative d\'accès au serveur.</string>
+    <string name="setup_error_response">Le serveur a retourné une réponse non valide.</string>
     <string name="setup_error_failed">Le test de connexion initial a échoué.</string>
     <string name="welcome_text">pretixSCAN est une application de gestion des entrées d\'évènement que vous pouvez utiliser pour valider les billets que vous avez vendus via pretix.</string>
     <string name="cont">CONTINUER</string>
     <string name="setup_error_invalid_qr_code">Le QR code que vous avez scanné n\'est pas un code de configuration valide. Veuillez vous assurer que vous avez créé le code dans la section Appareils d\'un compte organisateur pretix.</string>
     <string name="setup_progress">Initialisation de l\'appareil…</string>
-    <string name="setup_error_server">Erreur du serveur lors de l\'enregistrement de l\'appareil.</string>
+    <string name="setup_error_server">Une erreur s\'est produite sur le serveur lors de l\'enregistrement de l\'appareil.</string>
     <string name="hint_url">URL</string>
     <string name="hint_token">Jeton</string>
     <string name="dismiss">Rejeter</string>
@@ -102,8 +102,8 @@
     <string name="scan_result_ambiguous">Le code du billet est ambigu dans la liste</string>
     <string name="scan_result_canceled">Commande annulée</string>
     <string name="error_sync_in_background">Une synchronisation est déjà en cours d\'exécution en arrière-plan.</string>
-    <string name="dialog_unpaid_title">Commande impayée</string>
-    <string name="dialog_unpaid_retry">Enregistrer quand même</string>
+    <string name="dialog_unpaid_title">Commande non payée</string>
+    <string name="dialog_unpaid_retry">Enregistrez quand même</string>
     <string name="preference_badgeprint_enable">Activer l\'impression de badges</string>
     <string name="preference_autobadgeprint_enable">Imprimez automatiquement les badges</string>
     <string name="preference_badgeprint_install_pretixprint">L\'impression de badges nécessite l\'application pretixPRINT. Voulez-vous l\'installer \?</string>
@@ -146,7 +146,7 @@
     </plurals>
     <string name="tutorial_setup">Pour commencer, créez un nouvel appareil dans la section Appareils de votre compte d\'organisateur dans le site de pretix. Un QR code vous sera alors présenté afin de configurer celui-ci.</string>
     <string name="setup_error_legacy_qr_code">Le QR code que vous avez scanné correspond à une ancienne version de cette application. Veuillez vous rendre dans la section Appareils de votre compte organisateur et y créer un nouveal appareil.</string>
-    <string name="setup_error_io">Erreur de connexion lors de la tentative de joindre le serveur.</string>
+    <string name="setup_error_io">Erreur de connexion lors de la tentative de connexion au serveur.</string>
     <string name="setup_error_permissions">pretixSCAN ne fonctionne pas correctement sans l\'octroi de ces autorisations. Veuillez redémarrer l\'application.</string>
     <string name="welcome_disclaimer1">Je comprends que les données personnelles des participants à mes événements connectés seront stockées sur cet appareil et je m\'engage à sécuriser l\'appareil correctement.</string>
     <string name="settings_label_device_camera">Utiliser la caméra de l\'appareil</string>
@@ -156,7 +156,7 @@
     <string name="status_canceled">Annulé</string>
     <string name="status_empty">Aucun résultat de recherche n\'a été trouvé. Assurez-vous de saisire au moins quatre caractères.</string>
     <string name="scan_result_revoked">Code du billet révoqué/modifié</string>
-    <string name="dialog_unpaid_text">Ce billet appartient à une commande qui n\'a pas encore été payée. Souhaitez-vous toujours l\'enregistrer \? Cela ne marquera pas la commande comme payée.</string>
+    <string name="dialog_unpaid_text">Ce ticket appartient à une commande qui n\'a pas encore été payée. Voulez-vous toujours l\'enregistrer ? La commande ne sera pas marquée comme payée.</string>
     <string name="hardware_scanner">Veuillez appuyer sur les boutons de scan de votre appareil pour scanner.</string>
     <string name="force_full_resync_help">Cela ne supprimera aucune de vos données locales, mais cela forcera la prochaine synchronisation de chaque événement à être une synchronisation complète, c\'est-à-dire en téléchargeant à nouveau toutes les données au lieu des seules données modifiées.</string>
     <string name="full_delete_confirm">Voulez-vous vraiment réinitialiser l\'appareil \? Vous devrez le coupler à nouveau avec le système en ligne.</string>
