@@ -50,23 +50,9 @@
     <string name="first_scanned">Zuerst gescannt: %s</string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="tutorial_setup">Um loszulegen, erstellen Sie ein neues Gerät im Abschnitt \"Geräte\" ihres Veranstalter-Kontos im pretix-Backend. Sie erhalten dann einen QR-Code zur Konfiguration, den Sie hier scannen können.</string>
-    <string name="setup_error_legacy_qr_code">Der gescannte QR-Code ist für einen Vorläufer dieser App gültig. Bitte gehen Sie stattdessen zum Abschnitt \"Geräte\" Ihres Veranstalterkontos und legen Sie dort ein neues Gerät an.</string>
-    <string name="setup_error_invalid_qr_code">Der QR-Code, den Sie gescannt haben, ist nicht gültig. Bitte stellen Sie sicher, dass er aus der \"Geräte\"-Sektion Ihres pretix-Veranstalterkontos stammt.</string>
-    <string name="setup_error_version_too_high">Der gescannte QR-Code ist von einer neueren pretix-Version als für diese App ausgelegt. Bitte prüfen Sie, ob es ein Update für diese App gibt!</string>
-    <string name="setup_progress">Initialisiere Gerät…</string>
-    <string name="setup_error_request">Anfrage vom Server abgelehnt, bitte prüfen Sie Ihre Eingabe.</string>
-    <string name="setup_error_io">Verbindungsfehler beim Versuch, den Server zu erreichen.</string>
-    <string name="setup_error_ssl">Sicherheitsfehler bei der Verbindung zum Server.</string>
-    <string name="setup_error_server">Serverfehler beim Registrieren des Geräts.</string>
-    <string name="setup_error_response">Der Server hat eine ungültige Antwort zurückgegeben.</string>
-    <string name="setup_error_failed">Der initiale Verbindungstest ist fehlgeschlagen.</string>
-    <string name="setup_error_permissions">pretixSCAN funktioniert ohne diese Berechtigungen nicht. Bitte starten Sie die App neu.</string>
     <string name="welcome_text">pretixSCAN ist eine App zur Einlasskontrolle, mit der Sie über pretix verkaufte Tickets kontrollieren können.</string>
     <string name="welcome_disclaimer1">Ich verstehe, dass personenbezogene Daten zu den Teilnehmern meiner Veranstaltungen auf diesem Gerät gespeichert werden und sichere das Gerät angemessen.</string>
     <string name="cont">WEITER</string>
-    <string name="hint_url">URL</string>
-    <string name="hint_token">Token</string>
     <string name="dismiss">Schließen</string>
     <string name="settings_label_about">Über diese App</string>
     <string name="settings_label_licenses">Autoren und Lizenzen</string>
@@ -177,7 +163,6 @@
     <string name="error_no_available_events">Es wurde kein gegenwärtiges oder zukünftiges Event gefunden. Bitte prüfen Sie das Datum und die Zugriffsrechte Ihrer Veranstaltungen.</string>
     <string name="event_select_calendar">Kalender anzeigen</string>
     <string name="action_label_ok">OK</string>
-    <string name="setup_grant_camera_permission">Bitte erteilen Sie die Kamera-Berechtigung für den QR-Code-Scanner</string>
     <string-array name="settings_valuelabels_auto_print_badges">
         <item>Nein, nur auf Knopfdruck</item>
         <item>Nur, wenn noch nicht gedruckt</item>
