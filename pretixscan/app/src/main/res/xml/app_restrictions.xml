@@ -22,7 +22,7 @@
         android:restrictionType="bool"
         android:title="@string/preference_badgeprint_enable" />
     <restriction
-        android:defaultValue="false"
+        android:defaultValue="once"
         android:key="pref_auto_print_badges_option"
         android:dependency="pref_print_badges"
         android:restrictionType="choice"
