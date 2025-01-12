@@ -4,4 +4,66 @@
     <string name="title_activity_main">pretixSCAN</string>
     <string name="headline_setup">pretixSCANにようこそ!</string>
     <string name="cancel">キャンセル</string>
+    <string name="debug_info_device">デバイス: %1$s</string>
+    <string name="action_manual">手動で設定</string>
+    <string name="scantype_entry_kiosk_print">チケットをスキャンしてバッジを印刷</string>
+    <string name="sync_status_last">前回成功した同期:</string>
+    <string name="sync_status_last_failed">前回失敗した同期:</string>
+    <string name="sync_status_never">未同期</string>
+    <string name="sync_status_progress">同期実行中</string>
+    <string name="sync_status">同期のステータス</string>
+    <string name="settings_summary_orders_sync">このオプションが選択されていない場合、pretixSCANは注文データをダウンロードできません。また、pretixのデフォルト設定では、オフラインでチケットをスキャンすることができません。</string>
+    <string name="settings_summary_auto_switch">このオプションを使用すると、pretixSCANが同期中、サーバーに対して、サーバーがアプリを別のイベントとチェックインリストに切り替えることを提案し、自動的に切り替えるかどうかを尋ねます。</string>
+    <string name="error_unknown_exception">不明なエラーが発生しました</string>
+    <string name="action_sync">いますぐ同期する</string>
+    <string name="progress_syncing_first">イベントの設定をダウンロード中…</string>
+    <string name="progress_syncing">サーバと同期中…</string>
+    <string name="progress_processing">処理中…</string>
+    <string name="progress_registering">デバイスをサーバに登録中…</string>
+    <string name="error_not_synchronized">デバイスは、サーバと正常に同期できませんでした</string>
+    <string name="action_label_settings">設定</string>
+    <string name="action_label_statistics">統計</string>
+    <string name="action_label_scantype_exit">退出のスキャンに切り替え</string>
+    <string name="scantype_entry">入場</string>
+    <plurals name="sync_status_time_minutes">
+        <item quantity="other">%d 分前に同期済み</item>
+    </plurals>
+    <string name="action_multievent_disable">エクスパートモードを無効にする</string>
+    <string name="action_multievent_disable_error">複数のイベントが選択中の場合、エクスパートモードを無効にすることができません。</string>
+    <string name="scantype_exit">退出</string>
+    <string name="scantype_entry_kiosk">チケットをスキャンしてチェックイン</string>
+    <string name="checktype_offline">オフラインで検証</string>
+    <string name="operation_select_event">イベントを選択</string>
+    <string name="operation_select_events">イベントを選択</string>
+    <string name="events_selected">%s つのイベントが選択済み</string>
+    <string name="operation_select_checkinlist">チェックインリストを選択</string>
+    <string name="settings_label_auto_sync">自動同期</string>
+    <string name="settings_label_orders_sync">注文をダウンロード</string>
+    <string name="settings_label_auto_switch">イベントの自動選択</string>
+    <plurals name="sync_status_time_hours">
+        <item quantity="other">%d 時間前に同期済み</item>
+    </plurals>
+    <plurals name="sync_status_time_days">
+        <item quantity="other">%d 日前に同期済み</item>
+    </plurals>
+    <string name="sync_status_now">直前に同期済み</string>
+    <plurals name="sync_status_pending">
+        <item quantity="other">保留中のアップロードが%d件</item>
+    </plurals>
+    <string name="short_datetime_format">MM/dd HH:mm</string>
+    <string name="first_scanned">最初のスキャン: %s</string>
+    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
+    <string name="ok">OK</string>
+    <string name="action_label_ok">OK</string>
+    <string name="action_multievent_enable">エクスパートモード (複数のイベントを選択)</string>
+    <string name="debug_info_event">イベント: %1$s</string>
+    <string name="debug_info_subevent">日付: %1$s (%2$s)</string>
+    <string name="debug_info_list">リスト: %1$s</string>
+    <string name="debug_info_gate">ゲート: %1$s</string>
+    <string name="action_search">検索</string>
+    <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
+    <string name="error_access_revoked">デバイスのアクセスが取り消されました。デバイスをサーバに再登録する必要があります。</string>
+    <string name="action_label_scantype_entry">入場のスキャンに切り替え</string>
+    <string name="scantype_exit_kiosk">チケットをスキャンして退出</string>
+    <string name="checktype_online">オンラインで検証</string>
 </resources>
