@@ -112,7 +112,7 @@
     <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken\? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
     <string name="dialog_unpaid_retry">Trotzdem einchecken</string>
     <string name="preference_badgeprint_enable">Badge-Druck aktivieren</string>
-    <string name="preference_autobadgeprint_enable">Ausweise automatisch drucken</string>
+    <string name="preference_autobadgeprint_enable">Badges automatisch drucken</string>
     <string name="preference_badgeprint_install_pretixprint">Badge-Druck benötigt die pretixPRINT-App. Wollen Sie diese installieren\?</string>
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Jedes Badge doppelt drucken</string>
