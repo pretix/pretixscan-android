@@ -19,8 +19,8 @@
     <string name="action_multievent_enable">Modo experto (selección de varios eventos)</string>
     <string name="action_multievent_disable">Desactivar modo experto</string>
     <string name="action_multievent_disable_error">El modo experto no puede desactivarse si se han seleccionado varios eventos.</string>
-    <string name="scantype_entry">Entrada</string>
-    <string name="scantype_exit">Salidas</string>
+    <string name="scantype_entry">Entrada (Check-In)</string>
+    <string name="scantype_exit">Salida (Check-Out)</string>
     <string name="scantype_entry_kiosk">Escanear la entrada para realizar el check-in</string>
     <string name="scantype_entry_kiosk_print">Escanear la entrada para imprimir la tarjeta</string>
     <string name="scantype_exit_kiosk">Escanear la entrada para registrar la salida</string>
