@@ -14,7 +14,6 @@
     <string name="sync_status_last_failed">Viimeisin epäonnistunut päivitys:</string>
     <string name="sync_status_last">Viimeisin onnistunut päivitys:</string>
     <string name="settings_label_auto_switch">Tapahtuman automaattinen valinta</string>
-    <string name="action_manual">Manuaalinen asetus</string>
     <string name="operation_select_event">Valitse tapahtuma</string>
     <string name="operation_select_checkinlist">Valitse sisäänpääsylista</string>
     <string name="settings_label_auto_sync">Automaattinen synkronointi</string>

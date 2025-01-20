@@ -35,7 +35,6 @@
     <string name="debug_info_gate">Bramka: %1$s</string>
     <string name="debug_info_device">Urządzenie: %1$s</string>
     <string name="action_search">Szukaj</string>
-    <string name="action_manual">Konfiguracja ręczna</string>
     <string name="operation_select_event">Wybierz wydarzenie</string>
     <string name="operation_select_events">Wybierz wydarzenia</string>
     <string name="events_selected">Wybrano %s wydarzeń</string>
@@ -65,14 +64,6 @@
     <string name="first_scanned">Pierwsze skanowanie: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="setup_error_legacy_qr_code">Zeskanowany kod QR dotyczy poprzedniej wersji tej aplikacji. Przejdź do sekcji Urządzenia na swoim koncie organizatora pretix i utwórz tam nowe urządzenie.</string>
-    <string name="setup_error_version_too_high">Zeskanowany kod QR pochodzi z nowszej wersji aplikacji pretix niż ta, dla której została stworzona. Sprawdź, czy możesz uzyskać aktualizację dla tej aplikacji!</string>
-    <string name="setup_progress">Inicjalizacja urządzenia…</string>
-    <string name="setup_error_request">Żądanie odrzucone przez serwer. Sprawdź dwukrotnie wprowadzone dane.</string>
-    <string name="setup_error_ssl">Błąd zabezpieczeń podczas próby połączenia z serwerem.</string>
-    <string name="setup_error_server">Błąd serwera podczas próby zarejestrowania urządzenia.</string>
-    <string name="setup_error_response">Serwer zwrócił nieprawidłową odpowiedź.</string>
-    <string name="setup_error_failed">Początkowy test połączenia nie powiódł się.</string>
     <string name="cont">DALEJ</string>
     <string name="hint_url">Adres URL</string>
     <string name="hint_token">Token</string>
@@ -139,8 +130,6 @@
     <string name="action_multievent_disable_error">Trybu eksperta nie można wyłączyć, jeśli wybrano wiele zdarzeń.</string>
     <string name="action_label_statistics">Statystyki</string>
     <string name="action_multievent_disable">Wyłącz tryb eksperta</string>
-    <string name="tutorial_setup">Aby rozpocząć, utwórz nowe urządzenie w sekcji Urządzenia na swoim koncie organizatora w wewnętrznym systemie pretix. Następnie zostanie Ci wyświetlony konfiguracyjny kod QR do zeskanowania.</string>
-    <string name="setup_error_permissions">pretixSCAN nie działa poprawnie bez przyznania tych uprawnień. Uruchom ponownie aplikację.</string>
     <string name="settings_label_verification">Weryfikacja biletów</string>
     <string name="settings_label_licenses">Autor i licencje</string>
     <string name="cancel">Anuluj</string>
@@ -156,8 +145,6 @@
     </plurals>
     <string name="scan_result_ambiguous">Kod biletu na liście jest niejednoznaczny</string>
     <string name="scan_result_unapproved">Zamówienie nie zostało zatwierdzone</string>
-    <string name="setup_error_invalid_qr_code">Zeskanowany kod QR nie jest prawidłowym kodem konfiguracyjnym. Upewnij się, że kod został utworzony w sekcji Urządzenia na koncie organizatora pretix.</string>
-    <string name="setup_error_io">Błąd połączenia podczas próby nawiązania połączenia z serwerem.</string>
     <string name="welcome_text">pretixSCAN to aplikacja umożliwiająca wejście na wydarzenie, której można użyć do walidacji biletów sprzedanych za pośrednictwem pretix.</string>
     <string name="settings_label_scan_offline">Skanowanie offline</string>
     <string name="pref_unpaid_ask_summary">Gdy lista odpraw jest ustawiona tak, aby zawierała oczekujące zamówienia, to ustawienie kontroluje, czy użytkownik zostanie zapytany, zanim zostanie zameldowany.</string>
@@ -174,5 +161,4 @@
     <string name="preference_autobadgeprint_enable">Automatyczne drukowanie identyfikatorów po pomyślnym zeskanowaniu</string>
     <string name="label_shop_inactive">Sklep dezaktywowany</string>
     <string name="label_shop_active">Aktywny</string>
-    <string name="setup_grant_camera_permission">Zezwól na używanie kamery aby korzystać ze skanera QR</string>
 </resources>

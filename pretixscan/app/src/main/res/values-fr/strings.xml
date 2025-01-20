@@ -23,7 +23,6 @@
     <string name="debug_info_gate">Porte : %1$s</string>
     <string name="debug_info_device">Appareil : %1$s</string>
     <string name="scantype_exit_kiosk">Scanner votre billet pour enregistrer la sortie</string>
-    <string name="action_manual">Mise en place manuelle</string>
     <string name="operation_select_event">Sélectionner l\'évènement</string>
     <string name="events_selected">%s évènements sélectionnés</string>
     <string name="operation_select_checkinlist">Sélectionnez la liste d\'enregistrement</string>
@@ -56,16 +55,8 @@
     <string name="first_scanned">Premier scan : %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="setup_error_version_too_high">Le QR code que vous avez scanné provient d\'une version de pretix plus récente que celle pour laquelle cette application a été conçue. Veuillez vérifier si vous pouvez obtenir une mise à jour pour cette application !</string>
-    <string name="setup_error_request">Demande rejetée par le serveur. Veuillez revérifier votre saisie.</string>
-    <string name="setup_error_ssl">Erreur de sécurité lors de la tentative d\'accès au serveur.</string>
-    <string name="setup_error_response">Le serveur a retourné une réponse non valide.</string>
-    <string name="setup_error_failed">Le test de connexion initial a échoué.</string>
     <string name="welcome_text">pretixSCAN est une application de gestion des entrées d\'évènement que vous pouvez utiliser pour valider les billets que vous avez vendus via pretix.</string>
     <string name="cont">CONTINUER</string>
-    <string name="setup_error_invalid_qr_code">Le QR code que vous avez scanné n\'est pas un code de configuration valide. Veuillez vous assurer que vous avez créé le code dans la section Appareils d\'un compte organisateur pretix.</string>
-    <string name="setup_progress">Initialisation de l\'appareil…</string>
-    <string name="setup_error_server">Une erreur s\'est produite sur le serveur lors de l\'enregistrement de l\'appareil.</string>
     <string name="hint_url">URL</string>
     <string name="hint_token">Jeton</string>
     <string name="dismiss">Rejeter</string>
@@ -144,10 +135,6 @@
         <item quantity="many">%d téléversements en attente</item>
         <item quantity="other">%d téléversements en attente</item>
     </plurals>
-    <string name="tutorial_setup">Pour commencer, créez un nouvel appareil dans la section Appareils de votre compte d\'organisateur dans le site de pretix. Un QR code vous sera alors présenté afin de configurer celui-ci.</string>
-    <string name="setup_error_legacy_qr_code">Le QR code que vous avez scanné correspond à une ancienne version de cette application. Veuillez vous rendre dans la section Appareils de votre compte organisateur et y créer un nouveal appareil.</string>
-    <string name="setup_error_io">Erreur de connexion lors de la tentative de connexion au serveur.</string>
-    <string name="setup_error_permissions">pretixSCAN ne fonctionne pas correctement sans l\'octroi de ces autorisations. Veuillez redémarrer l\'application.</string>
     <string name="welcome_disclaimer1">Je comprends que les données personnelles des participants à mes événements connectés seront stockées sur cet appareil et je m\'engage à sécuriser l\'appareil correctement.</string>
     <string name="settings_label_device_camera">Utiliser la caméra de l\'appareil</string>
     <string name="settings_label_auto_offline">Activation et désactivation automatiques du mode hors ligne</string>
@@ -166,7 +153,6 @@
     <string name="scantype_entry_kiosk_print">Scannez votre billet pour imprimer votre badge</string>
     <string name="action_multievent_disable">Désactiver le mode expert</string>
     <string name="action_multievent_disable_error">Le mode expert ne peut pas être désactivé si plusieurs événements sont sélectionnés.</string>
-    <string name="setup_grant_camera_permission">Veuillez autoriser la caméra à utiliser le scanner QR</string>
     <string name="settings_label_auto_offline_help">Si vous sélectionnez l\'une des durées ci-dessous, l\'application basculera automatiquement vers un scan hors ligne lorsque le temps de validation est supérieur au temps sélectionné. Par ailleurs, l\'application passera en mode hors ligne intégral si plusieurs scans ont échoué, ou si ils ont duré plus longtemps que prévu. Une fois que la connexion redevient stable, l\'application rebasculera en mode en ligne.</string>
     <string name="scan_result_unapproved">Commande non approuvée</string>
     <string name="pin_protection_enter">Saisir le code PIN</string>

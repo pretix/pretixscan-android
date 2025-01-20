@@ -57,6 +57,11 @@ class SetupActivity : AppCompatActivity(R.layout.activity_setup), SetupCallable 
         return super.dispatchKeyEvent(event)
     }
 
+    override fun config(useCamera: Boolean) {
+        val conf = AppConfig(this)
+        conf.useCamera = useCamera
+    }
+
     override fun setup(url: String, token: String) {
         val conf = AppConfig(this)
 
@@ -94,7 +99,7 @@ class SetupActivity : AppCompatActivity(R.layout.activity_setup), SetupCallable 
         }
     }
 
-    override fun onSucessfulSetup() {
+    override fun onSuccessfulSetup() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

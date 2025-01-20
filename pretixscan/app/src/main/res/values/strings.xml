@@ -32,7 +32,6 @@
     <string name="debug_info_gate">Gate: %1$s</string>
     <string name="debug_info_device">Device: %1$s</string>
     <string name="action_search">Search</string>
-    <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_events">Select Events</string>
     <string name="events_selected">%s events selected</string>
