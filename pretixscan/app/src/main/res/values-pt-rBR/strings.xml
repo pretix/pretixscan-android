@@ -2,13 +2,10 @@
 <resources>
     <string name="hint_url">URL</string>
     <string name="error_sync_in_background">Uma sincronização já está sendo executada em segundo plano.</string>
-    <string name="setup_error_server">Erro no servidor ao tentar registrar o dispositivo.</string>
-    <string name="setup_error_permissions">pretixSCAN não funciona corretamente sem conceder essas permissões. Reinicie o aplicativo.</string>
     <string name="scan_result_invalid_time">O bilhete não é válido no momento</string>
     <string name="app_name">pretixSCAN</string>
     <string name="short_datetime_format">dd/MM HH:mm</string>
     <string name="title_activity_main">pretixSCAN</string>
-    <string name="action_manual">Configuração Manual</string>
     <string name="scan_result_exit">Saida registrada</string>
     <string name="headline_setup">Bem-Vindo ao pretixSCAN!</string>
     <string name="action_sync">Sincronizar agora</string>
@@ -50,11 +47,6 @@
     <string name="sync_status_date_format">%1$tH:%1$tM %1$td/%1$tm/%1$tY</string>
     <string name="first_scanned">Primeiro scaneado: %s</string>
     <string name="ok">OK</string>
-    <string name="setup_progress">Inicializando dispositivo…</string>
-    <string name="setup_error_request">Requisição rejeitada pelo servidor. Por favor, verifique as informações.</string>
-    <string name="setup_error_io">Erro de conexão ao tentar acessar o servidor.</string>
-    <string name="setup_error_response">O servidor retornou uma resposta inválida.</string>
-    <string name="setup_error_failed">O teste de conexão inicial falhou.</string>
     <string name="welcome_text">O pretixSCAN é um aplicativo de entrada para eventos que você pode usar para validar ingressos vendidos pelo pretix.</string>
     <string name="welcome_disclaimer1">Entendo que os dados pessoais dos participantes dos meus eventos conectados serão armazenados neste dispositivo e eu o protegerei adequadamente.</string>
     <string name="cont">Continuar</string>
@@ -104,13 +96,8 @@
     <string name="scantype_entry_kiosk_print">Scanei sei ticket para imprimir seu crachá</string>
     <string name="datetime_format">%1$tH:%1$tM%1$td%1$tm%1$tY</string>
     <string name="pref_unpaid_ask">Pergunte antes de fazer o check-in de bilhetes não pagos</string>
-    <string name="setup_error_ssl">Erro de segurança ao tentar acessar o servidor.</string>
     <string name="pref_unpaid_ask_summary">Quando a lista de check-in é definida para incluir pedidos pendentes, esta configuração controla se você será questionado antes que eles sejam verificados.</string>
-    <string name="setup_error_legacy_qr_code">O código QR que você escaneou é de uma versão antiga deste aplicativo. Vá para a seção Dispositivos na sua conta do organizador e crie um novo dispositivo.</string>
-    <string name="setup_error_invalid_qr_code">O código QR que você escaneou não é um código de configuração válido. Certifique-se de que você criou o código na seção Dispositivos de uma conta do organizador.</string>
-    <string name="setup_error_version_too_high">O código QR que você escaneou é de uma versão mais recente do que a que este aplicativo. Verifique se você pode obter uma atualização para este aplicativo!</string>
     <string name="sync_status_never">ainda não sincronizado</string>
-    <string name="tutorial_setup">Para começar, crie um novo dispositivo na seção Dispositivos da sua conta de organizador. Você verá um código QR de configuração para escanear.</string>
     <string name="settings_label_verification">Verificação de ticket</string>
     <string name="already_scanned">já escaneado</string>
     <string name="preference_badgeprint_install_pretixprint">A impressão de crachás requer o aplicativo pretixPRINT separado. Você quer instalá-lo?</string>

@@ -5,7 +5,6 @@
     <string name="headline_setup">pretixSCANにようこそ!</string>
     <string name="cancel">キャンセル</string>
     <string name="debug_info_device">デバイス: %1$s</string>
-    <string name="action_manual">手動で設定</string>
     <string name="scantype_entry_kiosk_print">チケットをスキャンしてバッジを印刷</string>
     <string name="sync_status_last">前回成功した同期:</string>
     <string name="sync_status_last_failed">前回失敗した同期:</string>
