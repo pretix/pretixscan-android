@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tutorial_setup">Om te starten, maak een nieuw apparaat aan in het Apparaten onderdeel van je organisator account in de Pretix controlepaneel. Daar vind je een qr code die je kan scannen om de juiste configuratie te downloaden.</string>
     <string name="ok">OK</string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="first_scanned">Eerst gescanned: %s</string>
@@ -34,7 +33,6 @@
     <string name="settings_label_auto_sync">Automatische Synchronisatie</string>
     <string name="operation_select_checkinlist">Selecteer Check-in lijst</string>
     <string name="operation_select_event">Kies evenement</string>
-    <string name="action_manual">Handmatig instellen</string>
     <string name="action_search">Zoeken</string>
     <string name="debug_info_device">Apparaat: %1$s</string>
     <string name="debug_info_gate">Poort: %1$s</string>
@@ -76,17 +74,6 @@
     <string name="cont">DOORGAAN</string>
     <string name="welcome_disclaimer1">Ik begrijp dat persoonsgegevens van gasten van mijn evenementen zullen worden opgeslagen op dit apparaat en ik zal het apparaat goed beveiligen.</string>
     <string name="welcome_text">pretixSCAN is een app die u kunt gebruiken om tickets te controleren die u via pretix hebt verkocht.</string>
-    <string name="setup_error_permissions">pretixSCAN werkt niet juist zonder deze toestemmingen te geven. Start de app opnieuw op.</string>
-    <string name="setup_error_failed">De eerste verbindingstest is mislukt.</string>
-    <string name="setup_error_response">De server heeft een ongeldig antwoord teruggegeven.</string>
-    <string name="setup_error_server">Er is een serverfout opgetreden tijdens het registreren van het apparaat.</string>
-    <string name="setup_error_ssl">Er is een beveiligingsfout opgetreden tijdens het verbinden met de server.</string>
-    <string name="setup_error_io">Er is een verbindingsfout opgetreden tijdens het verbinden met de server.</string>
-    <string name="setup_error_request">Verzoek geweigerd door server. Controleer uw invoer.</string>
-    <string name="setup_progress">Apparaat instellen…</string>
-    <string name="setup_error_version_too_high">De gescande QR-code is voor een nieuwere versie van pretix dan waar deze app is voor gebouwd. Controleer of er een update is voor deze app!</string>
-    <string name="setup_error_invalid_qr_code">De QR-code die u scande is geen geldige configuratiecode. Controleer of u de code heeft aangemaakt onder Apparaten in de organisatoraccountsinstellingen van een pretix-organisatoraccount.</string>
-    <string name="setup_error_legacy_qr_code">De QR-code die u scande is alleen voor een oudere versie van deze app geldig. Ga naar de apparatenlijst in uw pretixaccount en maak hier een nieuw apparaat aan.</string>
     <string name="settings_summary_auto_switch">Met deze optie zal pretixSCAN tijdens het synchroniseren aan de server vragen of de server aanraadt om de app naar een ander evenement en inchecklijst te wisselen. Als dit het geval is zal pretixSCAN automatisch naar dit evenement wisselen.</string>
     <string name="currently_inside">momenteel aanwezig</string>
     <string name="pin_protection_switch_mode">Modusveranderingen beveiligen</string>
@@ -162,7 +149,6 @@
     <string name="scantype_entry_kiosk_print">Scan uw ticket om uw badge te printen</string>
     <string name="action_multievent_disable">Expertmodus uitschakelen</string>
     <string name="action_multievent_disable_error">Expertmodus kan niet uitgeschakeld worden wanneer meerdere evenementen zijn geselecteerd.</string>
-    <string name="setup_grant_camera_permission">Verleen de camera-machtiging om de QR Scanner te kunnen gebruiken</string>
     <string name="settings_label_auto_offline_help">Als u een van de onderstaande tijden selecteert, zal de app automatisch de offline-scanmodus gebruiken wanneer een online scan langer dan de geselecteerde tijd duurt. Daarnaast zal de app naar volledige offline-modus schakelen wanneer meerdere scans mislukt zijn of langer duurden dan de geselecteerde tijd. Zodra de verbinding weer enige tijd stabiel is, zal de app terugschakelen naar online-modus.</string>
     <string name="scan_result_unapproved">Bestelling niet goedgekeurd</string>
     <string name="pref_ignore_questions">Stel geen vragen tijdens check-in</string>

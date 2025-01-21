@@ -992,17 +992,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
-                            values: Map<QuestionLike, String>?, isResumed: Boolean,
+                            values: Map<String, String>?, isResumed: Boolean,
                             retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question }
         for (q in questions) {
             q.resolveDependency(questions)
         }
         val values_ = if (values == null) {
-            val v = mutableMapOf<QuestionLike, String>()
+            val v = mutableMapOf<String, String>()
             res.requiredAnswers!!.forEach {
                 if (!it.currentValue.isNullOrBlank()) {
-                    v[it.question] = it.currentValue!!
+                    v[it.question.identifier] = it.currentValue!!
                 }
             }
             v
@@ -1480,11 +1480,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
 
             val answers = savedInstanceState.getBundle("answers")!!
-            val values = mutableMapOf<QuestionLike, String>()
+            val values = mutableMapOf<String, String>()
             lastScanResult!!.requiredAnswers!!.forEach {
                 val v = answers.getString(it.question.identifier, "")
                 if (v.isNotBlank()) {
-                    values[it.question] = v
+                    values[it.question.identifier] = v
                 }
             }
 
