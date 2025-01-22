@@ -1224,7 +1224,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         val isPrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
                 result.position != null &&
-                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+                getBadgeLayout((application as PretixScan).db, result.position!!, result.eventSlug!!) != null)
 
         if (isPrintable) {
 
@@ -1238,7 +1238,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         )
                         logSuccessfulPrint(
                             api,
-                            (application as PretixScan).data,
+                            (application as PretixScan).db,
                             result.eventSlug!!,
                             result.position!!.getLong("id"),
                             "badge"
@@ -1254,7 +1254,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
                 "once" -> {
                     result.type == TicketCheckProvider.CheckResult.Type.VALID &&
-                    !isPreviouslyPrinted((application as PretixScan).data, result.position!!)
+                    !isPreviouslyPrinted((application as PretixScan).db, result.position!!)
                 }
                 else -> false
             }
@@ -1262,7 +1262,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             if (shouldAutoPrint) {
                 printBadge(
                     this@MainActivity,
-                    application as PretixScan,
+                    (application as PretixScan).db,
+                    (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
                     recv
@@ -1272,7 +1273,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             binding.ibPrint.setOnClickListener {
                 printBadge(
                     this@MainActivity,
-                    application as PretixScan,
+                    (application as PretixScan).db,
+                    (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
                     recv

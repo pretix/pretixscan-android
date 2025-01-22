@@ -1,3 +1,8 @@
 count:
 SELECT COUNT(*)
 FROM QueuedCall;
+
+countWhereUrlLike:
+SELECT COUNT(*)
+FROM QueuedCall
+WHERE url LIKE ?;
