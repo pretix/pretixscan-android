@@ -66,7 +66,6 @@ import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.db.Event
 import eu.pretix.libpretixsync.db.QueuedCall
 import eu.pretix.libpretixsync.db.QueuedCheckIn
-import eu.pretix.libpretixsync.db.Settings
 import eu.pretix.libpretixsync.db.SubEvent
 import eu.pretix.libpretixsync.models.Question
 import eu.pretix.libpretixsync.models.db.toModel
@@ -1038,10 +1037,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             }
         }
 
-        val settings = (application as PretixScan).data.select(Settings::class.java)
-                .where(Settings.SLUG.eq(res.eventSlug))
-                .get()
-                .firstOrNull()
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
                 this,
                 questions,
