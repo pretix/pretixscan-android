@@ -18,9 +18,9 @@
 package eu.pretix.pretixscan.droid.db
 
 import android.content.Context
+import eu.pretix.pretixscan.utils.DatabaseProvider
 import io.requery.android.DefaultMapping
 import io.requery.android.LoggingListener
-import io.requery.android.sqlite.DatabaseProvider
 import io.requery.android.sqlite.SchemaUpdater
 import io.requery.meta.EntityModel
 import io.requery.sql.Configuration
@@ -81,17 +81,18 @@ open class SqlCipherDatabaseSource(context: Context,
         }
     }
 
-    override fun getConfiguration(): Configuration {
-        if (_configuration == null) {
-            val builder = ConfigurationBuilder(this, model)
-                .setMapping(mapping)
-                .setPlatform(platform)
-                .setBatchUpdateSize(1000)
-            onConfigure(builder)
-            _configuration = builder.build()
+    override val configuration: Configuration
+        get() {
+            if (_configuration == null) {
+                val builder = ConfigurationBuilder(this, model)
+                    .setMapping(mapping)
+                    .setPlatform(platform)
+                    .setBatchUpdateSize(1000)
+                onConfigure(builder)
+                _configuration = builder.build()
+            }
+            return _configuration!!
         }
-        return _configuration!!
-    }
 
     override fun onCreate(db: SQLiteDatabase) {
         this.db = db
@@ -117,7 +118,7 @@ open class SqlCipherDatabaseSource(context: Context,
     override fun getConnection(): Connection {
         synchronized(this) {
             if (db == null) {
-                db = getWritableDatabase()
+                db = writableDatabase
             }
             return getConnection(db!!)
         }
