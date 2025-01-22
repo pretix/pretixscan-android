@@ -1,0 +1,3 @@
+count:
+SELECT COUNT(*)
+FROM QueuedCheckIn;

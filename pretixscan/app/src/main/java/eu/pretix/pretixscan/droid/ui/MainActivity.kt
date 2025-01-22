@@ -62,11 +62,6 @@ import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
-import eu.pretix.libpretixsync.db.CheckInList
-import eu.pretix.libpretixsync.db.Event
-import eu.pretix.libpretixsync.db.QueuedCall
-import eu.pretix.libpretixsync.db.QueuedCheckIn
-import eu.pretix.libpretixsync.db.SubEvent
 import eu.pretix.libpretixsync.models.Question
 import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
@@ -97,6 +92,7 @@ import java.lang.Integer.max
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -229,30 +225,32 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             confdetails += "\n"
         }
         if (conf.synchronizedEvents.isNotEmpty()) {
-            val events = (application as PretixScan).data.select(Event::class.java)
-                    .where(Event.SLUG.`in`(conf.synchronizedEvents))
-                    .get().toList()
+            val events = (application as PretixScan).db.eventQueries.selectBySlugList(conf.synchronizedEvents)
+                .executeAsList()
+                .map { it.toModel() }
+
             for (event in events) {
                 confdetails += getString(R.string.debug_info_event, event.name)
                 confdetails += "\n"
 
                 val subeventId = conf.getSelectedSubeventForEvent(event.slug)
                 if (subeventId != null && subeventId > 0) {
-                    val subevent = (application as PretixScan).data.select(SubEvent::class.java)
-                            .where(SubEvent.SERVER_ID.eq(subeventId))
-                            .get().firstOrNull()
+                    val subevent = (application as PretixScan).db.subEventQueries.selectByServerId(subeventId)
+                        .executeAsOneOrNull()
+                        ?.toModel()
+
                     if (subevent != null) {
-                        val df = SimpleDateFormat(getString(R.string.short_datetime_format))
-                        confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.date_from))
+                        val df = DateTimeFormatter.ofPattern(getString(R.string.short_datetime_format))
+                        confdetails += getString(R.string.debug_info_subevent, subevent.name, df.format(subevent.dateFrom))
                         confdetails += "\n"
                     }
                 }
 
                 val checkinListId = conf.getSelectedCheckinListForEvent(event.slug)
                 if (checkinListId != null && checkinListId > 0) {
-                    val cl = (application as PretixScan).data.select(CheckInList::class.java)
-                            .where(CheckInList.SERVER_ID.eq(checkinListId))
-                            .get().firstOrNull()
+                    val cl = (application as PretixScan).db.checkInListQueries.selectByServerId(checkinListId)
+                        .executeAsOneOrNull()
+                        ?.toModel()
                     if (cl != null) {
                         confdetails += getString(R.string.debug_info_list, cl.name)
                         confdetails += "\n"
@@ -356,10 +354,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
 
         if (!(application as PretixScan).syncLock.isLocked) {
-            val checkins = (application as PretixScan).data.count(QueuedCheckIn::class.java)
-                    .get().value()
-            val calls = (application as PretixScan).data.count(QueuedCall::class.java)
-                    .get().value()
+            val checkins = (application as PretixScan).db.scanQueuedCheckInQueries.count().executeAsOne().toInt()
+            val calls = (application as PretixScan).db.scanQueuedCallQueries.count().executeAsOne().toInt()
             text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
         }
 
@@ -1243,9 +1239,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
 
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
-            val event = (application as PretixScan).data.select(Event::class.java)
-                    .where(Event.SLUG.eq(result.eventSlug))
-                    .get().firstOrNull()
+            val event = (application as PretixScan).db.eventQueries.selectBySlug(result.eventSlug)
+                .executeAsOneOrNull()
+                ?.toModel()
             view_data.eventName.set(event?.name)
         }
 
