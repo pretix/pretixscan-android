@@ -17,8 +17,8 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
 import eu.pretix.libpretixsync.sqldelight.BigDecimalAdapter
-import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
+import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import eu.pretix.pretixscan.utils.createSyncDatabase
 import eu.pretix.pretixscan.utils.readVersionPragma
@@ -29,7 +29,6 @@ import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.locks.ReentrantLock
 
 

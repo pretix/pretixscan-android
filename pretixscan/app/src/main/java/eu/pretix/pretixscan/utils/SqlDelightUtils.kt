@@ -12,7 +12,7 @@ import eu.pretix.libpretixsync.sqldelight.Receipt
 import eu.pretix.libpretixsync.sqldelight.ReceiptLine
 import eu.pretix.libpretixsync.sqldelight.ReceiptPayment
 import eu.pretix.libpretixsync.sqldelight.SubEvent
-import eu.pretix.libpretixsync.sqldelight.SyncDatabase
+import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import java.math.BigDecimal
 import java.util.Date
 

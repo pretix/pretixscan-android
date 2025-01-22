@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
     id "org.jetbrains.kotlin.kapt"
+    id "app.cash.sqldelight"
 }
 
 def flavors = [:]
@@ -181,4 +182,19 @@ dependencies {
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.apg-mobile:android-round-textview:v1.0.0'
+}
+
+sqldelight {
+    databases {
+        SyncDatabase {
+            packageName = "eu.pretix.pretixscan.sqldelight"
+
+            dependency(project(":libpretixsync"))
+
+            // Oldest dialect supported by SQLDelight 2.0.2
+            // In Android projects, it will auto-select based on SDK
+            // but not go lower than 3.18 (Android 9 is still on 3.8)
+            dialect "app.cash.sqldelight:sqlite-3-18-dialect:$sqldelight_version"
+        }
+    }
 }
