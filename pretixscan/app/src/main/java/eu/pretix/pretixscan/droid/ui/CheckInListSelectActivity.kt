@@ -53,7 +53,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     conf,
                     api,
                     AndroidSentryImplementation(),
-                    (application as PretixScan).data,
+                    (application as PretixScan).db,
                     (application as PretixScan).fileStorage,
                     1000L,
                     1000L,
@@ -68,7 +68,8 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     "pretixSCAN Android",
                     BuildConfig.VERSION_NAME,
                     null,
-                    null
+                    null,
+                    null,
             )
             sm.syncMinimalEventSet(event, subevent) { current_action ->
                 runOnUiThread {
