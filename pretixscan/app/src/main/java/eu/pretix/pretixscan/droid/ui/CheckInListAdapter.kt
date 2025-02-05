@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.models.CheckInList
 import eu.pretix.pretixscan.droid.databinding.ItemCheckinlistBinding
 
 class CheckInListTaskDiffCallback : DiffUtil.ItemCallback<CheckInList>() {
     override fun areItemsTheSame(oldItem: CheckInList, newItem: CheckInList): Boolean {
-        return oldItem.server_id == newItem.server_id
+        return oldItem.serverId == newItem.serverId
     }
 
     override fun areContentsTheSame(oldItem: CheckInList, newItem: CheckInList): Boolean {
@@ -29,7 +29,7 @@ internal class CheckInListAdapter(var selectedList: CheckInList?) :
         val checkInList = getItem(position)
         holder.binding.item = checkInList
         holder.binding.radioButton.setOnCheckedChangeListener(null)
-        holder.binding.radioButton.isChecked = checkInList.getServer_id() == selectedList?.getServer_id()
+        holder.binding.radioButton.isChecked = checkInList.serverId == selectedList?.serverId
         holder.binding.radioButton.setOnCheckedChangeListener(this)
     }
 
@@ -37,7 +37,7 @@ internal class CheckInListAdapter(var selectedList: CheckInList?) :
         if (payloads.size > 0 && payloads.all { it == CHECKED_CHANGE }) {
             val checkInList = getItem(position)
             holder.binding.radioButton.setOnCheckedChangeListener(null)
-            holder.binding.radioButton.isChecked = checkInList.getServer_id() == selectedList?.getServer_id()
+            holder.binding.radioButton.isChecked = checkInList.serverId == selectedList?.serverId
             holder.binding.radioButton.setOnCheckedChangeListener(this)
         } else {
             super.onBindViewHolder(holder, position, payloads)
