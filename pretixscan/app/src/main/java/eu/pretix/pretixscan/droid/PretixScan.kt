@@ -4,146 +4,114 @@ import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import androidx.sqlite.db.SupportSQLiteDatabase
+import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.soloader.SoLoader
-import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
 import eu.pretix.libpretixsync.sqldelight.BigDecimalAdapter
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.utils.KeystoreHelper
+import eu.pretix.pretixscan.utils.createDriver
 import eu.pretix.pretixscan.utils.createSyncDatabase
 import eu.pretix.pretixscan.utils.readVersionPragma
-import io.requery.BlockingEntityStore
-import io.requery.Persistable
-import io.requery.sql.EntityDataStore
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import java.util.concurrent.locks.ReentrantLock
 
 
 class PretixScan : MultiDexApplication() {
-    private var dataStore: BlockingEntityStore<Persistable>? = null
     val fileStorage = AndroidFileStorage(this)
     val syncLock = ReentrantLock()
     var flipperInit: FlipperInitializer.IntializationResult? = null
     lateinit var connectivityHelper: ConnectivityHelper
 
-    private fun migrateSqlCipher(name: String, dbPass: String) {
+    private fun migrateSqlCipher(name: String, dbPass: String, driver: AndroidSqliteDriver): Boolean {
         System.loadLibrary("sqlcipher")
 
-        val databaseFile = getDatabasePath(name)
-        SQLiteDatabase.openOrCreateDatabase(databaseFile, dbPass, null, null, object: SQLiteDatabaseHook {
-            override fun preKey(connection: SQLiteConnection) {
-            }
+        try {
+            driver.executeQuery(
+                identifier = null,
+                sql = "select count(*) from sqlite_master;",
+                mapper = { cursor ->
+                    cursor.next()
+                    QueryResult.Value(cursor.getLong(0))
+                },
+                parameters = 0,
+            )
+            return true
+        } catch (e: SQLiteException) {
+            try {
+                val databaseFile = getDatabasePath(name)
+                SQLiteDatabase.openOrCreateDatabase(
+                    databaseFile,
+                    dbPass,
+                    null,
+                    null,
+                    object : SQLiteDatabaseHook {
+                        override fun preKey(connection: SQLiteConnection) {
+                        }
 
-            override fun postKey(connection: SQLiteConnection) {
-                val result = connection.executeForLong("PRAGMA cipher_migrate;", emptyArray(), null)
-                if (result != 0L) {
-                    throw SQLiteException("cipher_migrate failed")
-                }
+                        override fun postKey(connection: SQLiteConnection) {
+                            val result = connection.executeForLong(
+                                "PRAGMA cipher_migrate;",
+                                emptyArray(),
+                                null
+                            )
+                            if (result != 0L) {
+                                throw SQLiteException("cipher_migrate failed")
+                            }
+                        }
+                    }).close()
+                return true
+            } catch (e: SQLiteException) {
+                // still not decrypted? then we probably lost the key due to a keystore issue
+                // let's start fresh, there's no reasonable other way to let the user out of this
+                this.deleteDatabase(name)
+                return false
             }
-        }).close()
+        }
     }
 
-    val data: BlockingEntityStore<Persistable>
-        get() {
-            if (dataStore == null) {
-                if (BuildConfig.DEBUG) {
-                    // Do not encrypt on debug, because it breaks Stetho
-                    val source = AndroidDatabaseSource(this, Models.DEFAULT, Migrations.CURRENT_VERSION)
-                    source.setLoggingEnabled(BuildConfig.DEBUG)
-                    val configuration = source.configuration
-                    dataStore = EntityDataStore(configuration)
-                } else {
-                    val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
-                    else KEYSTORE_PASSWORD
-
-                    var source = AndroidSqlCipherDatabaseSource(
-                        this,
-                        Models.DEFAULT,
-                        Models.DEFAULT.name,
-                        dbPass,
-                        Migrations.CURRENT_VERSION
-                    )
-                    try {
-                        // check if database has been decrypted
-                        source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
-                    } catch (e: SQLiteException) {
-                        try {
-                            source.close()
-                            migrateSqlCipher(Models.DEFAULT.name, dbPass)
-                            source = AndroidSqlCipherDatabaseSource(
-                                this,
-                                Models.DEFAULT,
-                                Models.DEFAULT.name,
-                                dbPass,
-                                Migrations.CURRENT_VERSION
-                            )
-                            source.readableDatabase.rawQuery("select count(*) from sqlite_master;", emptyArray())
-                        } catch (e: SQLiteException) {
-                            // still not decrypted? then we probably lost the key due to a keystore issue
-                            // let's start fresh, there's no reasonable other way to let the user out of this
-                            this.deleteDatabase(Models.DEFAULT.getName())
-                            source = AndroidSqlCipherDatabaseSource(
-                                this,
-                                Models.DEFAULT,
-                                Models.DEFAULT.name,
-                                dbPass,
-                                Migrations.CURRENT_VERSION
-                            )
-                        }
-                    }
-                    source.setLoggingEnabled(false)
-
-                    val configuration = source.configuration
-                    dataStore = EntityDataStore(configuration)
-                }
-            }
-            return dataStore!!
-        }
-
     val db: SyncDatabase by lazy {
-        // Access data to init schema through requery if it hasn't been created already
-        data.raw("PRAGMA user_version;").first()
+        val dbName = "default"
 
         val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
         else KEYSTORE_PASSWORD
 
         val androidDriver = if (BuildConfig.DEBUG) {
-            AndroidSqliteDriver(
-                schema = SyncDatabase.Schema,
+            createDriver(
                 context = this.applicationContext,
-                name = "default",
-                callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
-                    override fun onOpen(db: SupportSQLiteDatabase) {
-                        db.setForeignKeyConstraintsEnabled(true)
-                    }
-                },
+                dbName = dbName,
+                dbPass = null,
             )
         } else {
             System.loadLibrary("sqlcipher")
-            AndroidSqliteDriver(
-                schema = SyncDatabase.Schema,
+            val driver = createDriver(
                 context = this.applicationContext,
-                name = "default",
-                callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
-                    override fun onOpen(db: SupportSQLiteDatabase) {
-                        db.setForeignKeyConstraintsEnabled(true)
-                    }
-                },
-                factory = SupportOpenHelperFactory(dbPass.toByteArray())
+                dbName = dbName,
+                dbPass = dbPass,
             )
+
+            val migrationSuccess = migrateSqlCipher(dbName, dbPass, driver)
+            if (migrationSuccess) {
+                driver
+            } else {
+                // Re-open database if we had to delete it during migration
+                driver.close()
+                createDriver(
+                    context = this.applicationContext,
+                    dbName = dbName,
+                    dbPass = dbPass,
+                )
+            }
         }
 
         // Uncomment LogSqliteDriver for verbose logging

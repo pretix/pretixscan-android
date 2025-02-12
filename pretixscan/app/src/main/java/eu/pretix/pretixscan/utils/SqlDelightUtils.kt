@@ -1,9 +1,12 @@
 package eu.pretix.pretixscan.utils
 
+import android.content.Context
+import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.TransacterImpl
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import eu.pretix.libpretixsync.sqldelight.CheckIn
 import eu.pretix.libpretixsync.sqldelight.Closing
 import eu.pretix.libpretixsync.sqldelight.Event
@@ -13,6 +16,7 @@ import eu.pretix.libpretixsync.sqldelight.ReceiptLine
 import eu.pretix.libpretixsync.sqldelight.ReceiptPayment
 import eu.pretix.libpretixsync.sqldelight.SubEvent
 import eu.pretix.pretixscan.sqldelight.SyncDatabase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import java.math.BigDecimal
 import java.util.Date
 
@@ -95,3 +99,29 @@ fun readVersionPragma(driver: SqlDriver): Long? {
         parameters = 0,
     ).value
 }
+
+fun createDriver(context: Context, dbName: String, dbPass: String?) =
+    if (dbPass != null) {
+        AndroidSqliteDriver(
+            schema = SyncDatabase.Schema,
+            context = context,
+            name = dbName,
+            callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    db.setForeignKeyConstraintsEnabled(true)
+                }
+            },
+            factory = SupportOpenHelperFactory(dbPass.toByteArray())
+        )
+    } else {
+        AndroidSqliteDriver(
+            schema = SyncDatabase.Schema,
+            context = context,
+            name = dbName,
+            callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    db.setForeignKeyConstraintsEnabled(true)
+                }
+            },
+        )
+    }
