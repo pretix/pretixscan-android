@@ -22,6 +22,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.util.Base64
@@ -253,6 +256,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         view_data.configDetails.set(confdetails.trim())
         view_data.isOffline.set(conf.offlineMode)
+    }
+
+    private fun vibrate(success: Boolean) {
+        val vibrator: Vibrator
+        if (Build.VERSION.SDK_INT >= 31) {
+            val vb = this.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibrator = vb.defaultVibrator
+        } else {
+            vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(if (success) 50L else 200L, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(if (success) 50L else 200L)
+        }
     }
 
     private fun setSearchFilter(f: String) {
@@ -957,8 +976,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         showLoadingCard()
         hideSearchCard()
 
-        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
-            mediaPlayers[R.raw.beep]?.start()
+        if (answers == null && !ignore_unpaid && !conf.offlineMode) {
+            if (conf.sounds) mediaPlayers[R.raw.beep]?.start()
+            if (conf.haptics) vibrate(true)
         }
 
         bgScope.launch {
@@ -1054,30 +1074,40 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         lastScanResult = result
         lastIgnoreUnpaid = ignore_unpaid
 
-        if (conf.sounds)
-            when (result.type) {
+        when (result.type) {
                 TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
                     TicketCheckProvider.CheckInType.ENTRY ->
                         if (result.isRequireAttention) {
                             mediaPlayers[R.raw.attention]?.start()
+                            if (conf.haptics) vibrate(false)
                         } else {
-                            mediaPlayers[R.raw.enter]?.start()
+                            if (conf.sounds) mediaPlayers[R.raw.enter]?.start()
+                            if (conf.haptics) vibrate(true)
                         }
-                    TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
+                    TicketCheckProvider.CheckInType.EXIT -> {
+                        if (conf.sounds) mediaPlayers[R.raw.exit]?.start()
+                        if (conf.haptics) vibrate(true)
+                    }
                 }
-                TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.ERROR -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.UNPAID -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.REVOKED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.UNAPPROVED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.BLOCKED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
+                TicketCheckProvider.CheckResult.Type.INVALID,
+                TicketCheckProvider.CheckResult.Type.ERROR,
+                TicketCheckProvider.CheckResult.Type.UNPAID,
+                TicketCheckProvider.CheckResult.Type.CANCELED,
+                TicketCheckProvider.CheckResult.Type.PRODUCT,
+                TicketCheckProvider.CheckResult.Type.RULES,
+                TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
+                TicketCheckProvider.CheckResult.Type.REVOKED,
+                TicketCheckProvider.CheckResult.Type.UNAPPROVED,
+                TicketCheckProvider.CheckResult.Type.BLOCKED,
+                TicketCheckProvider.CheckResult.Type.INVALID_TIME,
+                TicketCheckProvider.CheckResult.Type.USED -> {
+                    if (conf.sounds) mediaPlayers[R.raw.error]?.start()
+                    if (conf.haptics) vibrate(false)
+                }
+                TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> {
+                    if (conf.sounds) mediaPlayers[R.raw.attention]?.start()
+                    if (conf.haptics) vibrate(false)
+                }
                 else -> {
                 }
             }

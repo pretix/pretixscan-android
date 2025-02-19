@@ -353,6 +353,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SOUNDS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SOUNDS, value).apply()
 
+    var haptics: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_HAPTICS, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_HAPTICS, value).apply()
+
     var proxyMode: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_SCAN_PROXY, false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCAN_PROXY, value).apply()
@@ -447,6 +451,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_IGNORE_QUESTIONS = "pref_ignore_questions"
         val PREFS_KEY_SCAN_TYPE = "pref_scan_type"
         val PREFS_KEY_SOUNDS = "pref_sounds"
+        val PREFS_KEY_HAPTICS = "pref_haptics"
         val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
