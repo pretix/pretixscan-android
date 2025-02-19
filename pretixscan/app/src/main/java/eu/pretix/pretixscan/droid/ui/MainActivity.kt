@@ -998,23 +998,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
                             values: Map<String, String>?, isResumed: Boolean,
                             retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
-        val questionServerIds = res.requiredAnswers!!.map { it.question.server_id }
-        val questions = (application as PretixScan).db.questionQueries.selectByServerIdList(questionServerIds)
-            .executeAsList()
-            .map { it.toModel() }
 
-        val questionsByServerId = mutableMapOf<Long, Question>()
+        val questions = res.requiredAnswers!!.map { it.question.toModel() }
         for (q in questions) {
             q.resolveDependency(questions)
-            questionsByServerId[q.serverId] = q
         }
 
         val values_ = if (values == null) {
             val v = mutableMapOf<String, String>()
             res.requiredAnswers!!.forEach {
-                val q = questionsByServerId[it.question.server_id]
-                if (!it.currentValue.isNullOrBlank() && q != null) {
-                    v[q.identifier] = it.currentValue!!
+                if (!it.currentValue.isNullOrBlank()) {
+                    v[it.question.toModel().identifier] = it.currentValue!!
                 }
             }
             v
