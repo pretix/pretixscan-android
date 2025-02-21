@@ -101,6 +101,13 @@
             android:label="@string/headline_please_reinstall"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.KioskActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.Fullscreen"
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
