@@ -92,6 +92,13 @@
             android:name=".ui.CheckInListSelectActivity"
             android:label="@string/operation_select_event"
             android:theme="@style/AppTheme.Dialog.Animated" />
+        <activity
+            android:name=".ui.KioskActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.Fullscreen"
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
