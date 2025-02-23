@@ -125,8 +125,6 @@ class MainActivity : BaseScanActivity() {
     private var searchAdapter: SearchListAdapter? = null
     private var searchFilter = ""
 
-    private var syncMessage = ""
-
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
     }
@@ -247,38 +245,7 @@ class MainActivity : BaseScanActivity() {
             binding.textViewStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green))
         }
         binding.textViewStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
-        var text = ""
-        val diff = System.currentTimeMillis() - conf.lastDownload
-        if ((application as PretixScan).syncLock.isLocked) {
-            if (syncMessage != "") {
-                text = syncMessage
-            } else {
-                text = getString(R.string.sync_status_progress);
-            }
-        } else if (conf.lastDownload == 0L) {
-            text = getString(R.string.sync_status_never);
-        } else if (diff > 24 * 3600 * 1000) {
-            val days = (diff / (24 * 3600 * 1000)).toInt()
-            text = getResources().getQuantityString(R.plurals.sync_status_time_days, days, days);
-        } else if (diff > 3600 * 1000) {
-            val hours = (diff / (3600 * 1000)).toInt()
-            text = getResources().getQuantityString(R.plurals.sync_status_time_hours, hours, hours);
-        } else if (diff > 60 * 1000) {
-            val mins = (diff / (60 * 1000)).toInt()
-            text = getResources().getQuantityString(R.plurals.sync_status_time_minutes, mins, mins);
-        } else {
-            text = getString(R.string.sync_status_now);
-        }
-
-        if (!(application as PretixScan).syncLock.isLocked) {
-            val checkins = (application as PretixScan).data.count(QueuedCheckIn::class.java)
-                    .get().value()
-            val calls = (application as PretixScan).data.count(QueuedCall::class.java)
-                    .get().value()
-            text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
-        }
-
-        binding.textViewStatus.setText(text)
+        binding.textViewStatus.setText(syncStatusText())
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -609,9 +576,6 @@ class MainActivity : BaseScanActivity() {
     }
 
     override fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean) {
-        lastScanResult = result
-        lastIgnoreUnpaid = ignore_unpaid
-
         if (conf.sounds)
             when (result.type) {
                 TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
