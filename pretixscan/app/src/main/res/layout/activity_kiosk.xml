@@ -1,46 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.KioskActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="Dummy Content"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
     <FrameLayout
+        android:id="@+id/flWaitingForScan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <ImageView
+            android:id="@+id/iv_kioskAnimation"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/llWelcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvWelcomeHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Welcome to example conference and fair!"
+            app:breakStrategy="balanced"
+            app:autoSizeMaxTextSize="60sp"
+            app:autoSizeMinTextSize="20sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform" />
+
+        <TextView
+            android:id="@+id/tvWelcomeMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Your Badge is being printed"
+            app:breakStrategy="balanced"
+            app:autoSizeMaxTextSize="30sp"
+            app:autoSizeMinTextSize="14sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/flRejected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:visibility="gone">
+
+        <View android:id="@+id/vRejectedBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pretix_brand_red" />
+
+        <TextView
+            android:id="@+id/tvRejectedMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="Ticket not valid"
+            android:textColor="@color/white"
+            app:autoSizeMaxTextSize="60dp"
+            app:autoSizeMinTextSize="20dp"
+            app:autoSizeStepGranularity="3dp"
+            app:autoSizeTextType="uniform"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flOutOfOrder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:visibility="gone">
+
+        <View android:id="@+id/vOoOBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pretix_brand_dark" />
+
+        <TextView
+            android:id="@+id/tvOutOfOrderMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="Out of order"
+            android:textColor="@color/white"
+            app:autoSizeMaxTextSize="60dp"
+            app:autoSizeMinTextSize="20dp"
+            app:autoSizeStepGranularity="3dp"
+            app:autoSizeTextType="uniform"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:keepScreenOn="true">
+
         <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="@style/Widget.AppTheme.ButtonBar.Fullscreen"
+            android:id="@+id/llStatusBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-            <Button
-                android:id="@+id/dummy_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvAppVersion"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Dummy Button" />
+                android:text=""
+                tools:text="pretixSCAN v9.9.99" />
+
+            <TextView
+                android:id="@+id/tvSyncStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text=""
+                tools:text="Sync completed" />
+
+            <ImageView
+                android:id="@+id/ivOfflineIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_cloud_off_white_24"
+                app:tint="@color/pretix_brand_red" />
 
         </LinearLayout>
     </FrameLayout>
