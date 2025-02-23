@@ -24,6 +24,8 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.QueuedCall
+import eu.pretix.libpretixsync.db.QueuedCheckIn
 import eu.pretix.libpretixsync.db.Settings
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
@@ -91,7 +93,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
     private val dataWedgeHelper = DataWedgeHelper(this)
 
-    private var syncMessage = ""
+    var syncMessage = ""
 
     private var pendingPinAction: ((pin: String) -> Unit)? = null
 
@@ -113,6 +115,40 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     }
 
     abstract fun reloadSyncStatus()
+
+    fun syncStatusText(): String {
+        var text = ""
+        val diff = System.currentTimeMillis() - conf.lastDownload
+        if ((application as PretixScan).syncLock.isLocked) {
+            if (syncMessage != "") {
+                text = syncMessage
+            } else {
+                text = getString(R.string.sync_status_progress)
+            }
+        } else if (conf.lastDownload == 0L) {
+            text = getString(R.string.sync_status_never)
+        } else if (diff > 24 * 3600 * 1000) {
+            val days = (diff / (24 * 3600 * 1000)).toInt()
+            text = getResources().getQuantityString(R.plurals.sync_status_time_days, days, days)
+        } else if (diff > 3600 * 1000) {
+            val hours = (diff / (3600 * 1000)).toInt()
+            text = getResources().getQuantityString(R.plurals.sync_status_time_hours, hours, hours)
+        } else if (diff > 60 * 1000) {
+            val mins = (diff / (60 * 1000)).toInt()
+            text = getResources().getQuantityString(R.plurals.sync_status_time_minutes, mins, mins)
+        } else {
+            text = getString(R.string.sync_status_now);
+        }
+
+        if (!(application as PretixScan).syncLock.isLocked) {
+            val checkins = (application as PretixScan).data.count(QueuedCheckIn::class.java)
+                .get().value()
+            val calls = (application as PretixScan).data.count(QueuedCall::class.java)
+                .get().value()
+            text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
+        }
+        return text
+    }
 
     override fun onCompletion(p0: MediaPlayer?) {
         p0?.seekTo(0)
@@ -464,7 +500,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_unknown_exception))
             }
             runOnUiThread {
-                displayScanResult(checkResult!!, answers, ignore_unpaid)
+                lastScanResult = checkResult!!
+                lastIgnoreUnpaid = ignore_unpaid
+                displayScanResult(checkResult, answers, ignore_unpaid)
             }
         }
     }
