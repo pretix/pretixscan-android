@@ -159,6 +159,7 @@ class KioskActivity : BaseScanActivity() {
                 state = KioskState.NeedAnswers
             }
             else -> {
+                binding.tvOutOfOrderMessage.text = "Unknown Scan Result Type"
                 state = KioskState.OutOfOrder
             }
         }
@@ -208,7 +209,8 @@ class KioskActivity : BaseScanActivity() {
         binding.flWaitingForScan.visibility = View.GONE
         binding.llWelcome.visibility = View.GONE
         binding.flRejected.visibility = View.GONE
-        binding.flOutOfOrder.visibility = View.GONE
+        binding.llGateOpen.visibility = View.GONE
+        binding.llOutOfOrder.visibility = View.GONE
 
         when (state) {
             KioskState.WaitingForScan -> {
@@ -221,9 +223,11 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Greeting -> {
                 binding.llWelcome.visibility = View.VISIBLE
             }
-            KioskState.GateOpen -> TODO()
+            KioskState.GateOpen -> {
+                binding.llGateOpen.visibility = View.VISIBLE
+            }
             KioskState.OutOfOrder -> {
-                binding.flOutOfOrder.visibility = View.VISIBLE
+                binding.llOutOfOrder.visibility = View.VISIBLE
             }
         }
     }
