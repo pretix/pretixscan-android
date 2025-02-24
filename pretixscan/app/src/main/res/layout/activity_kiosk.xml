@@ -4,20 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.KioskActivity">
+    tools:context=".ui.KioskActivity"
+    android:background="@color/pretix_brand_background">
 
     <FrameLayout
         android:id="@+id/flWaitingForScan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/iv_kioskAnimation"
             android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom"
+            />
     </FrameLayout>
 
     <LinearLayout
@@ -26,15 +30,18 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/tvWelcomeHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:gravity="bottom|center_horizontal"
             android:text="Welcome to example conference and fair!"
-            app:breakStrategy="balanced"
+            android:breakStrategy="balanced"
+            android:layout_weight="1"
             app:autoSizeMaxTextSize="60sp"
             app:autoSizeMinTextSize="20sp"
             app:autoSizeStepGranularity="1sp"
@@ -46,7 +53,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="Your Badge is being printed"
-            app:breakStrategy="balanced"
+            android:breakStrategy="balanced"
+            android:layout_weight="1"
             app:autoSizeMaxTextSize="30sp"
             app:autoSizeMinTextSize="14sp"
             app:autoSizeStepGranularity="1sp"
@@ -59,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:visibility="gone"
         tools:visibility="gone">
 
         <View android:id="@+id/vRejectedBackground"
@@ -87,6 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:visibility="gone"
         tools:visibility="gone">
 
         <View android:id="@+id/vOoOBackground"
