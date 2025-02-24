@@ -412,6 +412,7 @@ class MainActivity : BaseScanActivity() {
             window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
             }
+            launchKiosk() // FIXME: kiosk hardware detection
             return
         } else {
             supportActionBar?.show()

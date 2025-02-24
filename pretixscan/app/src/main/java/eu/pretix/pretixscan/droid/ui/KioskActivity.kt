@@ -2,6 +2,9 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.Animatable2
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -40,6 +43,7 @@ class KioskActivity : BaseScanActivity() {
     private val hideHandler = Handler(Looper.myLooper()!!)
     var state = KioskState.WaitingForScan
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -56,6 +60,18 @@ class KioskActivity : BaseScanActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         fullscreen()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            binding.ivKioskAnimation.drawable is AnimatedVectorDrawable) {
+            (binding.ivKioskAnimation.drawable as AnimatedVectorDrawable).apply {
+                registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        start()
+                    }
+                })
+                start()
+            }
+        }
     }
 
     fun fullscreen() {
