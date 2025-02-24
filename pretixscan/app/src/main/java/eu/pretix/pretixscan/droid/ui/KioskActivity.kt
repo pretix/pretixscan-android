@@ -41,8 +41,13 @@ class KioskActivity : BaseScanActivity() {
 
     private lateinit var binding: ActivityKioskBinding
     private val hideHandler = Handler(Looper.myLooper()!!)
+    private val backToStartHandler = Handler(Looper.myLooper()!!)
     var state = KioskState.WaitingForScan
 
+    val backToStart = Runnable {
+        state = KioskState.WaitingForScan
+        updateUi()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,7 @@ class KioskActivity : BaseScanActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         fullscreen()
+        updateUi()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             binding.ivKioskAnimation.drawable is AnimatedVectorDrawable) {
@@ -97,6 +103,7 @@ class KioskActivity : BaseScanActivity() {
     override fun onResume() {
         super.onResume()
         fullscreen()
+        updateUi()
     }
 
     override fun reload() {
@@ -187,6 +194,7 @@ class KioskActivity : BaseScanActivity() {
                 }
             }
             binding.tvRejectedMessage.text = result.message
+            backToStartHandler.postDelayed(backToStart, 3_000)
         }
 
         updateUi()
@@ -242,6 +250,8 @@ class KioskActivity : BaseScanActivity() {
                 return
             }
         }
+
+        backToStartHandler.removeCallbacks(backToStart)
         super.handleScan(raw_result, answers, ignore_unpaid)
     }
 
