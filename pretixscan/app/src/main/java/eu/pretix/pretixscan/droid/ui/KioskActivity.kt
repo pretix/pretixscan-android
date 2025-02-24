@@ -45,10 +45,17 @@ class KioskActivity : BaseScanActivity() {
     private lateinit var binding: ActivityKioskBinding
     private val hideHandler = Handler(Looper.myLooper()!!)
     private val backToStartHandler = Handler(Looper.myLooper()!!)
+    private val printTimeoutHandler = Handler(Looper.myLooper()!!)
     var state = KioskState.WaitingForScan
 
     val backToStart = Runnable {
         state = KioskState.WaitingForScan
+        updateUi()
+    }
+
+    val printTimeout = Runnable {
+        binding.tvOutOfOrderMessage.text = "Printing failed by timeout"
+        state = KioskState.OutOfOrder
         updateUi()
     }
 
@@ -203,14 +210,24 @@ class KioskActivity : BaseScanActivity() {
 
         updateUi()
 
-        val isPrintable = (conf.printBadges &&
+        // FIXME: splitted for debugging, merge again
+        var isPrintable = false
+        val mayBePrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
-                result.position != null &&
-                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+                result.position != null)
+        if (mayBePrintable) {
+            val badgeLayout =
+                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!)
+            if (badgeLayout != null) {
+                isPrintable = true
+            }
+        }
+
         if (isPrintable) {
             val recv = object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                     super.onReceiveResult(resultCode, resultData)
+                    printTimeoutHandler.removeCallbacks(printTimeout)
                     if (resultCode == 0) {
                         val api = PretixApi.fromConfig(
                             conf,
@@ -248,6 +265,7 @@ class KioskActivity : BaseScanActivity() {
             }
 
             if (shouldAutoPrint) {
+                printTimeoutHandler.postDelayed(printTimeout, 15_000)
                 printBadge(
                     this,
                     application as PretixScan,
@@ -255,7 +273,6 @@ class KioskActivity : BaseScanActivity() {
                     result.eventSlug!!,
                     recv
                 )
-                // FIXME: add timeout for print result
             }
         }
     }
