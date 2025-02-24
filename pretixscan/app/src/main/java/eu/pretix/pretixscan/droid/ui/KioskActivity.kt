@@ -9,13 +9,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.ResultReceiver
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import androidx.core.content.ContextCompat
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.Event
+import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
@@ -139,7 +142,7 @@ class KioskActivity : BaseScanActivity() {
                 TicketCheckProvider.CheckInType.ENTRY ->
                     state = KioskState.Greeting
                 TicketCheckProvider.CheckInType.EXIT ->
-                    state = KioskState.GateOpen
+                    state = KioskState.GateOpen // FIXME: actually open the gate
             }
             TicketCheckProvider.CheckResult.Type.INVALID,
             TicketCheckProvider.CheckResult.Type.ERROR,
@@ -200,8 +203,61 @@ class KioskActivity : BaseScanActivity() {
 
         updateUi()
 
-        // FIXME: start badge print
-        // FIXME: after badge print, set state = KioskState.GateOpen
+        val isPrintable = (conf.printBadges &&
+                result.scanType != TicketCheckProvider.CheckInType.EXIT &&
+                result.position != null &&
+                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!) != null)
+        if (isPrintable) {
+            val recv = object : ResultReceiver(null) {
+                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                    super.onReceiveResult(resultCode, resultData)
+                    if (resultCode == 0) {
+                        val api = PretixApi.fromConfig(
+                            conf,
+                            AndroidHttpClientFactory(application as PretixScan)
+                        )
+                        logSuccessfulPrint(
+                            api,
+                            (application as PretixScan).data,
+                            result.eventSlug!!,
+                            result.position!!.getLong("id"),
+                            "badge"
+                        )
+                        // FIXME: actually open the gate
+                        state = KioskState.GateOpen
+                    } else {
+                        // printing failed
+                        binding.tvOutOfOrderMessage.text = "Printing failed"
+                        state = KioskState.OutOfOrder
+                    }
+                    updateUi()
+                }
+            }
+
+            val shouldAutoPrint = when(conf.autoPrintBadges) {
+                "false" -> false
+                "true" -> {
+                    result.type == TicketCheckProvider.CheckResult.Type.VALID
+                }
+                "once" -> {
+                    result.type == TicketCheckProvider.CheckResult.Type.VALID &&
+                            !isPreviouslyPrinted((application as PretixScan).data, result.position!!)
+                    // FIXME: skip directly to GateOpen if person already has a badge?
+                }
+                else -> false
+            }
+
+            if (shouldAutoPrint) {
+                printBadge(
+                    this,
+                    application as PretixScan,
+                    result.position!!,
+                    result.eventSlug!!,
+                    recv
+                )
+                // FIXME: add timeout for print result
+            }
+        }
     }
 
 
