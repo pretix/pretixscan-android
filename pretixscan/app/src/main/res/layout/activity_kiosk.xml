@@ -141,6 +141,15 @@
                 android:text=""
                 tools:text="pretixSCAN v9.9.99" />
 
+            <ImageView
+                android:id="@+id/ivSyncStatusIcon"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_circle_24dp"
+                app:tint="@color/pretix_brand_red" />
+
             <TextView
                 android:id="@+id/tvSyncStatus"
                 android:layout_width="wrap_content"
