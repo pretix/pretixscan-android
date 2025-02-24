@@ -106,9 +106,11 @@ class KioskActivity : BaseScanActivity() {
 
     override fun reloadSyncStatus() {
         if (conf.lastFailedSync > conf.lastSync || System.currentTimeMillis() - conf.lastDownload > 5 * 60 * 1000) {
-            binding.tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red))
+            binding.ivSyncStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_warning_red_24dp))
+            binding.ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.pretix_brand_red))
         } else {
-            binding.tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_green))
+            binding.ivSyncStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_circle_24dp))
+            binding.ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.pretix_brand_green))
         }
         binding.tvSyncStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
         binding.tvSyncStatus.text = syncStatusText()
