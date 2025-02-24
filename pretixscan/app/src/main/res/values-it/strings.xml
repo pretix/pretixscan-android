@@ -65,12 +65,6 @@
     <string name="first_scanned">Primo scannerizzato: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="setup_error_invalid_qr_code">Il codice QR scannerizzato non è un codice valido di configurazione. Per favore verifica che il codice sia stato creato nella sezione Dispositivi dell\'account organizzatore pretix.</string>
-    <string name="setup_error_version_too_high">Il codice QR scannerizzato proviene da una versione più recente di pretix rispetto a quella per cui è stata progettata quest\'app. Prova ad aggiornare l\'applicazione!</string>
-    <string name="setup_error_request">Richiesta rifiutata dal server. Ricontrolla le informazioni inserite.</string>
-    <string name="setup_error_ssl">Errore di sicurezza durante il tentativo di accesso al server.</string>
-    <string name="setup_error_server">Errore del server durante il tentativo di registrazione del dispositivo.</string>
-    <string name="setup_error_failed">Il test di prima connessione ha fallito.</string>
     <string name="welcome_disclaimer1">Sono a conoscenza che i dati personali dei partecipanti agli eventi a cui mi collegherò verranno salvati su questo dispositivo e mi assicuro di tenere il dispositivo al sicuro.</string>
     <string name="cont">CONTINUA</string>
     <string name="hint_url">URL</string>
@@ -136,7 +130,6 @@
     <string name="pin_protection_settings">Proteggere impostazioni app</string>
     <string name="pin_protection_statistics">Proteggere statistiche</string>
     <string name="pin_protection_switch_event">Proteggere cambio evento</string>
-    <string name="action_manual">Impostazione manuale</string>
     <string name="sync_status_never">non ancora sincronizzata</string>
     <string name="pin_protection_enter">Inserire PIN</string>
     <string name="currently_inside">correntemente dentro all\' evento</string>
@@ -144,16 +137,10 @@
     <string name="event_select_calendar">Mostrare calendario</string>
     <string name="app_name">pretixSCAN</string>
     <string name="sync_status">Stato della sincronizzazione</string>
-    <string name="tutorial_setup">Per iniziare, crea un nuovo dispositivo nella sezione Dispositivi del tuo account organizzatore nel backend di pretix. Ti verrà presentato un codice QR da scannerizzare per la configurazione.</string>
     <string name="headline_setup">Benvenuto su pretixSCAN!</string>
-    <string name="setup_progress">Inizializzando il dispositivo…</string>
-    <string name="setup_error_response">Il server ha inviato una risposta non valida.</string>
-    <string name="setup_error_permissions">pretixSCAN non può funzionare correttamente senza abilitare i permessi. Chiudere e riaprire l\'app.</string>
     <string name="welcome_text">pretixScan è un app per gestire gli ingressi agli eventi che permette di validare i biglietti venduti attraverso pretix.</string>
     <string name="scan_result_revoked">Codice biglietto annullato/modificato</string>
     <string name="error_access_revoked">La possibilità di accedere con questo dispositivo è revocata, è necessario registrare nuovamente il dispositivo con il server.</string>
-    <string name="setup_error_legacy_qr_code">Il codice QR scannerizzato è per un vecchio predecessore di quest\'app. Per favore entra nella sezione Dispositivi del tuo account organizzatore pretix e crea un nuovo dispositivo.</string>
-    <string name="setup_error_io">Errore di connessione mentre si cerca di accedere al server.</string>
     <string name="pin_protection_switch_mode">Proteggere cambio modalità</string>
     <string name="debug_info_device">Dispositivo: %1$s</string>
     <string name="settings_label_auto_sync">Sincronizzazione Automatica</string>
@@ -165,7 +152,6 @@
     <string name="hardware_scanner">Premere il bottone per scannerizzare del vostro dispositivo.</string>
     <string name="settings_summary_scan_offline">Quando si scannerizza offline, il suo dispositivo verificherà con un database interno al dispositivo al posto che con il server e sincronizzerà il proprio database con il server occasionalmente. Cosicchè esso sia più resiliente, ma comunque permette di scannerizzare più volte se lo stesso biglietto è mostrato a dispositivi differenti.</string>
     <string name="pin_protection_enable">Abilitare protezione con PIN</string>
-    <string name="setup_grant_camera_permission">Gentilmente permettere i permessi di utlizzo della fotocamera per usare lo Scanner QR</string>
     <string name="cancel">Annulla</string>
     <string name="dialog_unpaid_text">Questo biglietto appartiene ad un ordine che non è ancora stato pagato. Vuoi comunque permettere il check-in? Questa azione non salverà l\'ordine come pagato.</string>
     <string name="status_empty">La ricerca non ha portato a nessun risultato. ASsicurarsi di aver inserito almeno quattro caratteri.</string>

@@ -32,7 +32,6 @@
     <string name="debug_info_gate">Gate: %1$s</string>
     <string name="debug_info_device">Device: %1$s</string>
     <string name="action_search">Search</string>
-    <string name="action_manual">Manual setup</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_events">Select Events</string>
     <string name="events_selected">%s events selected</string>
@@ -69,18 +68,6 @@
     <string name="first_scanned">First scanned: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="tutorial_setup">To get started, create a new device in the "Devices" section of your organizer account in the pretix backend. You will be then presented with a configuration QR code to scan.</string>
-    <string name="setup_error_legacy_qr_code">The QR code you scanned is for an old predecessor of this app. Please go to the "Devices" section in your pretix organizer account and create a new device there.</string>
-    <string name="setup_error_invalid_qr_code">The QR code you scanned is not a valid configuration code. Please make sure you created the code in the "Devices" section of a pretix organizer account.</string>
-    <string name="setup_error_version_too_high">The QR code you scanned is from a newer version of pretix than this app has been built for. Please check if you can get an update for this app!</string>
-    <string name="setup_progress">Initializing device…</string>
-    <string name="setup_error_request">Request rejected by server. Please double-check your input.</string>
-    <string name="setup_error_io">Connection error while trying to reach the server.</string>
-    <string name="setup_error_ssl">Security error while trying to reach the server.</string>
-    <string name="setup_error_server">Server error while trying to register the device.</string>
-    <string name="setup_error_response">The server returned an invalid response.</string>
-    <string name="setup_error_failed">The initial connection test failed.</string>
-    <string name="setup_error_permissions">pretixSCAN does not work properly without granting those permissions. Please restart the app.</string>
     <string name="welcome_text">pretixSCAN is a event entry app that you can use to validate tickets that you sold through pretix.</string>
     <string name="welcome_disclaimer1">I understand that personal data of attendees of my connected events will be stored on this device and I will secure the device properly.</string>
     <string name="cont">CONTINUE</string>
@@ -176,7 +163,6 @@
     <string name="currently_inside">currently attending</string>
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
     <string name="event_select_calendar">Show calendar</string>
-    <string name="setup_grant_camera_permission">Please grant camera permission to use the QR Scanner</string>
     <string-array name="settings_valuelabels_auto_print_badges">
         <item>No, only when button is pressed</item>
         <item>Once, if not yet printed</item>
