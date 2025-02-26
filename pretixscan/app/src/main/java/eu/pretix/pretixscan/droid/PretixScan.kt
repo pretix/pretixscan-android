@@ -20,7 +20,6 @@ import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import eu.pretix.pretixscan.utils.createDriver
 import eu.pretix.pretixscan.utils.createSyncDatabase
-import eu.pretix.pretixscan.utils.readVersionPragma
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
@@ -126,7 +125,6 @@ class PretixScan : MultiDexApplication() {
 
         createSyncDatabase(
             driver = driver,
-            version = readVersionPragma(driver),
             dateAdapter = AndroidUtilDateAdapter(),
             bigDecimalAdapter = BigDecimalAdapter(),
         )

@@ -22,23 +22,9 @@ import java.util.Date
 
 fun createSyncDatabase(
     driver: SqlDriver,
-    version: Long?,
     dateAdapter: ColumnAdapter<Date, String>,
     bigDecimalAdapter: ColumnAdapter<BigDecimal, Double>,
 ): SyncDatabase {
-    // TODO: Check DB migrations
-    if (version == null || version == 0L) {
-        try {
-            val t = object : TransacterImpl(driver) {}
-            t.transaction {
-                SyncDatabase.Schema.create(driver)
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-            throw e
-        }
-    }
-
     return SyncDatabase(
         driver = driver,
         CheckInAdapter =
@@ -86,18 +72,6 @@ fun createSyncDatabase(
             date_toAdapter = dateAdapter,
         ),
     )
-}
-
-fun readVersionPragma(driver: SqlDriver): Long? {
-    return driver.executeQuery(
-        identifier = null,
-        sql = "PRAGMA user_version;",
-        mapper = { cursor ->
-            cursor.next()
-            QueryResult.Value(cursor.getLong(0))
-        },
-        parameters = 0,
-    ).value
 }
 
 fun createDriver(context: Context, dbName: String, dbPass: String?) =
