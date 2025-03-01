@@ -53,7 +53,7 @@
     <string name="sync_status_date_format">dd/MM/yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd/MM HH:mm</string>
     <string name="first_scanned">Premier scan : %s</string>
-    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
+    <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="welcome_text">pretixSCAN est une application de gestion des entrées d\'évènement que vous pouvez utiliser pour valider les billets que vous avez vendus via pretix.</string>
     <string name="cont">CONTINUER</string>
@@ -75,8 +75,8 @@
     <string name="pref_unpaid_ask">Demander avant d\'enregistrer des billets non payés</string>
     <string name="pref_unpaid_ask_summary">Lorsque la liste d\'enregistrement est paramétrée pour inclure les commandes en attente, ce paramètre détermine si vous serez interrogé avant qu\'elles ne soient enregistrées.</string>
     <string name="question_validation_error">Certaines de vos données n\'ont pas pu être validées.</string>
-    <string name="question_input_required">Ce champ est nécessaire.</string>
-    <string name="question_input_invalid">Cette saisie est invalide.</string>
+    <string name="question_input_required">Ce champ est obligatoire.</string>
+    <string name="question_input_invalid">Cette entrée n\'est pas valide.</string>
     <string name="yes">Oui</string>
     <string name="cancel">Annuler</string>
     <string name="status_redeemed">Racheté</string>
