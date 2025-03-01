@@ -10,7 +10,7 @@
     <string name="progress_registering">Registrando el dispositivo con el servidor…</string>
     <string name="error_access_revoked">El acceso para este dispositivo ha sido revocado, debe registrarlo de nuevo en el servidor.</string>
     <string name="error_unknown_exception">Ha ocurrido un error desconocido</string>
-    <string name="error_not_synchronized">El dispositivo no se ha sincronizado correctamente con el servidor</string>
+    <string name="error_not_synchronized">Su dispositivo no se ha sincronizado correctamente con el servidor</string>
     <string name="action_label_ok">OK</string>
     <string name="action_label_settings">Configuración</string>
     <string name="action_label_statistics">Estadísticas</string>
@@ -70,7 +70,7 @@
     </plurals>
     <string name="sync_status_date_format">HH:mm:ss yyyy-MM-dd</string>
     <string name="first_scanned">Primer escaneo: %s</string>
-    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
+    <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="settings_summary_auto_switch">Con esta opción, pretixSCAN consultará al servidor durante la sincronización. Si el servidor sugiere cambia a una lista de asistentes diferente, el cambio se realizará automáticamente.</string>
     <string name="welcome_text">pretixSCAN es una aplicación que puede utilizar para validar las entradas reservadas a través de pretix.</string>
@@ -95,12 +95,12 @@
     <string name="settings_label_details">Detalles</string>
     <string name="settings_label_badges">Tarjeta de identificación</string>
     <string name="settings_summary_scan_offline">Al escanear sin conexión, su dispositivo comprobará todas las entradas con su base de datos interna en lugar de hacerlo con el servidor y sincronizará la base de datos con el servidor de vez en cuando. Esto es más fiable, pero permite escanear una entrada dos veces si se escanea con varios dispositivos.</string>
-    <string name="question_input_required">Campo obligatorio.</string>
+    <string name="question_input_required">Este campo es obligatorio.</string>
     <string name="yes">Si</string>
     <string name="pref_unpaid_ask">Preguntar antes de cobrar las entradas no pagadas</string>
     <string name="pref_ignore_questions">No hacer preguntas durante el check-in</string>
-    <string name="question_validation_error">Algunas de sus respuestas no han podido ser validadas.</string>
-    <string name="question_input_invalid">Este dato no es válido.</string>
+    <string name="question_validation_error">Algunas de sus aportaciones no han podido ser validadas.</string>
+    <string name="question_input_invalid">Esta entrada no es válida.</string>
     <string name="pref_unpaid_ask_summary">Cuando la lista de asistentes está configurada para incluir pedidos pendientes, esta opción le preguntará si ya están registrando.</string>
     <string name="status_unpaid">Sin pagar</string>
     <string name="status_canceled">Cancelado</string>
