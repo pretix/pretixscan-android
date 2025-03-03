@@ -1,2 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="scantype_entry_kiosk_print">Leia o seu bilhete para imprimir a sua identificação</string>
+    <string name="sync_status">Estado da sincronização</string>
+    <string name="sync_status_last">Última sincronização bem sucedida:</string>
+    <string name="sync_status_now">acabado de sincronizar</string>
+    <string name="sync_status_date_format">aaaa-MM-dd HH:mm:ss</string>
+    <plurals name="sync_status_pending">
+        <item quantity="one">%d upload pendente</item>
+        <item quantity="many">%d uploads pendentes</item>
+        <item quantity="other">%d uploads pendentes</item>
+    </plurals>
+    <string name="action_multievent_disable">Desativar modo expert</string>
+    <string name="action_multievent_disable_error">Modo expert não pode ser desativado se vários eventos estão selecionados.</string>
+    <string name="sync_status_last_failed">Última sincronização falhada:</string>
+    <string name="sync_status_never">ainda não sincronizado</string>
+    <string name="sync_status_progress">sincronização a decorrer</string>
+    <string name="ok">OK</string>
+    <plurals name="sync_status_time_minutes">
+        <item quantity="one">sincronizado há %d minuto</item>
+        <item quantity="many">sincronizado há %d minutos</item>
+        <item quantity="other">sincronizado há %d minutos</item>
+    </plurals>
+    <string name="operation_select_events">Selecionar Eventos</string>
+    <string name="events_selected">%s eventos selecionados</string>
+    <string name="action_label_ok">OK</string>
+    <string name="action_multievent_enable">Modo expert (selecionar múltiplos eventos)</string>
+    <plurals name="sync_status_time_days">
+        <item quantity="one">sincronizado há %d dia</item>
+        <item quantity="many">sincronizado há %d dias</item>
+        <item quantity="other">sincronizado há %d dias</item>
+    </plurals>
+    <plurals name="sync_status_time_hours">
+        <item quantity="one">sincronizado há %d hora</item>
+        <item quantity="many">sincronizado há %d horas</item>
+        <item quantity="other">sincronizado há %d horas</item>
+    </plurals>
+    <string name="error_access_revoked">O acesso deste dispositivo foi removido, terá de registar o dispositivo com o servidor outra vez.</string>
+    <string name="welcome_text">O pretixSCAN é uma app para entrada de eventos que pode utilizar para validar bilhetes que vendeu pelo pretix.</string>
+    <string name="short_datetime_format">MM/dd HH:mm</string>
+    <string name="first_scanned">Primeira leitura: %s</string>
+    <string name="settings_label_auto_switch">Seleção de evento automático</string>
+    <string name="action_search">Pesquisar</string>
+    <string name="operation_select_event">Selecionar Evento</string>
+    <string name="operation_select_checkinlist">Selecionar lista de check-in</string>
+    <string name="settings_label_auto_sync">Sincronização automática</string>
+    <string name="settings_label_orders_sync">Transferir pedidos</string>
+    <string name="checktype_online">Verificação online</string>
+    <string name="checktype_offline">Verificação offline</string>
+    <string name="debug_info_event">Evento: %1$s</string>
+    <string name="debug_info_subevent">Data: %1$s (%2$s)</string>
+    <string name="debug_info_list">Lista: %1$s</string>
+    <string name="debug_info_gate">Portão: %1$s</string>
+    <string name="debug_info_device">Dispositivo: %1$s</string>
+    <string name="action_label_settings">Definições</string>
+    <string name="scantype_exit">Saída</string>
+    <string name="scantype_entry_kiosk">Leia o seu bilhete para efetuar o check-in</string>
+    <string name="action_label_statistics">Estatísticas</string>
+    <string name="scantype_exit_kiosk">Leia o seu bilhete para efetuar o check-out</string>
+    <string name="action_label_scantype_entry">Mudar para registro de entradas</string>
+    <string name="scantype_entry">Entrada</string>
+    <string name="app_name">pretixSCAN</string>
+    <string name="progress_syncing_first">A transferir a configuração do evento…</string>
+    <string name="progress_syncing">A sincronizar com o servidor…</string>
+    <string name="progress_processing">A processar…</string>
+    <string name="progress_registering">A registar o dispositivo com o servidor…</string>
+    <string name="error_unknown_exception">Um erro desconhecido occoreu</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">Boas-vindas ao pretixSCAN!</string>
+    <string name="action_sync">Sincronizar agora</string>
+    <string name="error_not_synchronized">O seu dispositivo não foi sincronizado corretamente com o servidor</string>
+    <string name="settings_summary_auto_switch">Sem esta opção, o pretixSCAN vai perguntar ao servidor durante a sincronização se sugere mudar a app para outro evento e lista de check-in e mudará-los automaticamente.</string>
+    <string name="action_label_scantype_exit">Mudar para registro de saídas</string>
+    <string name="settings_summary_orders_sync">Sem esta opção, o petixSCAN não vai transferir informações dos pedidos e não vai conseguir ler bilhetes offline sem as definições predefinidas do pretix.</string>
+</resources>
