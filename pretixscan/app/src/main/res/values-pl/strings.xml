@@ -158,7 +158,7 @@
     <string name="pin_protection_pin">Ustaw PIN</string>
     <string name="dialog_unpaid_text">Ten bilet należy do zamówienia, które nie zostało jeszcze opłacone. Czy nadal chcesz go sprawdzić? Nie spowoduje to oznaczenia zamówienia jako opłaconego.</string>
     <string name="error_no_available_events">Nie znaleziono bieżącego ani przyszłego wydarzenia. Sprawdź daty i prawa dostępu do wydarzeń.</string>
-    <string name="preference_autobadgeprint_enable">Automatyczne drukowanie identyfikatorów po pomyślnym zeskanowaniu</string>
+    <string name="preference_autobadgeprint_enable">Automatyczne drukowanie identyfikatorów</string>
     <string name="label_shop_inactive">Sklep dezaktywowany</string>
     <string name="label_shop_active">Aktywny</string>
 </resources>
