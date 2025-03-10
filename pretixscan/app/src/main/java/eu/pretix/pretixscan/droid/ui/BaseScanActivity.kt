@@ -585,7 +585,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             return super.dispatchKeyEvent(event)
         }
         return when (event.keyCode) {
-            KeyEvent.KEYCODE_ENTER -> {
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_TAB -> {
                 if (keyboardBuffer.isEmpty()) {
                     false
                 }
