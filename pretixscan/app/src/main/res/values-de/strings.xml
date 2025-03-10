@@ -148,6 +148,12 @@
     <string name="settings_label_verification">Ticketkontrolle</string>
     <string name="settings_label_sync">Synchronisierung</string>
     <string name="settings_label_ui">Benutzeroberfläche</string>
+    <string name="kiosk_text_questions_reject">Ticketkontrolle hier nicht möglich</string>
+    <string name="kiosk_text_questions_reject_sub">Bitte wenden Sie sich an das Einlasspersonal</string>
+    <string name="kiosk_text_scan">Bitte scannen Sie Ihr Ticket</string>
+    <string name="kiosk_text_checking">Ticket wird geprüft…</string>
+    <string name="kiosk_text_print">Bitte entnehmen Sie Ihr Badge</string>
+    <string name="kiosk_text_gate">Bitte gehen Sie durch das Drehkreuz</string>
     <string name="scantype_entry_kiosk">Scannen Sie Ihr Ticket, um sich anzumelden.</string>
     <string name="scantype_entry_kiosk_print">Scannen Sie Ihr Ticket, um Ihr Badge zu drucken.</string>
     <string name="scantype_exit_kiosk">Scannen Sie Ihr Ticket, um sich abzumelden.</string>

@@ -13,11 +13,11 @@ import android.os.ResultReceiver
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
-import eu.pretix.libpretixsync.db.Event
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -34,9 +34,10 @@ class KioskActivity : BaseScanActivity() {
 
         enum class KioskState {
             WaitingForScan,
+            Checking,
             Rejected,
             NeedAnswers,
-            Greeting,
+            Printing,
             GateOpen,
             OutOfOrder,
         }
@@ -47,16 +48,26 @@ class KioskActivity : BaseScanActivity() {
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
     var state = KioskState.WaitingForScan
+        set(value) {
+            if (BuildConfig.DEBUG) {
+                println("Setting state from $state to $value")
+            }
+            field = value
+        }
 
     val backToStart = Runnable {
-        state = KioskState.WaitingForScan
-        updateUi()
+        if (state == KioskState.GateOpen || state == KioskState.NeedAnswers || state == KioskState.Checking) {
+            state = KioskState.WaitingForScan
+            updateUi()
+        }
     }
 
     val printTimeout = Runnable {
-        binding.tvOutOfOrderMessage.text = "Printing failed by timeout"
-        state = KioskState.OutOfOrder
-        updateUi()
+        if (state == KioskState.Printing) {
+            binding.tvOutOfOrderMessage.text = "Printing failed by timeout"
+            state = KioskState.OutOfOrder
+            updateUi()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,25 +80,42 @@ class KioskActivity : BaseScanActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         @SuppressLint("SetTextI18n")
-        binding.tvAppVersion.text = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        binding.tvAppVersion.text =
+            "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+    }
+
+    val loopCallback =
+        @RequiresApi(Build.VERSION_CODES.M) object : Animatable2.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable) {
+                (drawable as AnimatedVectorDrawable).start()
+            }
+        }
+
+    fun resetAnimations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            (binding.ivKioskAnimation.drawable as? AnimatedVectorDrawable)?.apply {
+                unregisterAnimationCallback(loopCallback)
+                registerAnimationCallback(loopCallback)
+                start()
+            }
+            (binding.ivKioskAnimation2.drawable as? AnimatedVectorDrawable)?.apply {
+                unregisterAnimationCallback(loopCallback)
+                registerAnimationCallback(loopCallback)
+                start()
+            }
+            (binding.ivKioskAnimation3.drawable as? AnimatedVectorDrawable)?.apply {
+                unregisterAnimationCallback(loopCallback)
+                registerAnimationCallback(loopCallback)
+                start()
+            }
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         fullscreen()
         updateUi()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            binding.ivKioskAnimation.drawable is AnimatedVectorDrawable) {
-            (binding.ivKioskAnimation.drawable as AnimatedVectorDrawable).apply {
-                registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        start()
-                    }
-                })
-                start()
-            }
-        }
+        resetAnimations()
     }
 
     fun fullscreen() {
@@ -123,11 +151,31 @@ class KioskActivity : BaseScanActivity() {
 
     override fun reloadSyncStatus() {
         if (conf.lastFailedSync > conf.lastSync || System.currentTimeMillis() - conf.lastDownload > 5 * 60 * 1000) {
-            binding.ivSyncStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_warning_red_24dp))
-            binding.ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.pretix_brand_red))
+            binding.ivSyncStatusIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this,
+                    R.drawable.ic_warning_red_24dp
+                )
+            )
+            binding.ivSyncStatusIcon.setColorFilter(
+                ContextCompat.getColor(
+                    this,
+                    R.color.pretix_brand_red
+                )
+            )
         } else {
-            binding.ivSyncStatusIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_circle_24dp))
-            binding.ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.pretix_brand_green))
+            binding.ivSyncStatusIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this,
+                    R.drawable.ic_baseline_check_circle_24
+                )
+            )
+            binding.ivSyncStatusIcon.setColorFilter(
+                ContextCompat.getColor(
+                    this,
+                    R.color.pretix_brand_green
+                )
+            )
         }
         binding.tvSyncStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
         binding.tvSyncStatus.text = syncStatusText()
@@ -142,15 +190,45 @@ class KioskActivity : BaseScanActivity() {
         println(answers)
         println(ignore_unpaid)
 
+        var isPrintable = false
+        val mayBePrintable = (conf.printBadges &&
+                result.scanType != TicketCheckProvider.CheckInType.EXIT &&
+                result.position != null)
+        if (mayBePrintable) {
+            val badgeLayout =
+                getBadgeLayout((application as PretixScan).db, result.position!!, result.eventSlug!!)
+            if (badgeLayout != null) {
+                isPrintable = true
+            }
+        }
+        val shouldAutoPrint = isPrintable && when (conf.autoPrintBadges) {
+            "false" -> false
+            "true" -> {
+                result.type == TicketCheckProvider.CheckResult.Type.VALID
+            }
+
+            "once" -> {
+                result.type == TicketCheckProvider.CheckResult.Type.VALID &&
+                        !isPreviouslyPrinted((application as PretixScan).db, result.position!!)
+            }
+
+            else -> false
+        }
+
         // FIXME: play sound
 
         when (result.type) {
             TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
                 TicketCheckProvider.CheckInType.ENTRY ->
-                    state = KioskState.Greeting
-                TicketCheckProvider.CheckInType.EXIT ->
-                    state = KioskState.GateOpen // FIXME: actually open the gate
+                    if (shouldAutoPrint) {
+                        state = KioskState.Printing
+                    } else {
+                        state = KioskState.GateOpen
+                    }
+
+                TicketCheckProvider.CheckInType.EXIT -> state = KioskState.GateOpen
             }
+
             TicketCheckProvider.CheckResult.Type.INVALID,
             TicketCheckProvider.CheckResult.Type.ERROR,
             TicketCheckProvider.CheckResult.Type.UNPAID,
@@ -165,28 +243,17 @@ class KioskActivity : BaseScanActivity() {
             TicketCheckProvider.CheckResult.Type.USED -> {
                 state = KioskState.Rejected
             }
+
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> {
                 state = KioskState.NeedAnswers
             }
+
             else -> {
                 binding.tvOutOfOrderMessage.text = "Unknown Scan Result Type"
                 state = KioskState.OutOfOrder
             }
         }
 
-        if (state == KioskState.Greeting) {
-            // FIXME: find out language of that order, modify message
-
-            var eventName = ""
-            if (result.eventSlug != null) {
-                val event = (application as PretixScan).data.select(Event::class.java)
-                    .where(Event.SLUG.eq(result.eventSlug))
-                    .get().firstOrNull()
-                eventName = event?.name ?: ""
-            }
-
-            binding.tvWelcomeHeading.text = getString(R.string.scan_result_valid) // FIXME: nicer welcome message
-        }
         if (state == KioskState.Rejected) {
             if (result.message == null) {
                 result.message = when (result.type!!) {
@@ -205,25 +272,15 @@ class KioskActivity : BaseScanActivity() {
                 }
             }
             binding.tvRejectedMessage.text = result.message
+            binding.tvRejectedReason.visibility =
+                if (result.reasonExplanation.isNullOrBlank()) View.GONE else View.VISIBLE
+            binding.tvRejectedReason.text = result.reasonExplanation
             backToStartHandler.postDelayed(backToStart, 3_000)
         }
 
         updateUi()
 
-        // FIXME: splitted for debugging, merge again
-        var isPrintable = false
-        val mayBePrintable = (conf.printBadges &&
-                result.scanType != TicketCheckProvider.CheckInType.EXIT &&
-                result.position != null)
-        if (mayBePrintable) {
-            val badgeLayout =
-                getBadgeLayout(application as PretixScan, result.position!!, result.eventSlug!!)
-            if (badgeLayout != null) {
-                isPrintable = true
-            }
-        }
-
-        if (isPrintable) {
+        if (state == KioskState.Printing) {
             val recv = object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                     super.onReceiveResult(resultCode, resultData)
@@ -241,27 +298,20 @@ class KioskActivity : BaseScanActivity() {
                             "badge"
                         )
                         // FIXME: actually open the gate
-                        state = KioskState.GateOpen
+                        runOnUiThread {
+                            state = KioskState.GateOpen
+                            updateUi()
+                            openGate()
+                        }
                     } else {
                         // printing failed
-                        binding.tvOutOfOrderMessage.text = "Printing failed"
-                        state = KioskState.OutOfOrder
+                        runOnUiThread {
+                            binding.tvOutOfOrderMessage.text = "Printing failed"
+                            state = KioskState.OutOfOrder
+                            updateUi()
+                        }
                     }
-                    updateUi()
                 }
-            }
-
-            val shouldAutoPrint = when(conf.autoPrintBadges) {
-                "false" -> false
-                "true" -> {
-                    result.type == TicketCheckProvider.CheckResult.Type.VALID
-                }
-                "once" -> {
-                    result.type == TicketCheckProvider.CheckResult.Type.VALID &&
-                            !isPreviouslyPrinted((application as PretixScan).data, result.position!!)
-                    // FIXME: skip directly to GateOpen if person already has a badge?
-                }
-                else -> false
             }
             if (shouldAutoPrint) {
                 printTimeoutHandler.postDelayed(printTimeout, 15_000)
@@ -305,33 +355,54 @@ class KioskActivity : BaseScanActivity() {
 
 
     fun updateUi() {
-        binding.flWaitingForScan.visibility = View.GONE
-        binding.llWelcome.visibility = View.GONE
-        binding.flRejected.visibility = View.GONE
-        binding.llGateOpen.visibility = View.GONE
+        println("Update UI to state $state")
+        binding.clWaitingForScan.visibility = View.GONE
+        binding.clPrinting.visibility = View.GONE
+        binding.clRejected.visibility = View.GONE
+        binding.clGate.visibility = View.GONE
+        binding.clChecking.visibility = View.GONE
         binding.llOutOfOrder.visibility = View.GONE
 
         when (state) {
             KioskState.WaitingForScan -> {
-                binding.flWaitingForScan.visibility = View.VISIBLE
+                binding.clWaitingForScan.visibility = View.VISIBLE
             }
+
             KioskState.Rejected -> {
-                binding.flRejected.visibility = View.VISIBLE
+                binding.clRejected.visibility = View.VISIBLE
             }
-            KioskState.NeedAnswers -> TODO()
-            KioskState.Greeting -> {
-                binding.llWelcome.visibility = View.VISIBLE
+
+            KioskState.NeedAnswers -> {
+                binding.tvRejectedMessage.text = getString(R.string.kiosk_text_questions_reject)
+                binding.tvRejectedReason.visibility = View.VISIBLE
+                binding.tvRejectedReason.text = getString(R.string.kiosk_text_questions_reject_sub)
+                binding.clRejected.visibility = View.VISIBLE
+                backToStartHandler.postDelayed(backToStart, 3_000)
             }
+
+            KioskState.Printing -> {
+                binding.clPrinting.visibility = View.VISIBLE
+            }
+
+            KioskState.Checking -> {
+                binding.clChecking.visibility = View.VISIBLE
+            }
+
             KioskState.GateOpen -> {
-                binding.llGateOpen.visibility = View.VISIBLE
+                binding.clGate.visibility = View.VISIBLE
             }
+
             KioskState.OutOfOrder -> {
                 binding.llOutOfOrder.visibility = View.VISIBLE
             }
         }
     }
 
-    override fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean) {
+    override fun handleScan(
+        raw_result: String,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean
+    ) {
         if (conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             val intent = Intent(this, SettingsActivity::class.java)
             // startWithPIN(intent, "settings") // we've already verified the pin
@@ -345,8 +416,10 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Rejected -> {
                 // that's fine, handle it
             }
+
+            KioskState.Checking,
             KioskState.NeedAnswers,
-            KioskState.Greeting,
+            KioskState.Printing,
             KioskState.GateOpen,
             KioskState.OutOfOrder -> {
                 // waiting for user, for printer, gate or administrative action. ignoring scan.
@@ -355,6 +428,9 @@ class KioskActivity : BaseScanActivity() {
         }
 
         backToStartHandler.removeCallbacks(backToStart)
+        printTimeoutHandler.removeCallbacks(printTimeout)
+        state = KioskState.Checking
+        updateUi()
         super.handleScan(raw_result, answers, ignore_unpaid)
     }
 

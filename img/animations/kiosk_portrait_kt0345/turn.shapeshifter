@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "layers": {
+    "vectorLayer": {
+      "id": "9838950",
+      "name": "vector",
+      "type": "vector",
+      "width": 158,
+      "height": 190,
+      "children": [
+        {
+          "id": "9838951",
+          "name": "path_3",
+          "type": "path",
+          "pathData": "M 58.464 50.437 L 148.444 50.437 L 148.444 55.429 L 59.75 55.429 Z",
+          "fillColor": "#c4c4c4",
+          "strokeColor": "#000000",
+          "strokeWidth": 2.74173
+        },
+        {
+          "id": "9838952",
+          "name": "path_4",
+          "type": "path",
+          "pathData": "M 55.629 61.223 L 65.903 125.546 L 60.309 126.562 L 49.351 60.456 Z",
+          "fillColor": "#c4c4c4",
+          "strokeColor": "#000000",
+          "strokeWidth": 2.74173,
+          "strokeLinecap": "round",
+          "strokeLinejoin": "round"
+        },
+        {
+          "id": "9838953",
+          "name": "path_5",
+          "type": "path",
+          "pathData": "M 104.456 145.955 L 78.518 155.218 L 96.063 155.218 L 90.433 180.335 C 90.417 180.405 90.501 180.463 90.622 180.463 L 118.69 180.463 C 118.81 180.463 118.894 180.405 118.877 180.335 L 112.952 155.218 L 130.066 155.218 Z",
+          "fillColor": "#50a167",
+          "strokeWidth": 1
+        },
+        {
+          "id": "9838954",
+          "name": "path_2",
+          "type": "path",
+          "pathData": "M 44.104 54.964 C 44.104 54.964 50.971 66.014 57.434 59.955 C 63.897 53.897 54.889 45.914 54.889 45.914 Z",
+          "fillColor": "#c4c4c4",
+          "strokeColor": "#000000",
+          "strokeWidth": 2.74173
+        },
+        {
+          "id": "9838955",
+          "name": "path_1",
+          "type": "path",
+          "pathData": "M 11.779 189.129 L 11.779 21.869 L 46.624 21.869 L 62.584 39.457 L 30.574 66.317 L 30.574 188.961 Z",
+          "fillColor": "#c4c4c4",
+          "strokeColor": "#000000",
+          "strokeWidth": 2.74173,
+          "strokeLinecap": "round",
+          "strokeLinejoin": "round"
+        }
+      ]
+    },
+    "hiddenLayerIds": []
+  },
+  "timeline": {
+    "animation": {
+      "id": "9838956",
+      "name": "anim",
+      "duration": 3000,
+      "blocks": [
+        {
+          "id": "9838957",
+          "layerId": "9838951",
+          "propertyName": "pathData",
+          "startTime": 0,
+          "endTime": 1500,
+          "interpolator": "ACCELERATE_DECELERATE",
+          "type": "path",
+          "fromValue": "M 58.464 50.437 L 148.444 50.437 L 148.444 55.429 L 59.75 55.429 Z",
+          "toValue": "M 55.629 61.223 L 65.903 125.546 L 60.309 126.562 L 49.351 60.456 Z"
+        },
+        {
+          "id": "9838958",
+          "layerId": "9838952",
+          "propertyName": "pathData",
+          "startTime": 0,
+          "endTime": 1500,
+          "interpolator": "ACCELERATE_DECELERATE",
+          "type": "path",
+          "fromValue": "M 55.629 61.223 L 65.903 125.546 L 60.309 126.562 L 49.351 60.456 Z",
+          "toValue": "M 58.464 50.437 L 148.444 50.437 L 148.444 55.429 L 59.75 55.429 Z"
+        },
+        {
+          "id": "9898467",
+          "layerId": "9838953",
+          "propertyName": "pathData",
+          "startTime": 0,
+          "endTime": 1500,
+          "interpolator": "FAST_OUT_SLOW_IN",
+          "type": "path",
+          "fromValue": "M 104.456 145.955 L 78.518 155.218 L 96.063 155.218 L 90.433 180.335 C 90.417 180.405 90.501 180.463 90.622 180.463 L 118.69 180.463 C 118.81 180.463 118.894 180.405 118.877 180.335 L 112.952 155.218 L 130.066 155.218 Z",
+          "toValue": "M 104.456 135.372 L 78.518 144.635 L 96.063 144.635 L 90.433 169.752 C 90.417 169.822 90.501 169.879 90.622 169.879 L 118.69 169.879 C 118.81 169.879 118.894 169.822 118.877 169.752 L 112.952 144.635 L 130.066 144.635 Z"
+        },
+        {
+          "id": "9901503",
+          "layerId": "9838953",
+          "propertyName": "pathData",
+          "startTime": 1500,
+          "endTime": 3000,
+          "interpolator": "FAST_OUT_SLOW_IN",
+          "type": "path",
+          "fromValue": "M 104.456 135.372 L 78.518 144.635 L 96.063 144.635 L 90.433 169.752 C 90.417 169.822 90.501 169.879 90.622 169.879 L 118.69 169.879 C 118.81 169.879 118.894 169.822 118.877 169.752 L 112.952 144.635 L 130.066 144.635 Z",
+          "toValue": "M 104.456 145.955 L 78.518 155.218 L 96.063 155.218 L 90.433 180.335 C 90.417 180.405 90.501 180.463 90.622 180.463 L 118.69 180.463 C 118.81 180.463 118.894 180.405 118.877 180.335 L 112.952 155.218 L 130.066 155.218 Z"
+        }
+      ]
+    }
+  }
+}

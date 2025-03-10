@@ -1,220 +1,356 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.KioskActivity"
-    android:background="@color/pretix_brand_background">
+    android:background="@color/pretix_brand_background"
+    android:keepScreenOn="true"
+    tools:context=".ui.KioskActivity">
 
     <FrameLayout
-        android:id="@+id/flWaitingForScan"
+        android:id="@+id/frameLayout3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/llStatusBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_kioskAnimation"
-            android:layout_gravity="center"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clWaitingForScan"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom"
-            />
-    </FrameLayout>
+            android:visibility="gone"
+            tools:visibility="gone">
 
-    <LinearLayout
-        android:id="@+id/llWelcome"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:visibility="gone"
-        tools:visibility="gone">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/kiosk_text_scan"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
-            android:id="@+id/tvWelcomeHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="bottom|center_horizontal"
-            android:text="Welcome to example conference and fair!"
-            android:breakStrategy="balanced"
-            android:layout_weight="1"
-            app:autoSizeMaxTextSize="60sp"
-            app:autoSizeMinTextSize="20sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform" />
+            <ImageView
+                android:id="@+id/iv_kioskAnimation"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_scan" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/tvWelcomeMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Your Badge is being printed"
-            android:breakStrategy="balanced"
-            android:layout_weight="1"
-            app:autoSizeMaxTextSize="30sp"
-            app:autoSizeMinTextSize="14sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/flRejected"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:visibility="gone"
-        tools:visibility="gone">
-
-        <View android:id="@+id/vRejectedBackground"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clChecking"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/pretix_brand_red" />
+            android:visibility="gone"
+            tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/tvRejectedMessage"
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/kiosk_text_checking"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                app:layout_constraintBottom_toTopOf="@+id/progressBar2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clPrinting"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="center"
-            android:text="Ticket not valid"
-            android:textColor="@color/white"
-            app:autoSizeMaxTextSize="60dp"
-            app:autoSizeMinTextSize="20dp"
-            app:autoSizeStepGranularity="3dp"
-            app:autoSizeTextType="uniform"
-            android:textStyle="bold" />
-    </FrameLayout>
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="gone">
 
-    <LinearLayout
-        android:id="@+id/llGateOpen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:visibility="gone"
-        tools:visibility="gone"
-        android:background="@color/pretix_brand_green">
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/kiosk_text_print"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
-            android:id="@+id/tvGateOpen"
+            <ImageView
+                android:id="@+id/iv_kioskAnimation2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_print" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clRejected"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:text="Access granted"
-            app:autoSizeMaxTextSize="60dp"
-            app:autoSizeMinTextSize="20dp"
-            app:autoSizeStepGranularity="3dp"
-            app:autoSizeTextType="uniform"
-            android:textStyle="bold" />
+            android:visibility="gone"
+            tools:visibility="gone">
 
-        <ImageView
-            android:layout_weight="1"
-            android:id="@+id/ivGateOpen"
-            android:layout_gravity="center"
+            <View
+                android:id="@+id/vRejectedBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/pretix_brand_red"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/tvRejectedMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="Ticket not valid"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvRejectedReason"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/tvRejectedReason"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="Here is a reason"
+                android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvRejectedMessage" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clGate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_exit_white_24dp"
-            android:rotation="180" />
-    </LinearLayout>
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="gone">
 
-    <LinearLayout
-        android:id="@+id/llOutOfOrder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:background="@color/pretix_brand_dark"
-        android:visibility="gone"
-        tools:visibility="gone">
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/kiosk_text_gate"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
-            android:id="@+id/tvOutOfOrderHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="bottom|center_horizontal"
-            android:text="Out of order"
-            android:breakStrategy="balanced"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_weight="1"
-            app:autoSizeMaxTextSize="60sp"
-            app:autoSizeMinTextSize="20sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform" />
-
-        <TextView
-            android:id="@+id/tvOutOfOrderMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Please use another gate"
-            android:breakStrategy="balanced"
-            android:textColor="@color/white"
-            android:layout_weight="1"
-            app:autoSizeMaxTextSize="30sp"
-            app:autoSizeMinTextSize="14sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:keepScreenOn="true">
+            <ImageView
+                android:id="@+id/iv_kioskAnimation3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_turn" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/llStatusBar"
+            android:id="@+id/llOutOfOrder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            android:layout_height="match_parent"
+            android:background="@color/pretix_brand_dark"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="gone">
 
             <TextView
-                android:id="@+id/tvAppVersion"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvOutOfOrderHeading"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                tools:text="pretixSCAN v9.9.99" />
-
-            <ImageView
-                android:id="@+id/ivSyncStatusIcon"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_circle_24dp"
-                app:tint="@color/pretix_brand_red" />
+                android:layout_weight="1"
+                android:breakStrategy="balanced"
+                android:gravity="bottom|center_horizontal"
+                android:text="Out of order"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="60sp"
+                app:autoSizeMinTextSize="20sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
 
             <TextView
-                android:id="@+id/tvSyncStatus"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvOutOfOrderMessage"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text=""
-                tools:text="Sync completed" />
-
-            <ImageView
-                android:id="@+id/ivOfflineIcon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="4dp"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_cloud_off_white_24"
-                app:tint="@color/pretix_brand_red" />
-
+                android:layout_weight="1"
+                android:breakStrategy="balanced"
+                android:gravity="center_horizontal"
+                android:text="Please use another gate"
+                android:textColor="@color/white"
+                app:autoSizeMaxTextSize="30sp"
+                app:autoSizeMinTextSize="14sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
         </LinearLayout>
     </FrameLayout>
-</FrameLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/llStatusBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@color/pretix_brand_light"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvAppVersion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="?attr/logo" />
+
+        <TextView
+            android:id="@+id/tvAppVersion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text=""
+            android:textColor="@color/pretix_brand_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivSyncStatusIcon"
+            app:layout_constraintStart_toEndOf="@+id/ivLogo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="pretixSCAN v9.9.99" />
+
+        <ImageView
+            android:id="@+id/ivSyncStatusIcon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvSyncStatus"
+            app:layout_constraintStart_toEndOf="@+id/tvAppVersion"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_circle_24dp"
+            app:tint="@color/pretix_brand_red" />
+
+        <TextView
+            android:id="@+id/tvSyncStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/pretix_brand_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivOfflineIcon"
+            app:layout_constraintStart_toEndOf="@+id/ivSyncStatusIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sync completed" />
+
+        <ImageView
+            android:id="@+id/ivOfflineIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvSyncStatus"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_cloud_off_white_24"
+            app:tint="@color/pretix_brand_red" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
