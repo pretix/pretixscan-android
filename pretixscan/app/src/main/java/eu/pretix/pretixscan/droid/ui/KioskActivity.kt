@@ -56,7 +56,7 @@ class KioskActivity : BaseScanActivity() {
         }
 
     val backToStart = Runnable {
-        if (state == KioskState.GateOpen || state == KioskState.NeedAnswers || state == KioskState.Checking) {
+        if (state == KioskState.GateOpen || state == KioskState.NeedAnswers || state == KioskState.Checking || state == KioskState.Rejected) {
             state = KioskState.WaitingForScan
             updateUi()
         }
@@ -275,7 +275,6 @@ class KioskActivity : BaseScanActivity() {
             binding.tvRejectedReason.visibility =
                 if (result.reasonExplanation.isNullOrBlank()) View.GONE else View.VISIBLE
             binding.tvRejectedReason.text = result.reasonExplanation
-            backToStartHandler.postDelayed(backToStart, 3_000)
         }
 
         updateUi()
@@ -323,6 +322,8 @@ class KioskActivity : BaseScanActivity() {
             )
         } else if (state == KioskState.GateOpen) {
             openGate()
+        } else if (state == KioskState.NeedAnswers || state == KioskState.Rejected) {
+            backToStartHandler.postDelayed(backToStart, 5_000)
         }
     }
 
