@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.droid.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -73,6 +74,9 @@ class KioskActivity : BaseScanActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+        // TODO: Remove after Messe Berlin prototype
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
 
         binding = ActivityKioskBinding.inflate(layoutInflater)
         setContentView(binding.root)
