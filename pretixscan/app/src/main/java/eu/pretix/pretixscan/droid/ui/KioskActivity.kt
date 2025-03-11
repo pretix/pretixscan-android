@@ -88,8 +88,7 @@ class KioskActivity : BaseScanActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         @SuppressLint("SetTextI18n")
-        binding.tvAppVersion.text =
-            "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        binding.tvAppVersion.text = "${BuildConfig.VERSION_NAME}"
     }
 
     val loopCallback =
