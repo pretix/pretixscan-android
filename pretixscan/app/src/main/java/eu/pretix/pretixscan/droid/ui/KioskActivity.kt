@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.PointF
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -11,6 +12,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import android.util.DisplayMetrics
+import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
@@ -24,6 +27,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+
 
 class KioskActivity : BaseScanActivity() {
     companion object {
@@ -415,6 +419,104 @@ class KioskActivity : BaseScanActivity() {
         state = KioskState.Checking
         updateUi()
         super.handleScan(raw_result, answers, ignore_unpaid)
+    }
+
+
+    val pointerDownPositions = mutableMapOf<Int, PointF>();
+    val pointerUpPositions = mutableMapOf<Int, PointF>();
+    var lowestPoint = PointF();
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        /*
+        We support the following gestures.
+
+        1.) Open menu with PIN, two finger gesture that looks like this:
+
+            <-------------X
+            X------------->
+
+       2.) Forget current out-of-order state (e.g. after printer was fixed):
+
+            X          ^
+             \        /
+              \      /
+               \    /
+                \  /
+                 \/
+
+        */
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                pointerDownPositions.clear()
+                pointerUpPositions.clear()
+                lowestPoint = PointF(0f, 0f)
+                pointerDownPositions[event.getPointerId(0)] = PointF(event.getX(0), event.getY(0))
+                return true
+            }
+
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                pointerDownPositions[event.getPointerId(event.actionIndex)] =
+                    PointF(event.getX(event.actionIndex), event.getY(event.actionIndex))
+                return true
+            }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                pointerUpPositions[event.getPointerId(event.actionIndex)] =
+                    PointF(event.getX(event.actionIndex), event.getY(event.actionIndex))
+                return true
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                if (event.getY(event.actionIndex) > lowestPoint.y) {
+                    lowestPoint =
+                        PointF(event.getX(event.actionIndex), event.getY(event.actionIndex))
+                }
+                return true
+            }
+
+            MotionEvent.ACTION_UP -> {
+                pointerUpPositions[event.getPointerId(0)] = PointF(event.getX(0), event.getY(0))
+
+                val displaymetrics = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(displaymetrics)
+                val height: Int = displaymetrics.heightPixels
+                val width: Int = displaymetrics.widthPixels
+                
+                if (pointerUpPositions.size == 2 && pointerDownPositions.size == 2) {
+                    val fingerIds = pointerDownPositions.keys.toList()
+                    val upperFingerId =
+                        if (pointerDownPositions[fingerIds[0]]!!.y < pointerDownPositions[fingerIds[1]]!!.y) {
+                            fingerIds[0]
+                        } else {
+                            fingerIds[1]
+                        }
+                    val lowerFingerId = pointerDownPositions.keys.first { it != upperFingerId }
+
+                    val gestureDetected =
+                        (pointerUpPositions[upperFingerId]!!.x - pointerDownPositions[upperFingerId]!!.x < -0.5 * width) &&
+                                (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 0.5 * width) &&
+                                (pointerUpPositions[upperFingerId]!!.y < pointerUpPositions[lowerFingerId]!!.y)
+                    if (gestureDetected) {
+                        val intent = Intent(this, SettingsActivity::class.java)
+                        startWithPIN(intent, "settings")
+                    }
+                } else if (pointerUpPositions.size == 1 && pointerDownPositions.size == 1) {
+                    val fingerId = pointerDownPositions.keys.first()
+                    val gestureDetected =
+                        (pointerDownPositions[fingerId]!!.x - lowestPoint.x < -0.2 * width) &&
+                                (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 0.2 * width) &&
+                                (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 0.2 * height) &&
+                                (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 0.2 * height)
+                    if (gestureDetected && state == KioskState.OutOfOrder) {
+                        state = KioskState.WaitingForScan
+                        updateUi()
+                    }
+                }
+                return true
+            }
+
+            else -> return super.onTouchEvent(event)
+        }
     }
 
 }
