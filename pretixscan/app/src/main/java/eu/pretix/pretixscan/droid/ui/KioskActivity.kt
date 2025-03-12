@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
@@ -39,6 +40,7 @@ class KioskActivity : BaseScanActivity() {
 
         enum class KioskState {
             WaitingForScan,
+            ReadingBarcode,
             Checking,
             Rejected,
             NeedAnswers,
@@ -61,9 +63,16 @@ class KioskActivity : BaseScanActivity() {
         }
 
     val backToStart = Runnable {
-        if (state == KioskState.GateOpen || state == KioskState.NeedAnswers || state == KioskState.Checking || state == KioskState.Rejected) {
-            state = KioskState.WaitingForScan
-            updateUi()
+        when (state) {
+            KioskState.GateOpen,
+            KioskState.NeedAnswers,
+            KioskState.Checking,
+            KioskState.ReadingBarcode,
+            KioskState.Rejected -> {
+                state = KioskState.WaitingForScan
+                updateUi()
+            }
+            else -> {}
         }
     }
 
@@ -392,6 +401,12 @@ class KioskActivity : BaseScanActivity() {
 
             KioskState.Checking -> {
                 binding.clChecking.visibility = View.VISIBLE
+                binding.tvChecking.text = getString(R.string.kiosk_text_checking)
+            }
+
+            KioskState.ReadingBarcode -> {
+                binding.clChecking.visibility = View.VISIBLE
+                binding.tvChecking.text = getString(R.string.kiosk_text_reading)
             }
 
             KioskState.GateOpen -> {
@@ -402,6 +417,16 @@ class KioskActivity : BaseScanActivity() {
                 binding.llOutOfOrder.visibility = View.VISIBLE
             }
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val r = super.dispatchKeyEvent(event)
+        if (state == KioskState.WaitingForScan && keyboardBuffer.isNotBlank()) {
+            state = KioskState.ReadingBarcode
+            updateUi()
+            backToStartHandler.postDelayed(backToStart, 3_000)
+        }
+        return r
     }
 
     override fun handleScan(
@@ -419,6 +444,7 @@ class KioskActivity : BaseScanActivity() {
 
         when (state) {
             KioskState.WaitingForScan,
+            KioskState.ReadingBarcode,
             KioskState.Rejected -> {
                 // that's fine, handle it
             }
@@ -500,7 +526,7 @@ class KioskActivity : BaseScanActivity() {
                 windowManager.defaultDisplay.getMetrics(displaymetrics)
                 val height: Int = displaymetrics.heightPixels
                 val width: Int = displaymetrics.widthPixels
-                
+
                 if (pointerUpPositions.size == 2 && pointerDownPositions.size == 2) {
                     val fingerIds = pointerDownPositions.keys.toList()
                     val upperFingerId =

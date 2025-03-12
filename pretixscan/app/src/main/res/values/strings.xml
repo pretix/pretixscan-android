@@ -21,7 +21,8 @@
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
     <string name="kiosk_text_scan">Please scan your ticket</string>
-    <string name="kiosk_text_checking">We are checking your ticket…</string>
+    <string name="kiosk_text_reading">Reading barcode…</string>
+    <string name="kiosk_text_checking">Checking your ticket…</string>
     <string name="kiosk_text_print">Please take your badge</string>
     <string name="kiosk_text_gate">Please proceed through the gate</string>
     <string name="kiosk_text_questions_reject">Ticket cannot be validated here</string>
