@@ -150,6 +150,7 @@
     <string name="kiosk_text_questions_reject">Ticketkontrolle hier nicht möglich</string>
     <string name="kiosk_text_questions_reject_sub">Bitte wenden Sie sich an das Einlasspersonal</string>
     <string name="kiosk_text_scan">Bitte scannen Sie Ihr Ticket</string>
+    <string name="kiosk_text_reading">Barcode wird gelesen…</string>
     <string name="kiosk_text_checking">Ticket wird geprüft…</string>
     <string name="kiosk_text_print">Bitte entnehmen Sie Ihr Badge</string>
     <string name="kiosk_text_gate">Bitte gehen Sie durch das Drehkreuz</string>
