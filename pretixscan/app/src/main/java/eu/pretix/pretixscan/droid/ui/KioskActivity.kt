@@ -54,6 +54,7 @@ class KioskActivity : BaseScanActivity() {
     private val hideHandler = Handler(Looper.myLooper()!!)
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
+    private val gateTimeoutHandler = Handler(Looper.myLooper()!!)
     var state = KioskState.WaitingForScan
         set(value) {
             if (BuildConfig.DEBUG) {
@@ -79,6 +80,14 @@ class KioskActivity : BaseScanActivity() {
     val printTimeout = Runnable {
         if (state == KioskState.Printing) {
             binding.tvOutOfOrderMessage.text = "Printing failed by timeout"
+            state = KioskState.OutOfOrder
+            updateUi()
+        }
+    }
+
+    val gateTimeout = Runnable {
+        if (state == KioskState.GateOpen) {
+            binding.tvOutOfOrderMessage.text = "Gate opening failed by timeout"
             state = KioskState.OutOfOrder
             updateUi()
         }
@@ -312,7 +321,6 @@ class KioskActivity : BaseScanActivity() {
                             result.position!!.getLong("id"),
                             "badge"
                         )
-                        // FIXME: actually open the gate
                         runOnUiThread {
                             state = KioskState.GateOpen
                             updateUi()
@@ -370,7 +378,6 @@ class KioskActivity : BaseScanActivity() {
 
 
     fun updateUi() {
-        println("Update UI to state $state")
         binding.clWaitingForScan.visibility = View.GONE
         binding.clPrinting.visibility = View.GONE
         binding.clRejected.visibility = View.GONE
@@ -461,6 +468,7 @@ class KioskActivity : BaseScanActivity() {
 
         backToStartHandler.removeCallbacks(backToStart)
         printTimeoutHandler.removeCallbacks(printTimeout)
+        gateTimeoutHandler.removeCallbacks(gateTimeout)
         state = KioskState.Checking
         updateUi()
         super.handleScan(raw_result, answers, ignore_unpaid)
