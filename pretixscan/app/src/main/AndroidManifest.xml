@@ -12,6 +12,7 @@
     <queries>
         <package android:name="eu.pretix.pretixprint" />
         <package android:name="eu.pretix.pretixprint.debug" />
+        <package android:name="eu.pretix.kt0345service" />
         <package android:name="de.silpion.bleuartcompanion" />
         <package android:name="com.symbol.datawedge" />
     </queries>
