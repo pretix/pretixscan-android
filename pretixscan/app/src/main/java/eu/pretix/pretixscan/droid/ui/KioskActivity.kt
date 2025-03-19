@@ -211,10 +211,6 @@ class KioskActivity : BaseScanActivity() {
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean
     ) {
-        println(result)
-        println(answers)
-        println(ignore_unpaid)
-
         var isPrintable = false
         val mayBePrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
@@ -240,18 +236,29 @@ class KioskActivity : BaseScanActivity() {
             else -> false
         }
 
-        // FIXME: play sound
-
         when (result.type) {
             TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
-                TicketCheckProvider.CheckInType.ENTRY ->
+                TicketCheckProvider.CheckInType.ENTRY -> {
                     if (shouldAutoPrint) {
                         state = KioskState.Printing
                     } else {
                         state = KioskState.GateOpen
                     }
+                    if (conf.sounds) {
+                        if (result.isRequireAttention) {
+                            mediaPlayers[R.raw.attention]?.start()
+                        } else {
+                            mediaPlayers[R.raw.enter]?.start()
+                        }
+                    }
+                }
 
-                TicketCheckProvider.CheckInType.EXIT -> state = KioskState.GateOpen
+                TicketCheckProvider.CheckInType.EXIT -> {
+                    state = KioskState.GateOpen
+                    if (conf.sounds) {
+                        mediaPlayers[R.raw.exit]?.start()
+                    }
+                }
             }
 
             TicketCheckProvider.CheckResult.Type.INVALID,
@@ -267,15 +274,24 @@ class KioskActivity : BaseScanActivity() {
             TicketCheckProvider.CheckResult.Type.INVALID_TIME,
             TicketCheckProvider.CheckResult.Type.USED -> {
                 state = KioskState.Rejected
+                if (conf.sounds) {
+                    mediaPlayers[R.raw.error]?.start()
+                }
             }
 
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> {
                 state = KioskState.NeedAnswers
+                if (conf.sounds) {
+                    mediaPlayers[R.raw.error]?.start()
+                }
             }
 
             else -> {
                 binding.tvOutOfOrderMessage.text = "Unknown Scan Result Type"
                 state = KioskState.OutOfOrder
+                if (conf.sounds) {
+                    mediaPlayers[R.raw.error]?.start()
+                }
             }
         }
 
@@ -430,6 +446,9 @@ class KioskActivity : BaseScanActivity() {
         val r = super.dispatchKeyEvent(event)
         if (state == KioskState.WaitingForScan && keyboardBuffer.isNotBlank()) {
             state = KioskState.ReadingBarcode
+            if (conf.sounds) {
+                mediaPlayers[R.raw.beep]?.start()
+            }
             updateUi()
             backToStartHandler.postDelayed(backToStart, 3_000)
         }
