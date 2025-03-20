@@ -97,9 +97,6 @@ class KioskActivity : BaseScanActivity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
 
-        // TODO: Remove after Messe Berlin prototype
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
-
         binding = ActivityKioskBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
