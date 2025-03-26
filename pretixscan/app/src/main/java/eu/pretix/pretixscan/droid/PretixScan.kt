@@ -45,7 +45,7 @@ class PretixScan : MultiDexApplication() {
                 },
                 parameters = 0,
             )
-            return true
+            return false
         } catch (e: SQLiteException) {
             try {
                 val databaseFile = getDatabasePath(name)
@@ -74,7 +74,7 @@ class PretixScan : MultiDexApplication() {
                 // still not decrypted? then we probably lost the key due to a keystore issue
                 // let's start fresh, there's no reasonable other way to let the user out of this
                 this.deleteDatabase(name)
-                return false
+                return true
             }
         }
     }
@@ -99,17 +99,17 @@ class PretixScan : MultiDexApplication() {
                 dbPass = dbPass,
             )
 
-            val migrationSuccess = migrateSqlCipher(dbName, dbPass, driver)
-            if (migrationSuccess) {
-                driver
-            } else {
-                // Re-open database if we had to delete it during migration
+            val reopen = migrateSqlCipher(dbName, dbPass, driver)
+            if (reopen) {
+                // Re-open database if we had to delete it during migration or the cipher had to be migrated
                 driver.close()
                 createDriver(
                     context = this.applicationContext,
                     dbName = dbName,
                     dbPass = dbPass,
                 )
+            } else {
+                driver
             }
         }
 
