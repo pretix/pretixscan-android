@@ -19,6 +19,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import android.speech.tts.TextToSpeech
 import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -26,6 +27,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -38,6 +40,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import java.util.Locale
 
 
 class KioskActivity : BaseScanActivity() {
@@ -73,6 +76,9 @@ class KioskActivity : BaseScanActivity() {
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
     private val gateTimeoutHandler = Handler(Looper.myLooper()!!)
+    private var tts: TextToSpeech? = null
+    private var accessibilityMode = false
+
     var networkType = NetworkType.Unknown
     var state = KioskState.WaitingForScan
         set(value) {
@@ -90,6 +96,7 @@ class KioskActivity : BaseScanActivity() {
             KioskState.ReadingBarcode,
             KioskState.Rejected -> {
                 state = KioskState.WaitingForScan
+                accessibilityMode = false
                 updateUi()
             }
             else -> {}
@@ -120,6 +127,13 @@ class KioskActivity : BaseScanActivity() {
         setContentView(binding.root)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.ERROR) {
+                tts = null
+            }
+            tts?.setLanguage(Locale.getDefault())
+        }
 
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
@@ -344,14 +358,18 @@ class KioskActivity : BaseScanActivity() {
             TicketCheckProvider.CheckResult.Type.INVALID_TIME,
             TicketCheckProvider.CheckResult.Type.USED -> {
                 state = KioskState.Rejected
-                if (conf.sounds) {
+                if (accessibilityMode) {
+                    // Will be done further down below
+                } else if (conf.sounds) {
                     mediaPlayers[R.raw.error]?.start()
                 }
             }
 
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> {
                 state = KioskState.NeedAnswers
-                if (conf.sounds) {
+                if (accessibilityMode) {
+                    speak(getString(R.string.kiosk_text_questions_reject))
+                } else if (conf.sounds) {
                     mediaPlayers[R.raw.error]?.start()
                 }
             }
@@ -386,11 +404,17 @@ class KioskActivity : BaseScanActivity() {
             binding.tvRejectedReason.visibility =
                 if (result.reasonExplanation.isNullOrBlank()) View.GONE else View.VISIBLE
             binding.tvRejectedReason.text = result.reasonExplanation
+            if (accessibilityMode) {
+                speak(result.message + ". " + (result.reasonExplanation ?: ""))
+            }
         }
 
         updateUi()
 
         if (state == KioskState.Printing) {
+            if (accessibilityMode) {
+                speakCurrentState()
+            }
             val recv = object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                     super.onReceiveResult(resultCode, resultData)
@@ -438,6 +462,9 @@ class KioskActivity : BaseScanActivity() {
     }
 
     fun openGate() {
+        if (accessibilityMode) {
+            speakCurrentState()
+        }
         openGate(this, object : ResultReceiver(null) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 super.onReceiveResult(resultCode, resultData)
@@ -708,6 +735,9 @@ class KioskActivity : BaseScanActivity() {
                     if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
                         state = KioskState.WaitingForScan
                         updateUi()
+                    } else {
+                        accessibilityMode = true
+                        speakCurrentState(force=true)
                     }
                 }
                 return true
@@ -717,4 +747,49 @@ class KioskActivity : BaseScanActivity() {
         }
     }
 
+    var utteranceId = 0
+
+    fun speak(text: String) {
+        utteranceId += 1
+        val res = tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utterance$utteranceId")
+        if (res == TextToSpeech.ERROR) {
+            Toast.makeText(this, "TTS ERROR", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun speakCurrentState(force: Boolean=false) {
+        when (state) {
+            KioskState.WaitingForScan -> {
+                speak(getString(R.string.kiosk_text_scan))
+            }
+            KioskState.ReadingBarcode -> {
+                if (force) {
+                    speak(getString(R.string.kiosk_text_reading))
+                }
+            }
+            KioskState.Checking -> {
+                // Do nothing
+                if (force) {
+                    speak(getString(R.string.kiosk_text_checking))
+                }
+            }
+            KioskState.Rejected -> {
+                if (force) {
+                    speak(getString(R.string.scan_result_invalid))
+                }
+            }
+            KioskState.NeedAnswers -> {
+                speak(getString(R.string.kiosk_text_questions_reject))
+            }
+            KioskState.Printing -> {
+                speak(getString(R.string.kiosk_text_print))
+            }
+            KioskState.GateOpen -> {
+                speak(getString(R.string.kiosk_text_gate))
+            }
+            KioskState.OutOfOrder -> {
+                speak(getString(R.string.kiosk_text_gate))
+            }
+        }
+    }
 }

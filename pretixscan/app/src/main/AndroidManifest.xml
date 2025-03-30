@@ -15,6 +15,9 @@
         <package android:name="eu.pretix.kt0345service" />
         <package android:name="de.silpion.bleuartcompanion" />
         <package android:name="com.symbol.datawedge" />
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
     </queries>
 
     <!-- The following are added as "required" by the permissions, but we want them to be optional -->
