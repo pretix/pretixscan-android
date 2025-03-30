@@ -397,6 +397,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
 
+    var kioskOutOfOrder: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_OOO, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_KIOSK_OOO, value).apply()
+
     override fun getKnownLiveEventSlugs(): Set<String> {
         return default_prefs.getStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, emptySet()) as Set<String>
     }
@@ -451,6 +455,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
+        val PREFS_KEY_KIOSK_OOO = "pref_kiosk_out_of_order"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
     }
 }
