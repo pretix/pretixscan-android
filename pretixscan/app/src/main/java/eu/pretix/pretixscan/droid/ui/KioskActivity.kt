@@ -20,6 +20,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -149,6 +150,7 @@ class KioskActivity : BaseScanActivity() {
         hideHandler.postDelayed({
             if (Build.VERSION.SDK_INT >= 30) {
                 window.insetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                window.insetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
                 // Note that some of these constants are new as of API 16 (Jelly Bean)
                 // and API 19 (KitKat). It is safe to use them, as they are inlined
@@ -465,6 +467,7 @@ class KioskActivity : BaseScanActivity() {
     fun openMenu(pin: String) {
         val optstrings = arrayOf(
             getString(R.string.action_label_settings),
+            getString(R.string.action_sync),
             getString(R.string.operation_select_event),
             // TODO: Change direction
             if (conf.kioskOutOfOrder)
@@ -479,6 +482,9 @@ class KioskActivity : BaseScanActivity() {
                         val intent = Intent(this, SettingsActivity::class.java)
                         intent.putExtra("pin", pin)
                         startActivity(intent)
+                    }
+                    getString(R.string.action_sync) -> {
+                        syncNow()
                     }
                     getString(R.string.operation_select_event) -> {
                         val intent = Intent(this, EventConfigActivity::class.java)
