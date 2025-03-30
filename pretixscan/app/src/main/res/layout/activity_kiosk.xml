@@ -332,6 +332,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="?attr/logo" />
 
+        <TextClock
+            android:id="@+id/tvClock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text=""
+            android:textColor="@color/kiosk_statusbar_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvDeviceInfo"
+            app:layout_constraintStart_toEndOf="@+id/ivLogo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="12:00" />
+
         <TextView
             android:id="@+id/tvDeviceInfo"
             android:layout_width="0dp"
@@ -343,9 +357,9 @@
             android:textColor="@color/kiosk_statusbar_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivSyncStatusIcon"
-            app:layout_constraintStart_toEndOf="@+id/ivLogo"
+            app:layout_constraintStart_toEndOf="@+id/tvClock"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="pretixSCAN v9.9.99" />
+            tools:text="#1234" />
 
         <ImageView
             android:id="@+id/ivSyncStatusIcon"
