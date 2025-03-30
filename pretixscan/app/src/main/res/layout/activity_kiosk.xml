@@ -298,11 +298,12 @@
             app:srcCompat="?attr/logo" />
 
         <TextView
-            android:id="@+id/tvAppVersion"
+            android:id="@+id/tvDeviceInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
+            android:gravity="end"
             android:text=""
             android:textColor="@color/pretix_brand_background"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -315,10 +316,9 @@
             android:id="@+id/ivSyncStatusIcon"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvSyncStatus"
-            app:layout_constraintStart_toEndOf="@+id/tvAppVersion"
+            app:layout_constraintStart_toEndOf="@+id/tvDeviceInfo"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_warning_red_24dp"
             app:tint="@color/pretix_brand_red" />
