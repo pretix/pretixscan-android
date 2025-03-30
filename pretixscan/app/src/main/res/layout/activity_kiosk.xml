@@ -250,7 +250,7 @@
                 android:layout_weight="1"
                 android:breakStrategy="balanced"
                 android:gravity="bottom|center_horizontal"
-                android:text="Out of order"
+                android:text="@string/out_of_order"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 app:autoSizeMaxTextSize="60sp"

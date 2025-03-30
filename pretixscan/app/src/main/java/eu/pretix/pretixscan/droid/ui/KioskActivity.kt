@@ -167,6 +167,11 @@ class KioskActivity : BaseScanActivity() {
     override fun onResume() {
         super.onResume()
         fullscreen()
+        if (conf.kioskOutOfOrder) {
+            conf.kioskOutOfOrder = true
+            state = KioskState.OutOfOrder
+            binding.tvOutOfOrderMessage.text = ""
+        }
         updateUi()
     }
 
@@ -462,6 +467,10 @@ class KioskActivity : BaseScanActivity() {
             getString(R.string.action_label_settings),
             getString(R.string.operation_select_event),
             // TODO: Change direction
+            if (conf.kioskOutOfOrder)
+                getString(R.string.action_label_remove_out_of_order)
+            else
+                getString(R.string.action_label_out_of_order)
         )
         MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
@@ -474,6 +483,17 @@ class KioskActivity : BaseScanActivity() {
                     getString(R.string.operation_select_event) -> {
                         val intent = Intent(this, EventConfigActivity::class.java)
                         startActivityForResult(intent, REQ_EVENT, null)
+                    }
+                    getString(R.string.action_label_out_of_order) -> {
+                        conf.kioskOutOfOrder = true
+                        state = KioskState.OutOfOrder
+                        binding.tvOutOfOrderMessage.text = ""
+                        updateUi()
+                    }
+                    getString(R.string.action_label_remove_out_of_order) -> {
+                        conf.kioskOutOfOrder = false
+                        state = KioskState.WaitingForScan
+                        updateUi()
                     }
                 }
             }
@@ -602,7 +622,7 @@ class KioskActivity : BaseScanActivity() {
                                 (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 0.2 * width) &&
                                 (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 0.2 * height) &&
                                 (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 0.2 * height)
-                    if (gestureDetected && state == KioskState.OutOfOrder) {
+                    if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
                         state = KioskState.WaitingForScan
                         updateUi()
                     }

@@ -181,4 +181,7 @@
     <string name="settings_label_device_name">Gerätename</string>
     <string name="hint_url">URL</string>
     <string name="hint_token">Token</string>
+    <string name="out_of_order">Außer Betrieb</string>
+    <string name="action_label_out_of_order">Außer Betrieb nehmen</string>
+    <string name="action_label_remove_out_of_order">Wieder in Betrieb nehmen</string>
 </resources>
