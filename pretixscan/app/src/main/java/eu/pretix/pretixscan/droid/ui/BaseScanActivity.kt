@@ -516,7 +516,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 checkResult = provider.check(conf.eventSelectionToMap(), result, "barcode", answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                     "exit" -> TicketCheckProvider.CheckInType.EXIT
                     else -> TicketCheckProvider.CheckInType.ENTRY
-                }, allowQuestions = !conf.ignoreQuestions)
+                }, allowQuestions = !conf.ignoreQuestions, useOrderLocale = true)
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
                         (application as PretixScan).connectivityHelper.recordError()
