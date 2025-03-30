@@ -74,7 +74,7 @@ enum class ResultState {
 
 abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, ScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
 
-    private val REQ_EVENT = 1
+    protected val REQ_EVENT = 1
 
     private lateinit var sm: SyncManager
     lateinit var conf: AppConfig

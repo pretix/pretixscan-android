@@ -113,9 +113,6 @@ class ViewDataHolder(private val ctx: Context) {
 }
 
 class MainActivity : BaseScanActivity() {
-
-    private val REQ_EVENT = 1
-
     private lateinit var binding: ActivityMainBinding
     private val hideHandler = Handler()
     private var hideAnimation: ValueAnimator? = null

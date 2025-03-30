@@ -1,6 +1,8 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.PointF
@@ -20,6 +22,8 @@ import android.view.Window
 import android.view.WindowInsets
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
@@ -449,16 +453,37 @@ class KioskActivity : BaseScanActivity() {
         return r
     }
 
+
+    fun openMenu(pin: String) {
+        val optstrings = arrayOf(
+            getString(R.string.action_label_settings),
+            getString(R.string.operation_select_event),
+            // TODO: Change direction
+        )
+        MaterialAlertDialogBuilder(this)
+            .setItems(optstrings) { _, i ->
+                when (optstrings[i]) {
+                    getString(R.string.action_label_settings) -> {
+                        val intent = Intent(this, SettingsActivity::class.java)
+                        intent.putExtra("pin", pin)
+                        startActivity(intent)
+                    }
+                    getString(R.string.operation_select_event) -> {
+                        val intent = Intent(this, EventConfigActivity::class.java)
+                        startActivityForResult(intent, REQ_EVENT, null)
+                    }
+                }
+            }
+            .show()
+    }
+
     override fun handleScan(
         raw_result: String,
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean
     ) {
         if (conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
-            val intent = Intent(this, SettingsActivity::class.java)
-            // startWithPIN(intent, "settings") // we've already verified the pin
-            intent.putExtra("pin", raw_result)
-            startActivity(intent)
+            openMenu(raw_result)
             return
         }
 
@@ -563,8 +588,9 @@ class KioskActivity : BaseScanActivity() {
                                 (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 0.5 * width) &&
                                 (pointerUpPositions[upperFingerId]!!.y < pointerUpPositions[lowerFingerId]!!.y)
                     if (gestureDetected) {
-                        val intent = Intent(this, SettingsActivity::class.java)
-                        startWithPIN(intent, "settings")
+                        pinProtect("settings") { pin ->
+                            openMenu(pin)
+                        }
                     }
                 } else if (pointerUpPositions.size == 1 && pointerDownPositions.size == 1) {
                     val fingerId = pointerDownPositions.keys.first()
