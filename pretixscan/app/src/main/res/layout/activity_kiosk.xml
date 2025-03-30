@@ -357,6 +357,7 @@
             android:layout_marginStart="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivDirectionIcon"
+            app:layout_constraintEnd_toStartOf="@+id/ivOfflineIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_wifi_unknown"
             app:tint="@color/kiosk_statusbar_text" />
