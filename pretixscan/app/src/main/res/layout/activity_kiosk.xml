@@ -305,7 +305,7 @@
             android:layout_marginEnd="4dp"
             android:gravity="end"
             android:text=""
-            android:textColor="@color/pretix_brand_background"
+            android:textColor="@color/kiosk_statusbar_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivSyncStatusIcon"
             app:layout_constraintStart_toEndOf="@+id/ivLogo"
@@ -332,7 +332,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text=""
-            android:textColor="@color/pretix_brand_background"
+            android:textColor="@color/kiosk_statusbar_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivDirectionIcon"
             app:layout_constraintStart_toEndOf="@+id/ivSyncStatusIcon"
@@ -348,7 +348,7 @@
             app:layout_constraintStart_toEndOf="@+id/tvSyncStatus"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_entry_gray_24dp"
-            app:tint="@color/white" />
+            app:tint="@color/kiosk_statusbar_text" />
 
         <ImageView
             android:id="@+id/ivNetworkIcon"
@@ -359,7 +359,7 @@
             app:layout_constraintStart_toEndOf="@+id/ivDirectionIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_wifi_unknown"
-            app:tint="@color/white" />
+            app:tint="@color/kiosk_statusbar_text" />
 
         <ImageView
             android:id="@+id/ivOfflineIcon"
