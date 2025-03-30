@@ -22,6 +22,7 @@ import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,6 +30,7 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
+import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
@@ -444,6 +446,11 @@ class KioskActivity : BaseScanActivity() {
             KioskState.OutOfOrder -> {
                 binding.llOutOfOrder.visibility = View.VISIBLE
             }
+        }
+        if (conf.scanType == "exit") {
+            binding.ivDirectionIcon.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_exit_white_24dp))
+        } else {
+            binding.ivDirectionIcon.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_entry_gray_24dp))
         }
     }
 
