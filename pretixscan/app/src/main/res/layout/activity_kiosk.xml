@@ -352,13 +352,24 @@
             app:tint="@color/white" />
 
         <ImageView
+            android:id="@+id/ivNetworkIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivDirectionIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_wifi_unknown"
+            app:tint="@color/white" />
+
+        <ImageView
             android:id="@+id/ivOfflineIcon"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ivDirectionIcon"
+            app:layout_constraintStart_toEndOf="@+id/ivNetworkIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_cloud_off_white_24"
             app:tint="@color/pretix_brand_red" />

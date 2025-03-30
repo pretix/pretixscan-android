@@ -89,7 +89,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     var keyboardBuffer: String = ""
     var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
-    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+    protected var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val dataWedgeHelper = DataWedgeHelper(this)
 
@@ -416,17 +416,34 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                (application as PretixScan).connectivityHelper.setHardOffline(false)
+                onNetworkAvailable(connectivityManager, network)
+            }
+
+            override fun onCapabilitiesChanged(
+                network: Network,
+                networkCapabilities: NetworkCapabilities
+            ) {
+                onNetworkChanged(connectivityManager, network)
             }
 
             override fun onLost(network: Network) {
-                check()
+                onNetworkLost(connectivityManager, network)
             }
         }
         check()
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
     }
 
+    protected open fun onNetworkAvailable(connectivityManager: ConnectivityManager, network: Network) {
+        (application as PretixScan).connectivityHelper.setHardOffline(false)
+    }
+
+    protected open fun onNetworkChanged(connectivityManager: ConnectivityManager, network: Network) {
+    }
+
+    protected open fun onNetworkLost(connectivityManager: ConnectivityManager, network: Network) {
+        (application as PretixScan).connectivityHelper.setHardOffline(connectivityManager.activeNetworkInfo?.isConnectedOrConnecting != true)
+    }
 
     override fun onPause() {
         handler.removeCallbacks(syncRunnable)

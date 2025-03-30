@@ -3,12 +3,17 @@ package eu.pretix.pretixscan.droid.ui
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.PointF
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -24,13 +29,11 @@ import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
-import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
@@ -55,6 +58,14 @@ class KioskActivity : BaseScanActivity() {
             GateOpen,
             OutOfOrder,
         }
+
+        enum class NetworkType {
+            Unknown,
+            None,
+            Cellular,
+            Wifi,
+            Ethernet
+        }
     }
 
     private lateinit var binding: ActivityKioskBinding
@@ -62,6 +73,7 @@ class KioskActivity : BaseScanActivity() {
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
     private val gateTimeoutHandler = Handler(Looper.myLooper()!!)
+    var networkType = NetworkType.Unknown
     var state = KioskState.WaitingForScan
         set(value) {
             if (BuildConfig.DEBUG) {
@@ -176,7 +188,54 @@ class KioskActivity : BaseScanActivity() {
             state = KioskState.OutOfOrder
             binding.tvOutOfOrderMessage.text = ""
         }
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        updateNetworkType(connectivityManager)
         updateUi()
+    }
+
+    private fun updateNetworkType(connectivityManager: ConnectivityManager) {
+        fun setNetworkType(nt: NetworkType) {
+            if (nt != networkType) {
+                networkType = nt
+                runOnUiThread {
+                    updateUi()
+                }
+            }
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            setNetworkType(NetworkType.Unknown)
+        } else if (connectivityManager.activeNetwork == null) {
+            setNetworkType(NetworkType.None)
+        } else {
+            val netCaps = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (netCaps == null) {
+                setNetworkType(NetworkType.Unknown)
+            } else if (netCaps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                setNetworkType(NetworkType.Ethernet)
+            } else if (netCaps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                setNetworkType(NetworkType.Wifi)
+            } else if (netCaps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                setNetworkType(NetworkType.Cellular)
+            } else {
+                setNetworkType(NetworkType.Unknown)
+            }
+        }
+    }
+
+    override fun onNetworkAvailable(connectivityManager: ConnectivityManager, network: Network) {
+        super.onNetworkAvailable(connectivityManager, network)
+        updateNetworkType(connectivityManager)
+    }
+
+    override fun onNetworkLost(connectivityManager: ConnectivityManager, network: Network) {
+        super.onNetworkLost(connectivityManager, network)
+        updateNetworkType(connectivityManager)
+    }
+
+    override fun onNetworkChanged(connectivityManager: ConnectivityManager, network: Network) {
+        super.onNetworkChanged(connectivityManager, network)
+        updateNetworkType(connectivityManager)
     }
 
     override fun reload() {
@@ -452,6 +511,19 @@ class KioskActivity : BaseScanActivity() {
         } else {
             binding.ivDirectionIcon.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_entry_gray_24dp))
         }
+
+        binding.ivNetworkIcon.visibility = if (networkType == NetworkType.Unknown) {
+            View.INVISIBLE
+        } else {
+            View.VISIBLE
+        }
+        binding.ivNetworkIcon.setImageDrawable(AppCompatResources.getDrawable(this, when (networkType) {
+            NetworkType.Unknown -> R.drawable.ic_wifi_unknown
+            NetworkType.None -> R.drawable.ic_wifi_off
+            NetworkType.Cellular -> R.drawable.ic_cell_tower_24px
+            NetworkType.Wifi -> R.drawable.ic_wifi_24px
+            NetworkType.Ethernet -> R.drawable.ic_ethernet_24px
+        }))
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
