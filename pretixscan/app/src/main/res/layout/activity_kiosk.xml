@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <TextView
                 android:id="@+id/tvChecking"
@@ -142,7 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <View
                 android:id="@+id/vRejectedBackground"
@@ -151,10 +151,10 @@
                 android:background="@color/pretix_brand_red"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/tvRejectedMessage"
@@ -170,7 +170,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/tvRejectedReason"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView2"
                 app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
@@ -189,6 +189,19 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvRejectedMessage" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvRejectedMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/vRejectedBackground"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/ic_block_24px"
+                app:tint="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -233,7 +246,7 @@
                 app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_turn" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llOutOfOrder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -241,37 +254,59 @@
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tvOutOfOrderHeading"
+            app:layout_constraintTop_toBottomOf="@+id/tvOutOfOrderHeading"
             tools:visibility="gone">
 
             <TextView
                 android:id="@+id/tvOutOfOrderHeading"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:breakStrategy="balanced"
                 android:gravity="bottom|center_horizontal"
                 android:text="@string/out_of_order"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                app:autoSizeMaxTextSize="60sp"
-                app:autoSizeMinTextSize="20sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform" />
+                app:layout_constraintBottom_toTopOf="@+id/tvOutOfOrderMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
             <TextView
                 android:id="@+id/tvOutOfOrderMessage"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:breakStrategy="balanced"
                 android:gravity="center_horizontal"
                 android:text="Please use another gate"
+                android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
                 android:textColor="@color/white"
-                app:autoSizeMaxTextSize="30sp"
-                app:autoSizeMinTextSize="14sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform" />
-        </LinearLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvOutOfOrderHeading" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvOutOfOrderHeading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/ic_error_stop_24px"
+                app:tint="@color/white" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
 
