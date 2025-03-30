@@ -25,7 +25,7 @@
             tools:visibility="gone">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tvWaitingForScan"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -53,7 +53,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/tvWaitingForScan"
                 app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_scan" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -105,7 +105,7 @@
             tools:visibility="gone">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tvPrinting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -133,7 +133,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/tvPrinting"
                 app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_print" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -201,7 +201,7 @@
             tools:visibility="gone">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tvGate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -229,7 +229,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/tvGate"
                 app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_turn" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

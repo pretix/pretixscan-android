@@ -1,11 +1,9 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.PointF
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
@@ -13,10 +11,10 @@ import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.LocaleList
 import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
@@ -38,6 +36,8 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import java.util.IllformedLocaleException
+import java.util.Locale
 
 
 class KioskActivity : BaseScanActivity() {
@@ -81,6 +81,40 @@ class KioskActivity : BaseScanActivity() {
             }
             field = value
         }
+    var localizedContext: Context? = null
+
+    fun setTemporaryLocale(overrideLocale: String) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return
+        }
+        val localeBuilder = Locale.Builder()
+        try {
+            localeBuilder.setLanguage(overrideLocale.split("-").first())
+        } catch (e: IllformedLocaleException) {
+            return
+        }
+        if (overrideLocale.contains("-")) {
+            try {
+                // Is this a region, like pt-br?
+                localeBuilder.setRegion(overrideLocale.split("-").last().uppercase())
+            } catch (e: IllformedLocaleException) {
+                try {
+                    // Is this a variant, like zh-hans?
+                    localeBuilder.setVariant(overrideLocale.split("-").last())
+                } catch (e: IllformedLocaleException) {
+                    // Is it neither, like de-informal? Ignore!
+                }
+            }
+        }
+
+        val conf = Configuration(resources.configuration)
+        conf.setLocales(LocaleList(localeBuilder.build(), Locale.getDefault()))
+        localizedContext = createConfigurationContext(conf)
+    }
+
+    private fun localizedString(stringId: Int): String {
+        return (localizedContext ?: this).getString(stringId)
+    }
 
     val backToStart = Runnable {
         when (state) {
@@ -90,6 +124,7 @@ class KioskActivity : BaseScanActivity() {
             KioskState.ReadingBarcode,
             KioskState.Rejected -> {
                 state = KioskState.WaitingForScan
+                localizedContext = null
                 updateUi()
             }
             else -> {}
@@ -281,6 +316,9 @@ class KioskActivity : BaseScanActivity() {
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean
     ) {
+        if (result.locale != null) {
+            setTemporaryLocale(result.locale!!)
+        }
         var isPrintable = false
         val mayBePrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
@@ -368,17 +406,17 @@ class KioskActivity : BaseScanActivity() {
         if (state == KioskState.Rejected) {
             if (result.message == null) {
                 result.message = when (result.type!!) {
-                    TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
-                    TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
-                    TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
-                    TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
-                    TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
-                    TicketCheckProvider.CheckResult.Type.UNAPPROVED -> getString(R.string.scan_result_unapproved)
-                    TicketCheckProvider.CheckResult.Type.INVALID_TIME -> getString(R.string.scan_result_invalid_time)
-                    TicketCheckProvider.CheckResult.Type.BLOCKED -> getString(R.string.scan_result_blocked)
-                    TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
-                    TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
-                    TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
+                    TicketCheckProvider.CheckResult.Type.INVALID -> localizedString(R.string.scan_result_invalid)
+                    TicketCheckProvider.CheckResult.Type.USED -> localizedString(R.string.scan_result_used)
+                    TicketCheckProvider.CheckResult.Type.RULES -> localizedString(R.string.scan_result_rules)
+                    TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> localizedString(R.string.scan_result_ambiguous)
+                    TicketCheckProvider.CheckResult.Type.REVOKED -> localizedString(R.string.scan_result_revoked)
+                    TicketCheckProvider.CheckResult.Type.UNAPPROVED -> localizedString(R.string.scan_result_unapproved)
+                    TicketCheckProvider.CheckResult.Type.INVALID_TIME -> localizedString(R.string.scan_result_invalid_time)
+                    TicketCheckProvider.CheckResult.Type.BLOCKED -> localizedString(R.string.scan_result_blocked)
+                    TicketCheckProvider.CheckResult.Type.UNPAID -> localizedString(R.string.scan_result_unpaid)
+                    TicketCheckProvider.CheckResult.Type.CANCELED -> localizedString(R.string.scan_result_canceled)
+                    TicketCheckProvider.CheckResult.Type.PRODUCT -> localizedString(R.string.scan_result_product)
                     else -> null
                 }
             }
@@ -478,15 +516,16 @@ class KioskActivity : BaseScanActivity() {
             }
 
             KioskState.NeedAnswers -> {
-                binding.tvRejectedMessage.text = getString(R.string.kiosk_text_questions_reject)
+                binding.tvRejectedMessage.text = localizedString(R.string.kiosk_text_questions_reject)
                 binding.tvRejectedReason.visibility = View.VISIBLE
-                binding.tvRejectedReason.text = getString(R.string.kiosk_text_questions_reject_sub)
+                binding.tvRejectedReason.text = localizedString(R.string.kiosk_text_questions_reject_sub)
                 binding.clRejected.visibility = View.VISIBLE
                 backToStartHandler.postDelayed(backToStart, 3_000)
             }
 
             KioskState.Printing -> {
                 binding.clPrinting.visibility = View.VISIBLE
+                binding.tvPrinting.text = localizedString(R.string.kiosk_text_print)
             }
 
             KioskState.Checking -> {
@@ -501,6 +540,7 @@ class KioskActivity : BaseScanActivity() {
 
             KioskState.GateOpen -> {
                 binding.clGate.visibility = View.VISIBLE
+                binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
             }
 
             KioskState.OutOfOrder -> {
@@ -575,6 +615,7 @@ class KioskActivity : BaseScanActivity() {
                     }
                     getString(R.string.action_label_remove_out_of_order) -> {
                         conf.kioskOutOfOrder = false
+                        localizedContext = null
                         state = KioskState.WaitingForScan
                         updateUi()
                     }
@@ -706,6 +747,7 @@ class KioskActivity : BaseScanActivity() {
                                 (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 0.2 * height) &&
                                 (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 0.2 * height)
                     if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
+                        localizedContext = null
                         state = KioskState.WaitingForScan
                         updateUi()
                     }
