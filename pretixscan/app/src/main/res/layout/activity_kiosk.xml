@@ -293,7 +293,6 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tvAppVersion"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="?attr/logo" />
@@ -335,7 +334,7 @@
             android:text=""
             android:textColor="@color/pretix_brand_background"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivOfflineIcon"
+            app:layout_constraintEnd_toStartOf="@+id/ivDirectionIcon"
             app:layout_constraintStart_toEndOf="@+id/ivSyncStatusIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sync completed" />

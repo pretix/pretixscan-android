@@ -257,6 +257,8 @@ class KioskActivity : BaseScanActivity() {
                     R.color.pretix_brand_red
                 )
             )
+            binding.tvSyncStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
+            binding.tvSyncStatus.text = syncStatusText()
         } else {
             binding.ivSyncStatusIcon.setImageDrawable(
                 ContextCompat.getDrawable(
@@ -270,9 +272,8 @@ class KioskActivity : BaseScanActivity() {
                     R.color.pretix_brand_green
                 )
             )
+            binding.tvSyncStatus.visibility = View.GONE
         }
-        binding.tvSyncStatus.visibility = if (conf.proxyMode) View.GONE else View.VISIBLE
-        binding.tvSyncStatus.text = syncStatusText()
     }
 
     override fun displayScanResult(
