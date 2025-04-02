@@ -3,13 +3,12 @@ package eu.pretix.pretixscan.utils
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.ColumnAdapter
-import app.cash.sqldelight.TransacterImpl
-import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import eu.pretix.libpretixsync.sqldelight.CheckIn
 import eu.pretix.libpretixsync.sqldelight.Closing
 import eu.pretix.libpretixsync.sqldelight.Event
+import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.libpretixsync.sqldelight.QueuedCheckIn
 import eu.pretix.libpretixsync.sqldelight.Receipt
 import eu.pretix.libpretixsync.sqldelight.ReceiptLine
@@ -74,17 +73,22 @@ fun createSyncDatabase(
     )
 }
 
-fun createDriver(context: Context, dbName: String, dbPass: String?) =
-    if (dbPass != null) {
+fun createDriver(context: Context, dbName: String, dbPass: String?): AndroidSqliteDriver {
+    val callback = object : AndroidSqliteDriver.Callback(
+        schema = SyncDatabase.Schema,
+        callbacks = arrayOf(Migrations.minVersionCallback),
+    ) {
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            db.setForeignKeyConstraintsEnabled(true)
+        }
+    }
+
+    return if (dbPass != null) {
         AndroidSqliteDriver(
             schema = SyncDatabase.Schema,
             context = context,
             name = dbName,
-            callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
-                override fun onOpen(db: SupportSQLiteDatabase) {
-                    db.setForeignKeyConstraintsEnabled(true)
-                }
-            },
+            callback = callback,
             factory = SupportOpenHelperFactory(dbPass.toByteArray())
         )
     } else {
@@ -92,10 +96,7 @@ fun createDriver(context: Context, dbName: String, dbPass: String?) =
             schema = SyncDatabase.Schema,
             context = context,
             name = dbName,
-            callback = object : AndroidSqliteDriver.Callback(SyncDatabase.Schema) {
-                override fun onOpen(db: SupportSQLiteDatabase) {
-                    db.setForeignKeyConstraintsEnabled(true)
-                }
-            },
+            callback = callback,
         )
     }
+}
