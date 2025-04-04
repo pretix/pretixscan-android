@@ -118,7 +118,14 @@ class ViewDataHolder(private val ctx: Context) {
     }
 
     fun setLed(context: Context, state: ResultState, needsAttention: Boolean) {
-        // FIXME
+        val led = LED(context)
+        when (state) {
+            EMPTY -> led.off()
+            LOADING -> led.progress()
+            DIALOG, WARNING -> led.attention(blink = needsAttention)
+            ERROR -> led.error()
+            SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
+        }
     }
 }
 
