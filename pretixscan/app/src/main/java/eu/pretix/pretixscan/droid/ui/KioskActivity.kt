@@ -36,6 +36,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import eu.pretix.pretixscan.droid.hardware.LED
 import java.util.IllformedLocaleException
 import java.util.Locale
 
@@ -81,6 +82,7 @@ class KioskActivity : BaseScanActivity() {
             }
             field = value
         }
+    var lastTicketRequireAttention = false
     var localizedContext: Context? = null
 
     fun setTemporaryLocale(overrideLocale: String) {
@@ -192,6 +194,11 @@ class KioskActivity : BaseScanActivity() {
         fullscreen()
         updateUi()
         resetAnimations()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LED(this).off()
     }
 
     fun fullscreen() {
@@ -319,6 +326,7 @@ class KioskActivity : BaseScanActivity() {
         if (result.locale != null) {
             setTemporaryLocale(result.locale!!)
         }
+        lastTicketRequireAttention = result.isRequireAttention
         var isPrintable = false
         val mayBePrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
@@ -505,14 +513,17 @@ class KioskActivity : BaseScanActivity() {
         binding.clGate.visibility = View.GONE
         binding.clChecking.visibility = View.GONE
         binding.llOutOfOrder.visibility = View.GONE
+        val led = LED(this)
 
         when (state) {
             KioskState.WaitingForScan -> {
                 binding.clWaitingForScan.visibility = View.VISIBLE
+                led.success(blink = false)
             }
 
             KioskState.Rejected -> {
                 binding.clRejected.visibility = View.VISIBLE
+                led.error(blink = true)
             }
 
             KioskState.NeedAnswers -> {
@@ -521,30 +532,44 @@ class KioskActivity : BaseScanActivity() {
                 binding.tvRejectedReason.text = localizedString(R.string.kiosk_text_questions_reject_sub)
                 binding.clRejected.visibility = View.VISIBLE
                 backToStartHandler.postDelayed(backToStart, 3_000)
+                led.error(blink = true)
             }
 
             KioskState.Printing -> {
                 binding.clPrinting.visibility = View.VISIBLE
                 binding.tvPrinting.text = localizedString(R.string.kiosk_text_print)
+                if (lastTicketRequireAttention) {
+                    led.attention(blink = true)
+                } else {
+                    led.success(blink = true)
+                }
             }
 
             KioskState.Checking -> {
                 binding.clChecking.visibility = View.VISIBLE
                 binding.tvChecking.text = getString(R.string.kiosk_text_checking)
+                led.progress(blink = false)
             }
 
             KioskState.ReadingBarcode -> {
                 binding.clChecking.visibility = View.VISIBLE
                 binding.tvChecking.text = getString(R.string.kiosk_text_reading)
+                led.progress(blink = false)
             }
 
             KioskState.GateOpen -> {
                 binding.clGate.visibility = View.VISIBLE
                 binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                if (lastTicketRequireAttention) {
+                    led.attention()
+                } else {
+                    led.success()
+                }
             }
 
             KioskState.OutOfOrder -> {
                 binding.llOutOfOrder.visibility = View.VISIBLE
+                led.error(blink = false)
             }
         }
         if (conf.scanType == "exit") {
