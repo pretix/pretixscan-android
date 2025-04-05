@@ -100,7 +100,7 @@
     <string name="total_tickets_sold">totaal aantal verkochte tickets</string>
     <string name="already_scanned">al gescand</string>
     <string name="preference_badgeprint_install_pretixprint">Het printen van badges vereist de extra pretixPRINT-app. Wilt u deze app installeren\?</string>
-    <string name="preference_autobadgeprint_enable">Print badges automatisch na een succesvolle scan</string>
+    <string name="preference_autobadgeprint_enable">Print badges automatisch</string>
     <string name="preference_badgeprint_enable">Badges printen inschakelen</string>
     <string name="dialog_unpaid_retry">Alsnog inchecken</string>
     <string name="dialog_unpaid_text">Dit ticket behoort tot een bestelling die nog niet betaald is. Wilt u het alsnog inchecken\? Dit zal de bestelling niet markeren als betaald.</string>
