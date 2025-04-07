@@ -514,7 +514,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 AndroidSentryImplementation(),
                 (application as PretixScan).data,
                 (application as PretixScan).fileStorage,
-                60000L,
+                10000L,
                 5 * 60000L,
                 if (conf.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,
                 conf.printBadges,
