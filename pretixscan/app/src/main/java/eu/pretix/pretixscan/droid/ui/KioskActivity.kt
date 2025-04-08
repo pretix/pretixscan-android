@@ -665,6 +665,7 @@ class KioskActivity : BaseScanActivity() {
         when (state) {
             KioskState.WaitingForScan,
             KioskState.ReadingBarcode,
+            KioskState.GateOpen,
             KioskState.Rejected -> {
                 // that's fine, handle it
             }
@@ -672,7 +673,6 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Checking,
             KioskState.NeedAnswers,
             KioskState.Printing,
-            KioskState.GateOpen,
             KioskState.OutOfOrder -> {
                 // waiting for user, for printer, gate or administrative action. ignoring scan.
                 return
