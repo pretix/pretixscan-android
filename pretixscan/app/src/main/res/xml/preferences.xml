@@ -107,5 +107,9 @@
         <Preference
             android:key="full_delete"
             android:title="@string/full_delete" />
+        <EditTextPreference
+            android:key="gate_back_to_start_timeout"
+            android:defaultValue="3000"
+            android:title="Time after gate open" />
     </PreferenceCategory>
 </PreferenceScreen>

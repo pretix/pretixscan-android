@@ -245,6 +245,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_MULTI_EVENT_MODE, false)
         set(value) = prefs.edit().putBoolean(PREFS_KEY_MULTI_EVENT_MODE, value).apply()
 
+    var timeAfterGateOpen: Int
+        get() = try {
+            Integer.parseInt(default_prefs.getString("gate_back_to_start_timeout", "3000")!!)
+        } catch (e: Exception) {
+            3000
+        }
+        set(value) = default_prefs.edit().putString("gate_back_to_start_timeout", value.toString()).apply()
+
     override fun getDeviceKnownName(): String {
         return prefs.getString(PREFS_KEY_DEVICE_KNOWN_NAME, "")!!
     }
