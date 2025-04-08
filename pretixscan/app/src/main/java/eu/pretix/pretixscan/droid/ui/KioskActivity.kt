@@ -490,7 +490,7 @@ class KioskActivity : BaseScanActivity() {
                 gateTimeoutHandler.removeCallbacks(gateTimeout)
                 if (resultCode == 0) {
                     runOnUiThread {
-                        backToStartHandler.postDelayed(backToStart, 3_000)
+                        backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
                     }
                 } else {
                     // gate opening failed
