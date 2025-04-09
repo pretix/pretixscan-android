@@ -121,6 +121,12 @@ android {
     lint {
         disable 'InvalidPackage', 'MissingTranslation'
     }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "${rootProject.name}-${variant.versionName}.apk"
+        }
+    }
 }
 
 repositories {
