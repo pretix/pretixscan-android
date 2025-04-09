@@ -676,6 +676,11 @@ class KioskActivity : BaseScanActivity() {
             }
         }
 
+        // ignore scan if same ticket was scanned two times, but gate is already open
+        if (raw_result == lastScanCode && state == KioskState.GateOpen) {
+            return
+        }
+
         backToStartHandler.removeCallbacks(backToStart)
         printTimeoutHandler.removeCallbacks(printTimeout)
         gateTimeoutHandler.removeCallbacks(gateTimeout)
