@@ -15,6 +15,7 @@ import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
 import eu.pretix.libpretixsync.sqldelight.BigDecimalAdapter
+import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityHelper
 import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.utils.KeystoreHelper
@@ -80,7 +81,7 @@ class PretixScan : MultiDexApplication() {
     }
 
     val db: SyncDatabase by lazy {
-        val dbName = "default"
+        val dbName = Migrations.DEFAULT_DATABASE_NAME
 
         val dbPass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreHelper.secureValue(KEYSTORE_PASSWORD, true)
         else KEYSTORE_PASSWORD

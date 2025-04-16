@@ -6,7 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.PendingIntentCompat
-import eu.pretix.libpretixsync.Models
+import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.pretixscan.droid.AppConfig
 import kotlin.system.exitProcess
 
@@ -15,7 +15,7 @@ fun wipeApp(ctx: Context) {
     val conf = AppConfig(ctx)
     conf.resetDeviceConfig()
 
-    ctx.deleteDatabase(Models.DEFAULT.name)
+    ctx.deleteDatabase(Migrations.DEFAULT_DATABASE_NAME)
 
     val mStartActivity = Intent(ctx, WelcomeActivity::class.java)
     val mPendingIntentId = 123456
