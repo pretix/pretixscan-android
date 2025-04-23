@@ -1186,10 +1186,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         if (!isExit && !result.shownAnswers.isNullOrEmpty()) {
             val qanda = SpannableStringBuilder()
             result.shownAnswers!!.forEachIndexed { index, questionAnswer ->
-                val question = (application as PretixScan).db.questionQueries.selectByServerId(questionAnswer.question.server_id)
-                    .executeAsOne()
-                    .toModel()
-                qanda.bold { append(question.question + ":") }
+                val question = questionAnswer.question.toModel().question
+                qanda.bold { append(question + ":") }
                 qanda.append(" ")
                 qanda.append(questionAnswer.currentValue) // FIXME: yes/no is written here as true/false
                 if (index != result.shownAnswers!!.lastIndex) {
