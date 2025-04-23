@@ -1036,7 +1036,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         } else {
             values
         }
-        val attendeeName = if (conf.hideNames) "" else res.position?.optString("attendee_name")
+        val attendeeName = if (conf.hideNames || res.position?.isNull("attendee_name") != false) {
+            ""
+        } else {
+            res.position?.optString("attendee_name")
+        }
+
         var attendeeDOB: String? = null
         if (!conf.hideNames) {
             val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
