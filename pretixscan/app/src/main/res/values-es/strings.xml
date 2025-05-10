@@ -131,7 +131,7 @@
     <string name="preference_autobadgeprint_enable">Imprimir los identificadores automáticamente</string>
     <string name="already_scanned">ya escaneado</string>
     <string name="total_tickets_sold">total de entradas reservadas</string>
-    <string name="hardware_scanner_switch_to_camera">Utilizar la cámara en su lugar</string>
+    <string name="hardware_scanner_switch_to_camera">Utilizar la cámara</string>
     <string name="force_full_resync">Forzar una sincronización completa</string>
     <string name="settings_label_datawedge">Instalar el perfil DataWedge</string>
     <string name="settings_label_version">Versión</string>
