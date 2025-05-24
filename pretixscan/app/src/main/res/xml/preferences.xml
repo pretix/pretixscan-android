@@ -85,6 +85,9 @@
             android:key="version"
             android:title="@string/settings_label_version" />
         <Preference
+            android:key="device_name"
+            android:title="@string/settings_label_device_name" />
+        <Preference
             android:key="licenses"
             android:title="@string/settings_label_licenses" />
     </PreferenceCategory>
