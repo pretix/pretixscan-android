@@ -5,8 +5,8 @@
     <string name="headline_setup">Bienvenue sur pretixSCAN !</string>
     <string name="action_sync">Synchroniser maintenant</string>
     <string name="progress_syncing_first">Téléchargement de la configuration de l\'événement…</string>
-    <string name="progress_processing">Traitement…</string>
-    <string name="error_unknown_exception">Une erreur inconnue est survenue</string>
+    <string name="progress_processing">Traitement en cours…</string>
+    <string name="error_unknown_exception">Une erreur inconnue s\'est produite</string>
     <string name="action_label_ok">OK</string>
     <string name="action_label_statistics">Statistiques</string>
     <string name="action_label_scantype_exit">Basculer vers le scan des sorties</string>
@@ -45,12 +45,12 @@
         <item quantity="other">synchronisé il y a %d jours</item>
     </plurals>
     <string name="sync_status_last">Dernière synchronisation réussie :</string>
-    <string name="sync_status">Statut de la synchronisation</string>
+    <string name="sync_status">État de la synchronisation</string>
     <string name="sync_status_last_failed">Dernier échec de synchronisation :</string>
     <string name="sync_status_never">pas encore synchronisé</string>
     <string name="sync_status_progress">la synchronisation est en cours</string>
     <string name="sync_status_now">synchronisé à l\'instant</string>
-    <string name="sync_status_date_format">dd/MM/yyyy HH:mm:ss</string>
+    <string name="sync_status_date_format">HH:mm:ss dd-MM-yyyy</string>
     <string name="short_datetime_format">dd/MM HH:mm</string>
     <string name="first_scanned">Premier scan : %s</string>
     <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
@@ -126,7 +126,7 @@
     <string name="error_not_synchronized">Votre appareil n\'a pas été correctement synchronisé avec le serveur</string>
     <string name="action_label_settings">Paramètres</string>
     <string name="action_label_scantype_entry">Basculer vers le scan des entrées</string>
-    <string name="action_search">Recherche</string>
+    <string name="action_search">Rechercher</string>
     <string name="operation_select_events">Sélectionner les évènements</string>
     <string name="settings_summary_orders_sync">Sans cette option, pretixSCAN ne téléchargera pas les données de la commande et ne pourra pas scanner les tickets hors ligne avec les paramètres par défaut de pretix.</string>
     <string name="settings_summary_auto_switch">Avec cette option, pretixSCAN demandera au serveur pendant la synchronisation si le serveur suggère de basculer l\'application vers un autre événement et une autre liste d\'enregistrement, puis basculera automatiquement.</string>
@@ -139,7 +139,7 @@
     <string name="settings_label_device_camera">Utiliser la caméra de l\'appareil</string>
     <string name="settings_label_auto_offline">Activation et désactivation automatiques du mode hors ligne</string>
     <string name="settings_summary_scan_offline">Lorsque vous utilisez le scan hors ligne, votre appareil vérifie toutes les entrées dans sa base de données interne plutôt que sur le serveur et synchronise occasionnellement sa base de données avec le serveur. Cette méthode est plus fiable, mais permet de scanner un billet deux fois si vous scannez avec plusieurs appareils.</string>
-    <string name="progress_registering">Enregistrement de l\'appareil avec le serveur…</string>
+    <string name="progress_registering">Enregistrement de l\'appareil auprès du serveur…</string>
     <string name="status_canceled">Annulé</string>
     <string name="status_empty">Aucun résultat de recherche n\'a été trouvé. Assurez-vous de saisire au moins quatre caractères.</string>
     <string name="scan_result_revoked">Code du billet révoqué/modifié</string>
@@ -148,7 +148,7 @@
     <string name="force_full_resync_help">Cela ne supprimera aucune de vos données locales, mais cela forcera la prochaine synchronisation de chaque événement à être une synchronisation complète, c\'est-à-dire en téléchargeant à nouveau toutes les données au lieu des seules données modifiées.</string>
     <string name="full_delete_confirm">Voulez-vous vraiment réinitialiser l\'appareil \? Vous devrez le coupler à nouveau avec le système en ligne.</string>
     <string name="settings_summary_kioskmode">Le mode kiosque masque les menus qui ne sont pas censés être utilisés dans une installation en libre-service. Le mode kiosque n\'empêche pas les utilisateurs de quitter l\'application via les fonctionnalités du système. Pour accéder aux paramètres, vous devez scanner un QR code avec votre code PIN.</string>
-    <string name="scan_result_invalid_time">Le billet n\'est pas valable actuellement</string>
+    <string name="scan_result_invalid_time">Le billet n\'est pas valide actuellement</string>
     <string name="scan_result_blocked">Billet bloqué</string>
     <string name="scantype_entry_kiosk_print">Scannez votre billet pour imprimer votre badge</string>
     <string name="action_multievent_disable">Désactiver le mode expert</string>
