@@ -1,2 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">pretixSCAN</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">Ansuf ar pretixSCAN!</string>
+    <string name="action_sync">Mtawi tura</string>
+    <string name="action_label_settings">Iɣewwaren</string>
+    <string name="action_label_statistics">Tidaddanin</string>
+    <string name="scantype_exit">Tuffɣa</string>
+    <string name="debug_info_event">Tadyant : %1$s</string>
+    <string name="debug_info_list">Tabdart: %1$s</string>
+    <string name="debug_info_subevent">Azemz : %1$s (%2$s)</string>
+    <string name="action_search">Nadi</string>
+    <string name="debug_info_gate">Tawwurt : %1$s</string>
+    <string name="debug_info_device">Ibenk : %1$s</string>
+    <string name="operation_select_event">Fren tadyant</string>
+    <string name="operation_select_events">Fren tidyanin</string>
+    <string name="settings_label_auto_sync">Amtawi awurman</string>
+    <string name="settings_label_auto_switch">Afran awurman n tedyant</string>
+    <string name="ok">Ih</string>
+    <string name="sync_status_date_format">HH:mm:ss dd-MM-yyyy</string>
+    <string name="short_datetime_format">dd/MM HH:mm</string>
+    <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
+    <string name="cont">KEMMEL</string>
+    <string name="hint_url">URL</string>
+    <string name="dismiss">Zgel</string>
+    <string name="settings_label_about">Ɣef usnas-a</string>
+    <string name="settings_label_device_camera">Seqdec takamiṛat n yibenk</string>
+    <string name="yes">Ih</string>
+    <string name="cancel">Semmet</string>
+    <string name="status_canceled">Yettwasemmet</string>
+    <string name="settings_label_datawedge">Sebded amaɣnu n DataWedge</string>
+    <string name="event_select_calendar">Sken-d awitay</string>
+    <string name="action_label_ok">Ih</string>
+    <string name="settings_label_ui">Agrudem n useqdac</string>
+    <string name="settings_label_sync">Amtawi</string>
+    <string name="settings_label_version">Lqem</string>
+</resources>
