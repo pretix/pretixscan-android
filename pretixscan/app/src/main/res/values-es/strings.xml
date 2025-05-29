@@ -68,7 +68,7 @@
         <item quantity="many">%d subidas pendientes</item>
         <item quantity="other">%d subidas pendientes</item>
     </plurals>
-    <string name="sync_status_date_format">HH:mm:ss yyyy-MM-dd</string>
+    <string name="sync_status_date_format">HH:mm:ss dd-MM-yyyy</string>
     <string name="first_scanned">Primer escaneo: %s</string>
     <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
     <string name="ok">OK</string>
