@@ -61,14 +61,14 @@
     <string name="sync_status_last_failed">Última sincronización fallida:</string>
     <string name="sync_status_never">todavía no sincronizado</string>
     <string name="sync_status_progress">sincronización está en curso</string>
-    <string name="short_datetime_format">HH:mm MM/dd</string>
+    <string name="short_datetime_format">HH:mm dd/MM</string>
     <string name="sync_status_now">acaba de sincronizarse</string>
     <plurals name="sync_status_pending">
         <item quantity="one">%d pendiente de subida</item>
         <item quantity="many">%d subidas pendientes</item>
         <item quantity="other">%d subidas pendientes</item>
     </plurals>
-    <string name="sync_status_date_format">HH:mm:ss yyyy-MM-dd</string>
+    <string name="sync_status_date_format">HH:mm:ss dd-MM-yyyy</string>
     <string name="first_scanned">Primer escaneo: %s</string>
     <string name="datetime_format">%1$td-%1$tm-%1$tY- %1$tH:%1$tM</string>
     <string name="ok">OK</string>
