@@ -93,6 +93,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<CheckBoxPreference>("pref_auto_switch")?.isEnabled = conf.eventSelection.size == 1
         findPreference<CheckBoxPreference>("pref_sync_orders")?.isEnabled = !conf.proxyMode
         findPreference<Preference>("version")?.summary = BuildConfig.VERSION_NAME
+        findPreference<Preference>("device_name")?.summary = conf.deviceKnownName
         findPreference<Preference>("full_resync")?.setOnPreferenceClickListener {
             // First, delete ResourceSyncStatus. This way the system forgets which data was already
             // pulled and will pull all lists completely instead of using If-Modified-Since or
