@@ -68,6 +68,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     "pretixSCAN Android",
                     BuildConfig.VERSION_NAME,
                     null,
+                    null,
                     null
             )
             sm.syncMinimalEventSet(event, subevent) { current_action ->

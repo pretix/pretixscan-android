@@ -67,6 +67,7 @@ import eu.pretix.libpretixsync.serialization.JSONArraySerializer
 import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
 import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.libpretixui.android.questions.QuestionsDialog
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
 import eu.pretix.libpretixui.android.scanning.ScanReceiver
@@ -538,6 +539,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 Build.VERSION.RELEASE,
             "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
+                null,
                 null,
                 (application as PretixScan).connectivityHelper
         )
@@ -1046,6 +1048,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 .get()
                 .firstOrNull()
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
+                QuestionsDialog.Companion.QuestionsType.LINE_ITEM_QUESTIONS,
                 this,
                 questions,
                 values_,
