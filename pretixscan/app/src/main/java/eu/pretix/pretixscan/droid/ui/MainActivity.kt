@@ -74,6 +74,7 @@ import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.connectivity.ConnectivityChangedListener
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
+import eu.pretix.pretixscan.droid.hardware.LED
 import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
@@ -143,6 +144,17 @@ class ViewDataHolder(private val ctx: Context) {
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
         })
+    }
+
+    fun setLed(context: Context, state: ResultState, needsAttention: Boolean) {
+        val led = LED(context)
+        when (state) {
+            EMPTY -> led.off()
+            LOADING -> led.progress()
+            DIALOG, WARNING -> led.attention(blink = needsAttention)
+            ERROR -> led.error()
+            SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
+        }
     }
 }
 
@@ -749,6 +761,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         scheduleSync()
 
         hardwareScanner.start(this)
+        LED(this).off()
 
         if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             binding.scannerView.setResultHandler(this)
@@ -837,6 +850,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         view_data.resultState.set(EMPTY)
         view_data.resultText.set(null)
         view_data.resultOffline.set(false)
+        LED(this).off()
     }
 
     fun showLoadingCard() {
@@ -911,11 +925,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             binding.scannerView.stopCamera()
         }
         hardwareScanner.stop(this)
+        LED(this).off()
 
         if (networkCallback != null) {
             val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(networkCallback!!)
         }
+    }
+
+    override fun onStop() {
+        LED(this).off()
+        super.onStop()
     }
 
     fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
@@ -1091,6 +1111,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
@@ -1100,6 +1121,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 handleScan(secret, answers, ignore_unpaid)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
         if (result.message == null) {
@@ -1145,6 +1167,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
         })
+        view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
+
         val isExit = (result.scanType == TicketCheckProvider.CheckInType.EXIT)
         if (result.ticket != null) {
             if (result.variation != null) {
