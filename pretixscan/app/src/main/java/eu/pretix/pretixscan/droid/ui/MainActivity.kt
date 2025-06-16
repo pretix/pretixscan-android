@@ -850,6 +850,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         view_data.resultState.set(EMPTY)
         view_data.resultText.set(null)
         view_data.resultOffline.set(false)
+        LED(this).off()
     }
 
     fun showLoadingCard() {
