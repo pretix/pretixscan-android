@@ -28,6 +28,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         multiDexEnabled true
+
+        setProperty("archivesBaseName", rootProject.name + "-" + versionName)
     }
 
     buildFeatures {
