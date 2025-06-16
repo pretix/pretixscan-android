@@ -934,6 +934,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     override fun onStop() {
         LED(this).off()
+        super.onStop()
     }
 
     fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
