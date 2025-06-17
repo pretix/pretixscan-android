@@ -157,4 +157,5 @@
     <string name="settings_label_search_disable">Deshabilitar búsqueda</string>
     <string name="error_no_available_events">No se ha encontrado ningún evento presente o futuro. Compruebe las fechas y los derechos de acceso de los eventos.</string>
     <string name="settings_summary_kioskmode">El modo Kiosko oculta los menús que no deben utilizarse en una instalación de autoservicio. El modo Kiosko no impide que los usuarios salgan de la app a través de las funciones del sistema. Para acceder a los ajustes, es necesario escanear un código QR junto con el PIN.</string>
+    <string name="settings_label_device_name">Nombre del dispositivo</string>
 </resources>
