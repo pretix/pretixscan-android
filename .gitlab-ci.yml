@@ -23,7 +23,7 @@ release:
     - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew --no-daemon -Dmaven.repo.local=$(pwd)/repo assemblePretixRelease --stacktrace
   artifacts:
     paths:
-      - pretixscan/app/build/outputs/apk/pretix/release/app-pretix-release.apk
+      - pretixscan/app/build/outputs/apk/pretix/release/*.apk
     expire_in: '6 weeks'
   only:
     - '/^v.*$/'
