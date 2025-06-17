@@ -157,4 +157,5 @@
     <string name="scan_result_unapproved">Commande non approuvée</string>
     <string name="pin_protection_enter">Saisir le code PIN</string>
     <string name="pref_ignore_questions">Ne pas poser de questions lors de l\'enregistrement</string>
+    <string name="settings_label_device_name">Nom de l\'appareil</string>
 </resources>
