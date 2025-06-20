@@ -495,6 +495,12 @@ class KioskActivity : BaseScanActivity() {
                     runOnUiThread {
                         backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
                     }
+                } else if (resultCode == 2) {
+                    // Gate opened, but did not turn.
+                    // TODO: Revert checkin?
+                    runOnUiThread {
+                        backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+                    }
                 } else {
                     // gate opening failed
                     runOnUiThread {
