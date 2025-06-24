@@ -153,4 +153,5 @@
     <string name="scan_result_unapproved">Bestelling niet goedgekeurd</string>
     <string name="pref_ignore_questions">Stel geen vragen tijdens check-in</string>
     <string name="pin_protection_enter">Voer PIN in</string>
+    <string name="settings_label_device_name">Apparaatnaam</string>
 </resources>
