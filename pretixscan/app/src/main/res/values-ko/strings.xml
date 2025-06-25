@@ -149,4 +149,5 @@
     <string name="pin_protection_settings">앱 설정 보호하기</string>
     <string name="pin_protection_enter">PIN 입력하기</string>
     <string name="currently_inside">지금 실제로 참여하고 있는 상태</string>
+    <string name="settings_label_device_name">장치 이름</string>
 </resources>
