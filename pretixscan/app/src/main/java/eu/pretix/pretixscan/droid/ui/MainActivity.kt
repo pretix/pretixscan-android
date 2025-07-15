@@ -459,8 +459,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         try {
             setupApi()
-        } catch (_: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             // IllegalStateException is thrown by db access -> Migrations.minVersionCallback
+            Sentry.captureException(e)
             panicPleaseReinstall()
             return
         }
@@ -749,8 +750,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         try {
             reload()
             setupApi()
-        } catch (_: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             // IllegalStateException is thrown by db access -> Migrations.minVersionCallback
+            Sentry.captureException(e)
             panicPleaseReinstall()
             return
         }
