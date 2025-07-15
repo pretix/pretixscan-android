@@ -41,7 +41,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
 import androidx.core.animation.doOnEnd
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
@@ -62,7 +61,6 @@ import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
-import eu.pretix.libpretixsync.models.Question
 import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
 import eu.pretix.libpretixsync.serialization.JSONArraySerializer
@@ -353,10 +351,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             text = getString(R.string.sync_status_now);
         }
 
-        if (!(application as PretixScan).syncLock.isLocked) {
-            val checkins = (application as PretixScan).db.scanQueuedCheckInQueries.count().executeAsOne().toInt()
-            val calls = (application as PretixScan).db.scanQueuedCallQueries.count().executeAsOne().toInt()
-            text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
+        try {
+            if (!(application as PretixScan).syncLock.isLocked) {
+                val checkins = (application as PretixScan).db.scanQueuedCheckInQueries.count().executeAsOne().toInt()
+                val calls = (application as PretixScan).db.scanQueuedCallQueries.count().executeAsOne().toInt()
+                text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
+            }
+        } catch (_: IllegalStateException) {
+            // IllegalStateException is thrown by Migrations.minVersionCallback
+            panicPleaseReinstall()
+            return
         }
 
         binding.textViewStatus.setText(text)
@@ -569,6 +573,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     private fun registerDevice() {
         val intent = Intent(this, WelcomeActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun panicPleaseReinstall() {
+        val intent = Intent(this, PleaseReinstallActivity::class.java)
         startActivity(intent)
         finish()
     }
