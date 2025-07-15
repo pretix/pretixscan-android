@@ -338,16 +338,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             text = getString(R.string.sync_status_now);
         }
 
-        try {
-            if (!(application as PretixScan).syncLock.isLocked) {
-                val checkins = (application as PretixScan).db.scanQueuedCheckInQueries.count().executeAsOne().toInt()
-                val calls = (application as PretixScan).db.scanQueuedCallQueries.count().executeAsOne().toInt()
-                text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
-            }
-        } catch (_: IllegalStateException) {
-            // IllegalStateException is thrown by Migrations.minVersionCallback
-            panicPleaseReinstall()
-            return
+        if (!(application as PretixScan).syncLock.isLocked) {
+            val checkins = (application as PretixScan).db.scanQueuedCheckInQueries.count().executeAsOne().toInt()
+            val calls = (application as PretixScan).db.scanQueuedCallQueries.count().executeAsOne().toInt()
+            text += " (" + resources.getQuantityString(R.plurals.sync_status_pending, checkins + calls, checkins + calls) + ")"
         }
 
         binding.textViewStatus.setText(text)
@@ -463,7 +457,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             registerDevice()
             return
         }
-        setupApi()
+        try {
+            setupApi()
+        } catch (_: IllegalStateException) {
+            // IllegalStateException is thrown by db access -> Migrations.minVersionCallback
+            panicPleaseReinstall()
+            return
+        }
         setUpEventListeners()
 
         if (conf.synchronizedEvents.isEmpty()) {
@@ -531,7 +531,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 Build.MODEL,
                 (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Build.VERSION.BASE_OS else "").ifEmpty { "Android" },
                 Build.VERSION.RELEASE,
-            "pretixSCAN Android",
+                "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
                 null,
                 null,
@@ -745,9 +745,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     override fun onResume() {
-        reload()
         super.onResume()
-        setupApi()
+        try {
+            reload()
+            setupApi()
+        } catch (_: IllegalStateException) {
+            // IllegalStateException is thrown by db access -> Migrations.minVersionCallback
+            panicPleaseReinstall()
+            return
+        }
         getRestrictions(this)
 
         view_data.kioskMode.set(conf.kioskMode)
