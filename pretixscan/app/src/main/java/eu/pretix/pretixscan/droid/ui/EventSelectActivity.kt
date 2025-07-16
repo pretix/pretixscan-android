@@ -192,7 +192,7 @@ class EventSelectActivity : MorphingDialogActivity() {
     fun refreshEvents() {
         conf = AppConfig(this)
         val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
-        eventManager = EventManager((application as PretixScan).data, api, conf, false)
+        eventManager = EventManager(api, conf, false)
         eventsAdapter = EventAdapter(null)
         binding.eventSelectList!!.tvError.visibility = View.GONE
         binding.eventSelectList!!.progressBar.visibility = View.VISIBLE

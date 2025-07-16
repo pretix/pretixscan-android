@@ -169,4 +169,7 @@
         <item>Once, if not yet printed</item>
         <item>Always</item>
     </string-array>
+    <string name="headline_please_reinstall">Please reinstall pretixSCAN</string>
+    <string name="reinstall_text">Your previous pretixSCAN version was too old and your local data cannot be used for the current version.\n\nPlease clear the storage for the pretixSCAN app or delete and reinstall the app.</string>
+    <string name="reinstall_open_app_settings">Open Android App Settings</string>
 </resources>
