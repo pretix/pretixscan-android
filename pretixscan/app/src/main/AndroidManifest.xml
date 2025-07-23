@@ -92,6 +92,11 @@
             android:name=".ui.CheckInListSelectActivity"
             android:label="@string/operation_select_event"
             android:theme="@style/AppTheme.Dialog.Animated" />
+        <activity
+            android:name=".ui.PleaseReinstallActivity"
+            android:label="@string/headline_please_reinstall"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1,0 +1,13 @@
+getAllLists:
+SELECT *
+FROM CheckInList
+WHERE event_slug = ?
+ORDER BY subevent_id, name ASC;
+
+getAllListsWithSubEvent:
+SELECT *
+FROM CheckInList
+WHERE
+    event_slug = ?
+    AND (subevent_id = ? OR subevent_id = 0)
+ORDER BY subevent_id, name ASC;

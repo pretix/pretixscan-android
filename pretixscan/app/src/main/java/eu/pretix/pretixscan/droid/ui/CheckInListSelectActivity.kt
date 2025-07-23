@@ -9,7 +9,8 @@ import android.os.Handler
 import android.view.View
 import androidx.core.app.ActivityCompat
 import eu.pretix.libpretixsync.api.PretixApi
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.models.CheckInList
+import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixpos.anim.MorphingDialogActivity
 import eu.pretix.pretixscan.droid.*
@@ -53,7 +54,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     conf,
                     api,
                     AndroidSentryImplementation(),
-                    (application as PretixScan).data,
+                    (application as PretixScan).db,
                     (application as PretixScan).fileStorage,
                     1000L,
                     1000L,
@@ -69,7 +70,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
                     BuildConfig.VERSION_NAME,
                     null,
                     null,
-                    null
+                    null,
             )
             sm.syncMinimalEventSet(event, subevent) { current_action ->
                 runOnUiThread {
@@ -89,12 +90,21 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
     private fun getAllLists(): List<CheckInList> {
         val event = intent!!.getStringExtra(EVENT_SLUG)
         val subeventId = intent!!.getLongExtra(SUBEVENT_ID, 0)
-        var lists = (application as PretixScan).data.select(CheckInList::class.java)
-                .where(CheckInList.EVENT_SLUG.eq(event))
-        if (subeventId > 0) {
-            lists = lists.and(CheckInList.SUBEVENT_ID.eq(subeventId).or(CheckInList.SUBEVENT_ID.eq(0)))
+
+        return if (subeventId > 0) {
+            (application as PretixScan).db.scanCheckInListQueries
+                .getAllListsWithSubEvent(
+                    event_slug = event,
+                    subevent_id = subeventId,
+                )
+                .executeAsList()
+                .map { it.toModel() }
+        } else {
+            (application as PretixScan).db.scanCheckInListQueries
+                .getAllLists(event_slug = event)
+                .executeAsList()
+                .map { it.toModel() }
         }
-        return lists.orderBy(CheckInList.SUBEVENT_ID.asc(), CheckInList.NAME.asc()).get().toList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +136,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
             val selectedList = checkInListAdapter.selectedList
             if (selectedList != null) {
                 val i = Intent()
-                i.putExtra(LIST_ID, selectedList.getServer_id())
+                i.putExtra(LIST_ID, selectedList.serverId)
                 setResult(Activity.RESULT_OK, i)
                 supportFinishAfterTransition()
             }
@@ -156,7 +166,7 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
 
     private fun refreshList(listOfLists: List<CheckInList>) {
         binding.progressBar.visibility = View.GONE
-        checkInListAdapter.selectedList = listOfLists.find { it.server_id == intent.getLongExtra(LIST_ID, 0) }
+        checkInListAdapter.selectedList = listOfLists.find { it.serverId == intent.getLongExtra(LIST_ID, 0) }
         if (checkInListAdapter.selectedList == null && listOfLists.size == 1) {
             checkInListAdapter.selectedList = listOfLists[0]
         }
