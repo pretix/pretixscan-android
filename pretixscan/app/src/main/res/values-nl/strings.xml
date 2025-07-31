@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ok">OK</string>
-    <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
+    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="first_scanned">Eerst gescanned: %s</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
