@@ -17,7 +17,7 @@
     <string name="action_sync">いますぐ同期する</string>
     <string name="progress_syncing_first">イベントの設定をダウンロード中…</string>
     <string name="progress_syncing">サーバと同期中…</string>
-    <string name="progress_processing">処理中…</string>
+    <string name="progress_processing"></string>
     <string name="progress_registering">デバイスをサーバに登録中…</string>
     <string name="error_not_synchronized">デバイスは、サーバと正常に同期できませんでした</string>
     <string name="action_label_settings">設定</string>
