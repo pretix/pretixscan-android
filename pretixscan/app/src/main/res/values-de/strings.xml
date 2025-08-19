@@ -167,4 +167,5 @@
         <item>Nur, wenn noch nicht gedruckt</item>
         <item>Immer</item>
     </string-array>
+    <string name="settings_label_device_name">Gerätename</string>
 </resources>
