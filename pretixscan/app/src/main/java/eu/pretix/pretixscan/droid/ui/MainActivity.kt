@@ -826,6 +826,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             } else {
                 null
             }
+            "M3" -> if (Build.MODEL.startsWith("M3PC")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
             else -> null
         } ?: return
 
