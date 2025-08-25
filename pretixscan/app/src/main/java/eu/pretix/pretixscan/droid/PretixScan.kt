@@ -4,9 +4,6 @@ import android.database.sqlite.SQLiteException
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import com.facebook.flipper.android.AndroidFlipperClient
-import com.facebook.flipper.core.FlipperClient
-import com.facebook.soloader.SoLoader
 import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -28,7 +25,6 @@ class PretixScan : MultiDexApplication() {
     private var dataStore: BlockingEntityStore<Persistable>? = null
     val fileStorage = AndroidFileStorage(this)
     val syncLock = ReentrantLock()
-    var flipperInit: FlipperInitializer.IntializationResult? = null
     lateinit var connectivityHelper: ConnectivityHelper
 
     private fun migrateSqlCipher(name: String, dbPass: String) {
@@ -109,10 +105,6 @@ class PretixScan : MultiDexApplication() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT > 26) {
-            SoLoader.init(this, false)
-
-            val client: FlipperClient = AndroidFlipperClient.getInstance(this)
-            flipperInit = FlipperInitializer.initFlipperPlugins(this, client)
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
 

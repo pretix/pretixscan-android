@@ -103,10 +103,6 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity
-            android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-            android:exported="true" />
-
         <meta-data android:name="io.sentry.dsn" android:value="${SENTRY_DSN}" />
         <meta-data android:name="io.sentry.auto-session-tracking.enable" android:value="false" />
         <meta-data android:name="io.sentry.breadcrumbs.activity-lifecycle" android:value="false" />

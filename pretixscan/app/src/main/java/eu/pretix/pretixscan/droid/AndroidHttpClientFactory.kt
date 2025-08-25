@@ -15,11 +15,6 @@ class AndroidHttpClientFactory(val app: PretixScan) : HttpClientFactory {
     override fun buildClient(ignore_ssl: Boolean): OkHttpClient {
         val builder = OkHttpClient.Builder()
         builder.addNetworkInterceptor(AndroidUserAgentInterceptor())
-
-        if (app.flipperInit?.interceptor != null) {
-            builder.addNetworkInterceptor(app.flipperInit!!.interceptor!!)
-        }
-
         builder.addNetworkInterceptor(RateLimitInterceptor())
 
         builder.connectTimeout(30, TimeUnit.SECONDS)
