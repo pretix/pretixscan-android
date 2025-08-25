@@ -123,7 +123,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 setMessage(R.string.full_delete_confirm)
                 setPositiveButton(R.string.yes) { dialog, _ ->
                     dialog.dismiss()
-                    wipeApp(requireActivity())
+                    wipeApp(requireActivity(), true)
                 }
                 setNegativeButton(R.string.no) { dialog, _ -> dialog.cancel() }
             }.create().show()

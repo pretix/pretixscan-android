@@ -212,7 +212,7 @@ class EventSelectActivity : MorphingDialogActivity() {
                         setMessage(R.string.error_access_revoked)
                         setPositiveButton(R.string.ok) { dialog, _ ->
                             dialog.dismiss()
-                            wipeApp(this@EventSelectActivity)
+                            wipeApp(this@EventSelectActivity, false)
                         }
                     }.create().show()
                 }
