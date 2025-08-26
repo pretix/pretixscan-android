@@ -17,6 +17,9 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
@@ -219,7 +222,25 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupActionBar()
+        setContentView(R.layout.activity_generic_fragment)
+        setSupportActionBar(findViewById(R.id.topAppBar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.content)
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val c = AppConfig(this)
         if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(
@@ -235,16 +256,8 @@ class SettingsActivity : AppCompatActivity() {
 
         // Display the fragment as the main content.
         supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, SettingsFragment())
+            .replace(R.id.content, SettingsFragment())
             .commit()
-    }
-
-    /**
-     * Set up the [android.app.ActionBar], if the API is available.
-     */
-    private fun setupActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onBackPressed() {

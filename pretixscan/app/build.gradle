@@ -17,12 +17,12 @@ apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 android {
     namespace 'eu.pretix.pretixscan.droid'
 
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 99
         versionName "2.10.3"
         vectorDrawables.useSupportLibrary = true
@@ -131,8 +131,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -166,7 +166,7 @@ dependencies {
     implementation(project(':libpretixui-android')) {
         transitive = true
     }
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 
     // libpretixsync
     kapt 'io.requery:requery-processor:1.6.0'

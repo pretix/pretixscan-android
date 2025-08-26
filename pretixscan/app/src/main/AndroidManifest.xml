@@ -47,7 +47,7 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,23 +67,27 @@
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="@string/headline_setup"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.Dark" />
         <activity
             android:name=".ui.SetupActivity"
-            android:label="@string/headline_setup" />
+            android:label="@string/headline_setup"
+            android:theme="@style/AppTheme.NoActionBar.Dark" />
         <activity
             android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/action_label_settings"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.EventConfigActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
-            android:label="@string/operation_select_events" />
+            android:label="@string/operation_select_events"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.EventSelectActivity"
             android:label="@string/operation_select_event"
