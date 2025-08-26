@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import eu.pretix.libpretixsync.setup.SetupManager
@@ -20,7 +23,7 @@ import io.sentry.Sentry
 import java.io.IOException
 import java.lang.Exception
 
-class SetupActivity : AppCompatActivity(R.layout.activity_setup), SetupCallable {
+class SetupActivity : AppCompatActivity(), SetupCallable {
     companion object {
         const val FRAGMENT_TAG = "SetupFragment"
     }
@@ -29,6 +32,25 @@ class SetupActivity : AppCompatActivity(R.layout.activity_setup), SetupCallable 
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_generic_fragment)
+        setSupportActionBar(findViewById(R.id.topAppBar))
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.content)
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         if (savedInstanceState == null) {
             val args = bundleOf(

@@ -41,11 +41,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
 import androidx.core.animation.doOnEnd
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.preference.PreferenceManager
@@ -461,6 +462,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         val ta = theme.obtainStyledAttributes(R.style.AppTheme_Actionbar, intArrayOf(R.attr.displayOptions))
         supportActionBar?.displayOptions = ta.getInt(0, 0)
         ta.recycle()
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            binding.content
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         volumeControlStream = AudioManager.STREAM_MUSIC
         buildMediaPlayer()
