@@ -157,4 +157,5 @@
     <string name="label_shop_active">Ativo</string>
     <string name="label_shop_inactive">Loja desativada</string>
     <string name="pin_protection">Proteção por PIN</string>
+    <string name="settings_label_device_name">Nome do dispositivo</string>
 </resources>
