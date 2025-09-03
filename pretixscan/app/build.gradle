@@ -190,7 +190,7 @@ sqldelight {
 
             dependency(project(":libpretixsync"))
 
-            // Oldest dialect supported by SQLDelight 2.0.2
+            // Oldest dialect supported by SQLDelight 2.1.0
             // In Android projects, it will auto-select based on SDK
             // but not go lower than 3.18 (Android 9 is still on 3.8)
             dialect "app.cash.sqldelight:sqlite-3-18-dialect:$sqldelight_version"
