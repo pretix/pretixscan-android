@@ -131,7 +131,7 @@
     <string name="settings_label_version">バージョン</string>
     <string name="settings_label_troubleshooting">トラブルシューティング</string>
     <string name="settings_label_device_name">デバイス名</string>
-    <string name="force_full_resync_help">これによりローカルデータが削除されることはありませんが、すべてのイベントの次回同期が完全同期となります。つまり、変更されたデータのみではなく、すべてのデータを再ダウンロードすることになります。</string>
+    <string name="force_full_resync_help">ローカルデータが削除されることはありませんが、すべてのイベントの次回同期が完全同期となり、変更されたデータのみではなく、すべてのデータを再ダウンロードすることになります。</string>
     <string name="full_delete">すべてのローカルデータを削除してデバイスをリセット</string>
     <string name="full_delete_confirm">本当にデバイスをリセットしますか？オンラインシステムと再度ペアリングする必要があります。</string>
     <string name="label_shop_active">有効</string>
