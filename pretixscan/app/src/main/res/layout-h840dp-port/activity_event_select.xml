@@ -24,8 +24,7 @@
             android:background="?android:colorBackground"
             android:elevation="6dp"
             android:maxWidth="720dp"
-            android:transitionName="morph_transition"
-            tools:targetApi="lollipop">
+            android:transitionName="morph_transition">
 
 
             <TextView

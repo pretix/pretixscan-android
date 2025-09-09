@@ -1,6 +1,5 @@
 package eu.pretix.pretixpos.anim
 
-import android.os.Build
 import android.transition.ArcMotion
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -36,6 +35,7 @@ abstract class MorphingDialogActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         supportFinishAfterTransition()
     }
 }
