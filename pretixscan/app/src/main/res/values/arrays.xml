@@ -16,4 +16,9 @@
         <item>once</item>
         <item>true</item>
     </string-array>
+    <string-array name="settings_values_scan_engine">
+        <item>zxing</item>
+        <item>mlkit</item>
+        <item>hardware</item>
+    </string-array>
 </resources>
