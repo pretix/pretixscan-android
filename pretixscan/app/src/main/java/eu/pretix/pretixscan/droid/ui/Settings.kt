@@ -12,6 +12,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -221,6 +222,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_generic_fragment)
         setSupportActionBar(findViewById(R.id.topAppBar))
