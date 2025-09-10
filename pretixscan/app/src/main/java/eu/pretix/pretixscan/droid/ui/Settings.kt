@@ -12,11 +12,15 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
@@ -121,7 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 setMessage(R.string.full_delete_confirm)
                 setPositiveButton(R.string.yes) { dialog, _ ->
                     dialog.dismiss()
-                    wipeApp(requireActivity())
+                    wipeApp(requireActivity(), true)
                 }
                 setNegativeButton(R.string.no) { dialog, _ -> dialog.cancel() }
             }.create().show()
@@ -216,8 +220,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setupActionBar()
+        setContentView(R.layout.activity_generic_fragment)
+        setSupportActionBar(findViewById(R.id.topAppBar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.content)
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val c = AppConfig(this)
         if (c.requiresPin("settings") && (!intent.hasExtra("pin") || !c.verifyPin(
@@ -233,16 +256,8 @@ class SettingsActivity : AppCompatActivity() {
 
         // Display the fragment as the main content.
         supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, SettingsFragment())
+            .replace(R.id.content, SettingsFragment())
             .commit()
-    }
-
-    /**
-     * Set up the [android.app.ActionBar], if the API is available.
-     */
-    private fun setupActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onBackPressed() {

@@ -5,7 +5,6 @@
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>
         <item name="logo">@drawable/ic_logo</item>
-        <item name="android:windowActionBarOverlay">true</item>
     </style>
 
     <style name="AppTheme.Dialog" parent="Theme.Material3.Light.Dialog">
@@ -17,11 +16,24 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.AppTheme.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/pretix_brand_light</item>
         <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
         <item name="colorAccent">@color/pretix_brand_green</item>
     </style>
+
+    <style name="Base.AppTheme.NoActionBar.Dark" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/pretix_brand_light</item>
+        <item name="colorPrimaryDark">@color/pretix_brand_dark</item>
+        <item name="colorAccent">@color/pretix_brand_green</item>
+        <item name="logo">@drawable/ic_logo</item>
+        <item name="appBarLayoutStyle">@style/Widget.App.AppBarLayout</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+    </style>
+
+    <!-- this enables overrides in values-v23/styles.xml -->
+    <style name="AppTheme.NoActionBar" parent="Base.AppTheme.NoActionBar" />
+    <style name="AppTheme.NoActionBar.Dark" parent="Base.AppTheme.NoActionBar.Dark" />
 
     <style name="AppTheme.Dialog.Animated" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/pretix_brand_light</item>
@@ -36,5 +48,26 @@
     <!-- NOTE: this has an override in values-land/styles.xml -->
     <style name="AppTheme.Actionbar" parent="ThemeOverlay.AppCompat.Dark">
         <item name="displayOptions">showHome|useLogo</item>
+    </style>
+
+    <style name="Widget.App.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="android:background">@color/pretix_brand_dark</item>
+        <item name="liftOnScroll">false</item>
+    </style>
+
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar.Surface">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar.Surface</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="titleMarginStart">20dp</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar.Surface" parent="ThemeOverlay.Material3.Toolbar.Surface">
+        <item name="colorSurface">@color/pretix_brand_light</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
     </style>
 </resources>

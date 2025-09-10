@@ -66,8 +66,8 @@ internal class CheckInListAdapter(var selectedList: CheckInList?) :
         }
     }
 
-    override fun onCheckedChanged(v: CompoundButton?, checked: Boolean) {
-        onClick(v?.parent as View)
+    override fun onCheckedChanged(v: CompoundButton, checked: Boolean) {
+        onClick(v.parent as View)
     }
 
     override fun submitList(list: List<CheckInList>?) {

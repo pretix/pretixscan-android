@@ -16,13 +16,11 @@
 
 package eu.pretix.pretixscan.droid.anim;
 
-import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.Property;
 
 import androidx.annotation.ColorInt;
@@ -31,7 +29,6 @@ import androidx.annotation.ColorInt;
  * A drawable that can morph size, shape (via it's corner radius) and color.  Specifically this is
  * useful for animating between a FAB and a dialog.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MorphDrawable extends Drawable {
 
     private Paint paint;
@@ -90,7 +87,7 @@ public class MorphDrawable extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         canvas.drawRoundRect(getBounds().left, getBounds().top, getBounds().right, getBounds()
-                .bottom, cornerRadius, cornerRadius, paint);//hujiawei
+                .bottom, cornerRadius, cornerRadius, paint);
     }
 
     @Override

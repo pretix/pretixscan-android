@@ -19,9 +19,7 @@ package eu.pretix.pretixscan.droid.anim;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.transition.ChangeBounds;
 import android.transition.TransitionValues;
 import android.util.AttributeSet;
@@ -35,7 +33,6 @@ import eu.pretix.pretixscan.droid.R;
 /**
  * A transition that morphs a circle into a rectangle, changing it's background color.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MorphViewToDialog extends ChangeBounds {
 
     private static final String PROPERTY_COLOR = "circleMorph:color";

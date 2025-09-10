@@ -45,6 +45,8 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.preference.PreferenceManager
@@ -463,6 +465,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         supportActionBar?.displayOptions = ta.getInt(0, 0)
         ta.recycle()
 
+        ViewCompat.setOnApplyWindowInsetsListener(
+            binding.content
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
         volumeControlStream = AudioManager.STREAM_MUSIC
         buildMediaPlayer()
 
@@ -843,6 +861,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 null
             }
             "SEUIC" -> if (Build.MODEL.startsWith("AUTOID Pad Air")) {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            } else {
+                null
+            }
+            "M3" -> if (Build.MODEL.startsWith("M3PC")) {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
             } else {
                 null

@@ -4,28 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="data"
             type="eu.pretix.pretixscan.droid.ui.ViewDataHolder" />
 
         <import type="eu.pretix.pretixscan.droid.ui.ResultState" />
-
         <import type="android.view.View" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:keepScreenOn="true"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
 
             <include android:id="@+id/mainToolbar" layout="@layout/include_main_toolbar" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_offline_bar"
@@ -692,7 +700,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </FrameLayout>
-
         </LinearLayout>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

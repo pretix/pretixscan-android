@@ -181,6 +181,6 @@ class CheckInListSelectActivity : MorphingDialogActivity() {
 
     override fun onBackPressed() {
         setResult(RESULT_CANCELED)
-        supportFinishAfterTransition()
+        super.onBackPressed()
     }
 }

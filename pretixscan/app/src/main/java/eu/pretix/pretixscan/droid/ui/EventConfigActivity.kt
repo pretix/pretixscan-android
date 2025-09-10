@@ -4,9 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -147,9 +151,28 @@ class EventConfigActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityEventConfigBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(findViewById(R.id.topAppBar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.content)
+        ) { v, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                top = 0, // handled by AppBar
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
         conf = AppConfig(this)
         eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).db, conf, this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
