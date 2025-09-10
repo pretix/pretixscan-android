@@ -76,7 +76,10 @@ fun createSyncDatabase(
 fun createDriver(context: Context, dbName: String, dbPass: String?): AndroidSqliteDriver {
     val callback = object : AndroidSqliteDriver.Callback(
         schema = SyncDatabase.Schema,
-        callbacks = arrayOf(Migrations.minVersionCallback),
+        callbacks = arrayOf(
+            Migrations.minVersionCallback,
+            Migrations.clearResourceSyncStatusCallback,
+        ),
     ) {
         override fun onOpen(db: SupportSQLiteDatabase) {
             db.setForeignKeyConstraintsEnabled(true)
