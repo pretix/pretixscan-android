@@ -10,6 +10,7 @@ import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 
 import org.json.JSONException
 
@@ -46,6 +47,7 @@ class EventinfoActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_eventinfo)
         setSupportActionBar(findViewById(R.id.topAppBar))
