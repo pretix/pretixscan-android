@@ -83,7 +83,7 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
 
     override fun config(useCamera: Boolean) {
         val conf = AppConfig(this)
-        conf.useCamera = useCamera
+        conf.scanEngine = if (useCamera) "zxing" else "hardware"
     }
 
     override fun setup(url: String, token: String) {

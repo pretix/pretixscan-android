@@ -1,0 +1,4 @@
+selectForItem:
+SELECT *
+FROM BadgeLayoutItem
+WHERE item = ?;

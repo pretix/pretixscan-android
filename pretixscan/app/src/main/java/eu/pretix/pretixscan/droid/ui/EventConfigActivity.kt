@@ -15,15 +15,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.EventSelection
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityEventConfigBinding
 import eu.pretix.pretixscan.droid.databinding.ItemEventSelectionBinding
-import io.requery.BlockingEntityStore
-import io.requery.Persistable
+import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import org.joda.time.DateTime
 
 
@@ -37,15 +35,19 @@ class EventSelectionDiffCallback : DiffUtil.ItemCallback<EventSelection>() {
     }
 }
 
-internal class EventSelectionAdapter(private val store: BlockingEntityStore<Persistable>, private val config: AppConfig, private val activity: EventConfigActivity) :
+internal class EventSelectionAdapter(private val db: SyncDatabase, private val config: AppConfig, private val activity: EventConfigActivity) :
         ListAdapter<EventSelection, BindingHolder<ItemEventSelectionBinding>>(EventSelectionDiffCallback()) {
     var list: List<EventSelection>? = null
 
     override fun onBindViewHolder(holder: BindingHolder<ItemEventSelectionBinding>, position: Int) {
         val event = getItem(position)
+        val checkInListName = db.checkInListQueries.selectByServerId(event.checkInList)
+            .executeAsList()
+            .firstOrNull()
+            ?.name ?: "list ${event.checkInList}"
+
         holder.binding.eventSelection = event
-        holder.binding.checkinListName = store.select(CheckInList.NAME).from(CheckInList::class.java).where(CheckInList.SERVER_ID.eq(event.checkInList)).get().firstOrNull()?.get(0)
-                ?: "list ${event.checkInList}"
+        holder.binding.checkinListName = checkInListName
         holder.binding.deleteButton.setOnClickListener {
             config.removeEvent(event.eventSlug)
             refresh()
@@ -172,7 +174,7 @@ class EventConfigActivity : AppCompatActivity() {
         }
 
         conf = AppConfig(this)
-        eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).data, conf, this)
+        eventSelectionAdapter = EventSelectionAdapter((application as PretixScan).db, conf, this)
         if (conf.requiresPin("switch_event") && (!intent.hasExtra("pin") || !conf.verifyPin(intent.getStringExtra("pin")!!))) {
             // Protect against external calls
             finish()
