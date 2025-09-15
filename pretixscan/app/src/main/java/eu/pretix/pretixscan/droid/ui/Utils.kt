@@ -6,7 +6,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.PendingIntentCompat
-import eu.pretix.libpretixsync.Models
+import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
@@ -51,7 +51,7 @@ fun wipeApp(ctx: Context, shouldRevoke: Boolean = false) {
         withContext(Dispatchers.Main) {
             conf.resetDeviceConfig()
 
-            ctx.deleteDatabase(Models.DEFAULT.name)
+            ctx.deleteDatabase(Migrations.DEFAULT_DATABASE_NAME)
 
             pdialog.dismiss()
 

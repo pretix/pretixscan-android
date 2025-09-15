@@ -32,7 +32,7 @@ class WelcomeActivity : AppCompatActivity() {
         setSupportActionBar(binding.topAppBar)
 
         ViewCompat.setOnApplyWindowInsetsListener(
-            binding.content as View
+            binding.content
         ) { v, windowInsets ->
             val insets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.systemBars()

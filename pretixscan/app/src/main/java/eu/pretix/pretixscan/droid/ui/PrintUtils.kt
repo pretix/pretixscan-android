@@ -10,12 +10,13 @@ import android.os.Parcel
 import android.os.ResultReceiver
 import androidx.core.content.FileProvider
 import eu.pretix.libpretixsync.api.PretixApi
-import eu.pretix.libpretixsync.db.*
+import eu.pretix.libpretixsync.db.NonceGenerator
+import eu.pretix.libpretixsync.models.BadgeLayout
+import eu.pretix.libpretixsync.models.db.toModel
+import eu.pretix.pretixscan.droid.AndroidFileStorage
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
-import eu.pretix.pretixscan.droid.PretixScan
-import io.requery.Persistable
-import io.requery.BlockingEntityStore
+import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -28,39 +29,31 @@ import java.util.TimeZone
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
-    val tl = BadgeLayout()
-    tl.setJson_data("{\"layout\": [{\"type\":\"textarea\",\"left\":\"13.09\",\"bottom\":\"49.73\",\"fontsize\":\"23.6\",\"color\":[0,0,0,1],\"fontfamily\":\"Open Sans\",\"bold\":true,\"italic\":false,\"width\":\"121.83\",\"content\":\"attendee_name\",\"text\":\"Max Mustermann\",\"align\":\"center\"}]}")
-    return tl
+    return BadgeLayout.defaultWithLayout(
+        "[{\"type\":\"textarea\",\"left\":\"13.09\",\"bottom\":\"49.73\",\"fontsize\":\"23.6\",\"color\":[0,0,0,1],\"fontfamily\":\"Open Sans\",\"bold\":true,\"italic\":false,\"width\":\"121.83\",\"content\":\"attendee_name\",\"text\":\"Max Mustermann\",\"align\":\"center\"}]",
+    )
 }
 
-fun getBadgeLayout(application: PretixScan, position: JSONObject, eventSlug: String): BadgeLayout? {
-    val event = application.data.select(Event::class.java)
-        .where(Event.SLUG.eq(eventSlug))
-        .get().firstOrNull()
-    if (!event.hasPlugin("pretix.plugins.badges")) {
+fun getBadgeLayout(db: SyncDatabase, position: JSONObject, eventSlug: String): BadgeLayout? {
+    val event = db.eventQueries.selectBySlug(eventSlug).executeAsOneOrNull()?.toModel()
+    if (event == null || !event.plugins.contains("pretix.plugins.badges")) {
         return null
     }
 
     val itemid_server = position.getLong("item")
-    val itemid_local = application.data.select(Item::class.java)
-        .where(Item.SERVER_ID.eq(itemid_server))
-        .get().firstOrNull().getId()
-
-    val litem = application.data.select(BadgeLayoutItem::class.java)
-        .where(BadgeLayoutItem.ITEM_ID.eq(itemid_local))
-        .get().firstOrNull()
+    val itemid_local = db.itemQueries.selectByServerId(itemid_server).executeAsOneOrNull()?.id
+    val litem = db.scanBadgeLayoutItemQueries.selectForItem(itemid_local).executeAsOneOrNull()
     if (litem != null) {
-        if (litem.getLayout() == null) { // "Do not print badges" is configured for this product
+        val layoutId = litem.layout
+        if (layoutId == null) { // "Do not print badges" is configured for this product
             return null
         } else { // A non-default badge layout is set for this product
-            return litem.getLayout()
+            return db.badgeLayoutQueries.selectById(layoutId).executeAsOneOrNull()?.toModel()
         }
     }
 
-    return application.data.select(BadgeLayout::class.java)
-        .where(BadgeLayout.IS_DEFAULT.eq(true))
-        .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-        .get().firstOrNull() ?: getDefaultBadgeLayout()
+    return db.badgeLayoutQueries.selectDefaultForEventSlug(eventSlug)
+        .executeAsOneOrNull()?.toModel() ?: getDefaultBadgeLayout()
 }
 
 fun isPackageInstalled(packagename: String, packageManager: PackageManager): Boolean {
@@ -85,7 +78,8 @@ fun receiverForSending(actualReceiver: ResultReceiver): ResultReceiver {
 
 fun printBadge(
     context: Context,
-    application: PretixScan,
+    db: SyncDatabase,
+    fileStorage: AndroidFileStorage,
     position: JSONObject,
     eventSlug: String,
     recv: ResultReceiver?
@@ -95,7 +89,6 @@ fun printBadge(
     if (AppConfig(context).printBadgesTwice) {
         positions.put(position)
     }
-    val store = application.data
     val data = JSONObject()
     data.put("positions", positions)
 
@@ -106,19 +99,21 @@ fun printBadge(
     val dataFile = File(dir, "order.json")
     val mediaFiles = ArrayList<File>()
 
-    val badgelayout = getBadgeLayout(application, position, eventSlug) ?: return
-    position.put("__layout", badgelayout.json.getJSONArray("layout"))
+    val badgelayout = getBadgeLayout(db, position, eventSlug) ?: return
+    position.put("__layout", badgelayout.layout)
 
-    if (badgelayout.getBackground_filename() != null) {
-        mediaFiles.add(application.fileStorage.getFile(badgelayout.getBackground_filename()))
+    val backgroundFilename = badgelayout.backgroundFilename
+    if (backgroundFilename != null) {
+        mediaFiles.add(fileStorage.getFile(backgroundFilename))
         position.put("__file_index", mediaFiles.size)
     }
 
     val etagMap = JSONObject()
-    val files = store.select(CachedPdfImage::class.java)
-        .where(CachedPdfImage.ORDERPOSITION_ID.eq(position.getLong("id"))).get().toList()
+    val files = db.cachedPdfImageQueries.selectForOrderPosition(position.getLong("id"))
+        .executeAsList()
+        .map { it.toModel() }
     for (f in files) {
-        mediaFiles.add(application.fileStorage.getFile("pdfimage_${f.getEtag()}.bin"))
+        mediaFiles.add(fileStorage.getFile("pdfimage_${f.etag}.bin"))
         etagMap.put(f.key, mediaFiles.size)
     }
     position.put("__image_map", etagMap)
@@ -194,7 +189,7 @@ fun printBadge(
     }
 }
 
-fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONObject): Boolean {
+fun isPreviouslyPrinted(db: SyncDatabase, position: JSONObject): Boolean {
     if (position.has("print_logs")) {
         val arr = position.getJSONArray("print_logs")
         val arrlen = arr.length()
@@ -208,10 +203,9 @@ fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONOb
             }
         }
     }
-    if (data.count(QueuedCall::class.java)
-            .where(QueuedCall.URL.like("%orderpositions/" + position.getLong("id") + "/printlog/"))
-            .get().value() > 0
-    ) {
+
+    val count = db.scanQueuedCallQueries.countWhereUrlLike("%orderpositions/" + position.getLong("id") + "/printlog/").executeAsOne()
+    if (count > 0) {
         return true
     }
     return false
@@ -219,7 +213,7 @@ fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONOb
 
 fun logSuccessfulPrint(
     api: PretixApi,
-    data: BlockingEntityStore<Persistable>,
+    db: SyncDatabase,
     eventSlug: String,
     positionId: Long,
     type: String
@@ -236,9 +230,9 @@ fun logSuccessfulPrint(
     df.timeZone = tz
     logbody.put("datetime", df.format(Date()))
 
-    val log = QueuedCall()
-    log.setBody(logbody.toString())
-    log.setIdempotency_key(NonceGenerator.nextNonce())
-    log.setUrl(api.eventResourceUrl(eventSlug, "orderpositions") + positionId + "/printlog/")
-    data.insert(log)
+    db.queuedCallQueries.insert(
+        body = logbody.toString(),
+        idempotency_key = NonceGenerator.nextNonce(),
+        url = api.eventResourceUrl(eventSlug, "orderpositions") + positionId + "/printlog/",
+    )
 }

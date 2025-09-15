@@ -27,7 +27,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import eu.pretix.libpretixsync.db.ResourceSyncStatus
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -102,8 +101,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             // First, delete ResourceSyncStatus. This way the system forgets which data was already
             // pulled and will pull all lists completely instead of using If-Modified-Since or
             // ?modified_since= mechanisms
-            (requireActivity().application as PretixScan).data.delete(ResourceSyncStatus::class.java).get()
-                .value();
+            (requireActivity().application as PretixScan).db.compatQueries.truncateResourceSyncStatus()
 
             // To make sync faster, we only update records in the local database if their `json_data`
             // column is different than what we received from the server. However, if there was a
