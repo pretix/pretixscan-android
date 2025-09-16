@@ -158,4 +158,7 @@
     <string name="error_no_available_events">No se ha encontrado ningún evento presente o futuro. Compruebe las fechas y los derechos de acceso de los eventos.</string>
     <string name="settings_summary_kioskmode">El modo Kiosko oculta los menús que no deben utilizarse en una instalación de autoservicio. El modo Kiosko no impide que los usuarios salgan de la app a través de las funciones del sistema. Para acceder a los ajustes, es necesario escanear un código QR junto con el PIN.</string>
     <string name="settings_label_device_name">Nombre del dispositivo</string>
+    <string name="reinstall_open_app_settings">Abrir los ajustes de la aplicación Android</string>
+    <string name="headline_please_reinstall">Por favor, reinstale pretixSCAN</string>
+    <string name="reinstall_text">La versión anterior de pretixSCAN es demasiado antigua y los datos locales no se pueden utilizar con la versión actual.\n\nBorre la memoria caché de la aplicación pretixSCAN o elimine y vuelva a instalar la aplicación.</string>
 </resources>
