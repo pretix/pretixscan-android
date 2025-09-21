@@ -150,4 +150,7 @@
     <string name="currently_inside">現在参加中</string>
     <string name="error_no_available_events">現在または将来のイベントが見つかりませんでした。イベントの日程とアクセス権限を確認してください。</string>
     <string name="event_select_calendar">カレンダーを表示</string>
+    <string name="headline_please_reinstall">pretixSCANを再インストールしてください</string>
+    <string name="reinstall_text">以前のpretixSCANバージョンが古すぎるため、ローカルデータを現在のバージョンで使用できません。\n\npretixSCANアプリのストレージをクリアするか、アプリを削除して再インストールしてください。</string>
+    <string name="reinstall_open_app_settings">Androidアプリ設定を開く</string>
 </resources>
