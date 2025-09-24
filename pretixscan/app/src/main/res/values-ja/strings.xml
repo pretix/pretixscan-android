@@ -146,7 +146,7 @@
     <string name="pin_protection_statistics">統計を保護</string>
     <string name="pin_protection_switch_event">イベント切り替えを保護</string>
     <string name="pin_protection_switch_mode">モード切り替えを保護</string>
-    <string name="pin_protection_enter">PINを入力</string>
+    <string name="pin_protection_enter">PINを入力する</string>
     <string name="currently_inside">現在参加中</string>
     <string name="error_no_available_events">現在または将来のイベントが見つかりませんでした。イベントの日程とアクセス権限を確認してください。</string>
     <string name="event_select_calendar">カレンダーを表示</string>
