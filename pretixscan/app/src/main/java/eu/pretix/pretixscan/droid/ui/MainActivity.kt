@@ -56,8 +56,16 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.google.android.gms.common.moduleinstall.InstallStatusListener
+import com.google.android.gms.common.moduleinstall.ModuleInstall
+import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
+import com.google.android.gms.common.moduleinstall.ModuleInstallStatusUpdate
+import com.google.android.gms.common.moduleinstall.ModuleInstallStatusUpdate.InstallState.STATE_CANCELED
+import com.google.android.gms.common.moduleinstall.ModuleInstallStatusUpdate.InstallState.STATE_COMPLETED
+import com.google.android.gms.common.moduleinstall.ModuleInstallStatusUpdate.InstallState.STATE_FAILED
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.mlkit.vision.barcode.BarcodeScanning
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -527,6 +535,66 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 (supportFragmentManager.findFragmentByTag(PinDialog.TAG) as? PinDialog)?.dismiss()
                 pendingPinAction?.let { it(pin) }
             }
+        }
+
+        if (conf.scanEngine == "mlkit") {
+            val moduleInstallClient = ModuleInstall.getClient(this)
+            val barcodeModule = BarcodeScanning.getClient()
+            moduleInstallClient.areModulesAvailable(
+                barcodeModule
+            )
+            class ModuleInstallProgressListener : InstallStatusListener {
+                override fun onInstallStatusUpdated(update: ModuleInstallStatusUpdate) {
+                    // Progress info is only set when modules are in the progress of downloading.
+                    update.progressInfo?.let {
+                        val progress = (it.bytesDownloaded * 100 / it.totalBytesToDownload).toInt()
+                        // Set the progress for the progress bar.
+                        //progressBar.setProgress(progress)
+                    }
+
+                    if (isTerminateState(update.installState)) {
+                        moduleInstallClient.unregisterListener(this)
+                    }
+                    if (update.installState == STATE_COMPLETED) {
+                        // -> switch engine
+                        switchScanEngine()
+                    }
+                }
+
+                fun isTerminateState(@ModuleInstallStatusUpdate.InstallState state: Int): Boolean {
+                    return state == STATE_CANCELED || state == STATE_COMPLETED || state == STATE_FAILED
+                }
+            }
+
+            val listener = ModuleInstallProgressListener()
+            val moduleInstallRequest = ModuleInstallRequest.newBuilder()
+                .addApi(barcodeModule)
+                .setListener(listener)
+                .build()
+
+            moduleInstallClient
+                .installModules(moduleInstallRequest)
+                .addOnSuccessListener {
+                    if (it.areModulesAlreadyInstalled()) {
+                        // Modules are already installed when the request is sent.
+                        // -> switch engine
+                        switchScanEngine()
+                    }
+                    // The install request has been sent successfully. This does not mean
+                    // the installation is completed. To monitor the install status, set an
+                    // InstallStatusListener to the ModuleInstallRequest.
+                }
+                .addOnFailureListener {
+                    // Handle failure…
+                }
+        }
+    }
+
+    private fun switchScanEngine() {
+        when(conf.scanEngine) {
+            "zxing" -> binding.scannerView.setAnalyzer(ScannerView.Companion.ANALYZER.ZXING)
+            "mlkit" -> binding.scannerView.setAnalyzer(ScannerView.Companion.ANALYZER.MLKIT)
+            else -> {}
         }
     }
 

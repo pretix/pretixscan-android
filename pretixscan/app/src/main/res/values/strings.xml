@@ -135,6 +135,7 @@
     <string name="preference_badgeprint_enable">Enable badge printing</string>
     <string name="preference_autobadgeprint_enable">Print badges automatically</string>
     <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do you want to install it?</string>
+    <string name="preference_scan_engine">Barcode scanner to use</string>
     <string name="already_scanned">already scanned</string>
     <string name="total_tickets_sold">total tickets sold</string>
     <string name="ticket_attention">Attention, special ticket!</string>
@@ -168,6 +169,11 @@
         <item>No, only when button is pressed</item>
         <item>Once, if not yet printed</item>
         <item>Always</item>
+    </string-array>
+    <string-array name="settings_valuelabels_scan_engine">
+        <item>Zebra Crossing (ZXing)</item>
+        <item>Google ML Kit</item>
+        <item>Hardware scanner of this device</item>
     </string-array>
     <string name="headline_please_reinstall">Please reinstall pretixSCAN</string>
     <string name="reinstall_text">Your previous pretixSCAN version was too old and your local data cannot be used for the current version.\n\nPlease clear the storage for the pretixSCAN app or delete and reinstall the app.</string>

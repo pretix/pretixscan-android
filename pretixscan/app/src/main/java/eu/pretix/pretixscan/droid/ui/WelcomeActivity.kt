@@ -59,7 +59,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         if (defaultToScanner()) {
             val conf = AppConfig(this)
-            conf.useCamera = false
+            conf.scanEngine = "hardware"
         }
     }
 
