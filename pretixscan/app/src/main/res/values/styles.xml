@@ -69,6 +69,6 @@
         <item name="colorOnSurface">@color/white</item>
         <item name="colorOnSurfaceVariant">@color/white</item>
         <item name="colorControlHighlight">@color/white</item>
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:editTextColor">@color/white</item>
     </style>
 </resources>
