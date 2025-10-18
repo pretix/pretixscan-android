@@ -16,7 +16,7 @@
     <string name="error_unknown_exception">不明なエラーが発生しました</string>
     <string name="action_sync">いますぐ同期する</string>
     <string name="progress_syncing_first">イベントの設定をダウンロード中…</string>
-    <string name="progress_syncing">サーバと同期中…</string>
+    <string name="progress_syncing">サーバーと同期中…</string>
     <string name="progress_processing">処理中…</string>
     <string name="progress_registering">デバイスをサーバに登録中…</string>
     <string name="error_not_synchronized">デバイスは、サーバと正常に同期できませんでした</string>
@@ -45,7 +45,7 @@
     <plurals name="sync_status_time_days">
         <item quantity="other">%d 日前に同期済み</item>
     </plurals>
-    <string name="sync_status_now">直前に同期済み</string>
+    <string name="sync_status_now">たった今同期済み</string>
     <plurals name="sync_status_pending">
         <item quantity="other">保留中のアップロードが%d件</item>
     </plurals>
