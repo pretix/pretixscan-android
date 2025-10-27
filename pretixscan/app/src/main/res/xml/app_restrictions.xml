@@ -5,6 +5,7 @@
         android:key="pref_sync_auto"
         android:restrictionType="bool"
         android:title="@string/settings_label_auto_sync" />
+    <!-- FIXME, remove/migrate? -->
     <restriction
         android:defaultValue="true"
         android:key="pref_use_camera"

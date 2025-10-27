@@ -175,6 +175,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+
+        // FIXME: pref_scan_engine. if BuildConfig.FLAVOR_edition == "foss", don't offer mlkit (disable?)
+        // FIXME: pref_scan_engine. check installation status of mlkit and warn for potential large download
+        // FIXME: pref_scan_engine. if changed to mlkit, check installation status
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {

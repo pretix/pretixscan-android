@@ -66,6 +66,12 @@ class AppConfig(ctx: Context) : ConfigStore {
                 .putString(PREFS_KEY_AUTOPRINTBADGES, "once")
                 .commit()
         }
+        if (prefs.contains(LEGACY_PREFS_KEY_USE_CAMERA)) {
+            prefs.edit()
+                .putString(PREFS_KEY_SCAN_ENGINE, if (prefs.getBoolean(LEGACY_PREFS_KEY_USE_CAMERA, true)) "zxing" else "hardware")
+                .remove(LEGACY_PREFS_KEY_USE_CAMERA)
+                .commit()
+        }
     }
 
     override fun isDebug(): Boolean {
@@ -339,9 +345,9 @@ class AppConfig(ctx: Context) : ConfigStore {
             }
         }
 
-    var useCamera: Boolean
-        get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
-        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
+    @Deprecated("use scanEngine instead")
+    val useCamera: Boolean
+        get() = default_prefs.getString(PREFS_KEY_SCAN_ENGINE, "zxing") != "hardware"
 
     val hideNames: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_HIDE_NAMES, false)
@@ -397,6 +403,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
 
+    var scanEngine: String
+        get() = default_prefs.getString(PREFS_KEY_SCAN_ENGINE, "zxing") ?: "zxing"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_SCAN_ENGINE, value).apply()
+
     override fun getKnownLiveEventSlugs(): Set<String> {
         return default_prefs.getStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, emptySet()) as Set<String>
     }
@@ -435,7 +445,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_SYNC_ORDERS = "pref_sync_orders"
         val PREFS_KEY_AUTO_SWITCH = "pref_auto_switch"
-        val PREFS_KEY_USE_CAMERA = "pref_use_camera"
+        val LEGACY_PREFS_KEY_USE_CAMERA = "pref_use_camera"
         val PREFS_KEY_SCAN_OFFLINE = "pref_scan_offline"
         val PREFS_KEY_SCAN_OFFLINE_AUTO = "pref_auto_offline"
         val PREFS_KEY_SCAN_PROXY = "pref_scan_proxy"
@@ -451,6 +461,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
+        val PREFS_KEY_SCAN_ENGINE = "pref_scan_engine"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
     }
 }
