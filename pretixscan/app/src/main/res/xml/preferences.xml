@@ -34,6 +34,10 @@
     <PreferenceCategory android:title="@string/settings_label_ui">
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="pref_screen_always_on"
+            android:title="@string/settings_label_screen_always_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_use_camera"
             android:title="@string/settings_label_device_camera" />
         <CheckBoxPreference
@@ -68,6 +72,7 @@
             android:dependency="pref_print_badges"
             android:key="pref_print_badges_twice"
             android:title="@string/preference_badges_twice" />
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_details">
         <CheckBoxPreference

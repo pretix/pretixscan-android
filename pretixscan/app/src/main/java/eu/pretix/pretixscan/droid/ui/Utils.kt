@@ -5,7 +5,10 @@ import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.view.View
+import android.view.WindowManager
 import androidx.core.app.PendingIntentCompat
+import androidx.preference.PreferenceManager
 import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
@@ -64,3 +67,4 @@ fun wipeApp(ctx: Context, shouldRevoke: Boolean = false) {
         }
     }
 }
+

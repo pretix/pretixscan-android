@@ -16,7 +16,6 @@
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -201,7 +200,6 @@
                     android:id="@+id/cl_main"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:keepScreenOn="true"
                     tools:visibility="gone">
 
                     <ImageView

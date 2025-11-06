@@ -55,6 +55,7 @@
     <string name="dismiss">Schließen</string>
     <string name="settings_label_about">Über diese App</string>
     <string name="settings_label_licenses">Autoren und Lizenzen</string>
+    <string name="settings_label_screen_always_on">Bildschirm wach halten</string>
     <string name="settings_label_device_camera">Geräte-Kamera benutzen</string>
     <string name="settings_label_scan_offline">Offline scannen</string>
     <string name="settings_label_auto_offline">Offline-Modus automatisch steuern</string>

@@ -79,6 +79,7 @@
     <string name="settings_label_ui">User interface</string>
     <string name="settings_label_about">About this app</string>
     <string name="settings_label_licenses">Author and licenses</string>
+    <string name="settings_label_screen_always_on">Keep display awake</string>
     <string name="settings_label_device_camera">Use device camera</string>
     <string name="settings_label_scan_offline">Offline scanning</string>
     <string name="settings_label_auto_offline">Automatically turn offline mode on and off</string>
