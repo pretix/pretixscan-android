@@ -171,7 +171,7 @@ class EventSelectActivity : MorphingDialogActivity() {
                 override fun create(view: View) = MonthViewContainer(view)
                 override fun bind(container: MonthViewContainer, month: CalendarMonth) {
                     @SuppressLint("SetTextI18n") // Concatenation warning for `setText` call.
-                    container.textView.text = "${month.yearMonth.month.name.toLowerCase().capitalize()} ${month.year}"
+                    container.textView.text = "${month.yearMonth.month.name.lowercase().capitalize()} ${month.year}"
                 }
             }
             val btnCalendar = findViewById<Button>(R.id.btnCalendar)

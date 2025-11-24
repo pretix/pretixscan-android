@@ -997,7 +997,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             return
         }
 
-        val result = if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.toUpperCase(Locale.getDefault()))) {
+        val result = if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.uppercase(Locale.getDefault()))) {
             /*
              * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supports checking digital COVID vaccination
              * certificates. When scanning them at the correct time, we have a high level of privacy
