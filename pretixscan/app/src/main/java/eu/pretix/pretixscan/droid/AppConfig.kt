@@ -343,6 +343,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_USE_CAMERA, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_USE_CAMERA, value).apply()
 
+    var keepScreenOn: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_SCREEN_ALWAYS_ON, true)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SCREEN_ALWAYS_ON, value).apply()
+
     val hideNames: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_HIDE_NAMES, false)
 
@@ -452,5 +456,6 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
+        private const val PREFS_KEY_SCREEN_ALWAYS_ON = "pref_screen_always_on"
     }
 }

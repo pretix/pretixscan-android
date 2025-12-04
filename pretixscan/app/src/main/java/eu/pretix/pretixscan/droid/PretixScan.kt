@@ -181,9 +181,8 @@ class PretixScan : MultiDexApplication(), Application.ActivityLifecycleCallbacks
     override fun onActivityPaused(activity: Activity) {}
 
     override fun onActivityResumed(activity: Activity) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val shouldKeepScreenOn = prefs.getBoolean("pref_screen_always_on", true)
-        if (shouldKeepScreenOn) {
+
+        if (AppConfig(this).keepScreenOn) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
