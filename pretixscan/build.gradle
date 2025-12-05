@@ -5,6 +5,7 @@ plugins {
     id 'com.google.protobuf' version '0.9.4' apply false
     id 'app.cash.sqldelight' version '2.1.0' apply false
     id "com.jaredsburrows.license" version "0.9.7" apply false
+    id "com.github.gmazzo.buildconfig" version "5.7.1" apply false
 }
 
 allprojects {
