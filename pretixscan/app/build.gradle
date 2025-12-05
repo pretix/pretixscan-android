@@ -17,21 +17,21 @@ try {
 apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
 android {
-    namespace 'eu.pretix.pretixscan.droid'
+    namespace = "eu.pretix.pretixscan.droid"
 
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 107
-        versionName "3.0.1"
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 107
+        versionName = "3.0.1"
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-        multiDexEnabled true
+        multiDexEnabled = true
 
-        setProperty("archivesBaseName", rootProject.name + "-" + versionName)
+        base.archivesName = rootProject.name + "-" + versionName
     }
 
     buildFeatures {
@@ -47,7 +47,7 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
     }
 
     signingConfigs {
@@ -82,7 +82,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            multiDexKeepProguard file('multidex-config.pro')
+            multiDexKeepProguard = file('multidex-config.pro')
             manifestPlaceholders["SENTRY_DSN"] = sentry_dsn
         }
         debug {
@@ -97,13 +97,13 @@ android {
     productFlavors {
         pretix {
             dimension "brand"
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
         }
         flavors.each { flavorName, flavorData ->
             "$flavorName" {
                 dimension "${flavorData['dimension']}"
                 applicationId "${flavorData['appId']}"
-                signingConfig signingConfigs."$flavorName"
+                signingConfig = signingConfigs."$flavorName"
             }
         }
     }
