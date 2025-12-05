@@ -7,6 +7,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import eu.pretix.libpretixsync.sqldelight.CheckIn
 import eu.pretix.libpretixsync.sqldelight.Closing
+import eu.pretix.libpretixsync.sqldelight.Discount
 import eu.pretix.libpretixsync.sqldelight.Event
 import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.libpretixsync.sqldelight.QueuedCheckIn
@@ -55,6 +56,7 @@ fun createSyncDatabase(
             price_after_voucherAdapter = bigDecimalAdapter,
             tax_rateAdapter = bigDecimalAdapter,
             tax_valueAdapter = bigDecimalAdapter,
+            line_price_grossAdapter = bigDecimalAdapter,
         ),
         ReceiptAdapter =
         Receipt.Adapter(
@@ -70,6 +72,11 @@ fun createSyncDatabase(
             date_fromAdapter = dateAdapter,
             date_toAdapter = dateAdapter,
         ),
+        DiscountAdapter =
+        Discount.Adapter(
+            available_fromAdapter = dateAdapter,
+            available_untilAdapter = dateAdapter,
+        )
     )
 }
 
