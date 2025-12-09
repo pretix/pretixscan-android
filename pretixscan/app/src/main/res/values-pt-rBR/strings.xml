@@ -158,4 +158,7 @@
     <string name="label_shop_inactive">Loja desativada</string>
     <string name="pin_protection">Proteção por PIN</string>
     <string name="settings_label_device_name">Nome do dispositivo</string>
+    <string name="headline_please_reinstall">Por favor, reinstale o pretixSCAN</string>
+    <string name="reinstall_text">Sua versão anterior do pretixSCAN é muito antiga e os dados locais não podem mais ser utilizados na versão atual.\n\nPor favor, limpe o armazenamento para o pretixSCAN ou exclua e reinstale a aplicação.</string>
+    <string name="reinstall_open_app_settings">Abrir configurações de App do Android</string>
 </resources>
