@@ -172,4 +172,6 @@
     <string name="reinstall_text">Ihre vorherige pretixSCAN Version war zu alt und die lokalen Daten können nicht für die aktuelle Version verwendet werden.\n\nBitte löschen Sie den Speicherinhalt für die pretixSCAN App oder löschen und installieren Sie die App neu.</string>
     <string name="reinstall_open_app_settings">Android App-Einstellungen öffnen</string>
     <string name="settings_label_device_name">Gerätename</string>
+    <string name="hint_url">URL</string>
+    <string name="hint_token">Token</string>
 </resources>
