@@ -64,3 +64,4 @@ fun wipeApp(ctx: Context, shouldRevoke: Boolean = false) {
         }
     }
 }
+

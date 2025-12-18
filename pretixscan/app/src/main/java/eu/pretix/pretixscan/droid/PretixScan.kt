@@ -1,7 +1,11 @@
 package eu.pretix.pretixscan.droid
 
+import android.app.Activity
+import android.app.Application
 import android.database.sqlite.SQLiteException
 import android.os.Build
+import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import app.cash.sqldelight.db.QueryResult
@@ -24,7 +28,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
 import java.util.concurrent.locks.ReentrantLock
 
 
-class PretixScan : MultiDexApplication() {
+class PretixScan : MultiDexApplication(), Application.ActivityLifecycleCallbacks {
     val fileStorage = AndroidFileStorage(this)
     val syncLock = ReentrantLock()
     lateinit var connectivityHelper: ConnectivityHelper
@@ -111,7 +115,7 @@ class PretixScan : MultiDexApplication() {
         }
 
         // Uncomment LogSqliteDriver for verbose logging
-        val driver = if(BuildConfig.DEBUG) {
+        val driver = if (BuildConfig.DEBUG) {
 //            LogSqliteDriver(androidDriver) {
 //                Log.d("SQLDelight", it)
 //            }
@@ -135,6 +139,9 @@ class PretixScan : MultiDexApplication() {
         }
 
         connectivityHelper = ConnectivityHelper(AppConfig(this))
+
+
+        registerActivityLifecycleCallbacks(this)
     }
 
     fun getCheckProvider(conf: AppConfig): TicketCheckProvider {
@@ -161,6 +168,35 @@ class PretixScan : MultiDexApplication() {
             return OnlineCheckProvider(conf, AndroidHttpClientFactory(this), db, fileStorage, fallback, fallbackTimeout)
         }
     }
+
+    override fun onActivityCreated(
+        activity: Activity,
+        savedInstanceState: Bundle?
+    ) {
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {}
+
+    override fun onActivityPaused(activity: Activity) {}
+
+    override fun onActivityResumed(activity: Activity) {
+
+        if (AppConfig(this).keepScreenOn) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
+    override fun onActivitySaveInstanceState(
+        activity: Activity,
+        outState: Bundle
+    ) {
+    }
+
+    override fun onActivityStarted(activity: Activity) {}
+
+    override fun onActivityStopped(activity: Activity) {}
 
     companion object {
         /*
