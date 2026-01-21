@@ -154,4 +154,8 @@
     <string name="pref_ignore_questions">Stel geen vragen tijdens check-in</string>
     <string name="pin_protection_enter">Voer PIN in</string>
     <string name="settings_label_device_name">Apparaatnaam</string>
+    <string name="settings_label_screen_always_on">Scherm actief houden</string>
+    <string name="headline_please_reinstall">Installeer pretixSCAN opnieuw</string>
+    <string name="reinstall_text">Uw vorige versie van pretixSCAN was te oud en uw lokale gegevens kunnen niet worden gebruikt voor de huidige versie.\n\nWis de opslagruimte voor de pretixSCAN-app of verwijder de app en installeer deze opnieuw.</string>
+    <string name="reinstall_open_app_settings">Open de instellingen van de Android-app</string>
 </resources>
