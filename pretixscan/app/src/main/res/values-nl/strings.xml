@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ok">OK</string>
-    <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
-    <string name="first_scanned">Eerst gescanned: %s</string>
+    <string name="ok">Oké</string>
+    <string name="datetime_format">%1$td-%1$tm-%1$tY %1$tH:%1$tM</string>
+    <string name="first_scanned">Eerst gescand: %s</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <plurals name="sync_status_pending">
@@ -14,36 +14,36 @@
     <string name="sync_status_never">nog niet gesynchroniseerd</string>
     <string name="sync_status_last_failed">Laatste mislukte synchronisatie:</string>
     <string name="sync_status_last">Laatste gelukte synchronisatie:</string>
-    <string name="sync_status">Synchronisatie status</string>
+    <string name="sync_status">Synchronisatiestatus</string>
     <plurals name="sync_status_time_days">
-        <item quantity="one">%d Dag geleden gesynchroniseerd</item>
-        <item quantity="other">%d Dagen geleden gesynchroniseerd</item>
+        <item quantity="one">%d dag geleden gesynchroniseerd</item>
+        <item quantity="other">%d dagen geleden gesynchroniseerd</item>
     </plurals>
     <plurals name="sync_status_time_hours">
-        <item quantity="one">%d Uur geleden gesynchroniseerd</item>
-        <item quantity="other">%d Uren geleden gesynchroniseerd</item>
+        <item quantity="one">%d uur geleden gesynchroniseerd</item>
+        <item quantity="other">%d uren geleden gesynchroniseerd</item>
     </plurals>
     <plurals name="sync_status_time_minutes">
-        <item quantity="one">%d Minuut geleden gesynchroniseerd</item>
-        <item quantity="other">%d Minuten geleden gesynchroniseerd</item>
+        <item quantity="one">%d minuut geleden gesynchroniseerd</item>
+        <item quantity="other">%d minuten geleden gesynchroniseerd</item>
     </plurals>
-    <string name="settings_label_auto_switch">Selecteer het evenement autmatisch</string>
+    <string name="settings_label_auto_switch">Selecteer het evenement automatisch</string>
     <string name="settings_summary_orders_sync">Zonder deze optie zal pretixSCAN niet de bestellingen kunnen downloaden en niet in staat zijn om met de standaard instellingen offline tickets te scannen.</string>
     <string name="settings_label_orders_sync">Bestellingen downloaden</string>
-    <string name="settings_label_auto_sync">Automatische Synchronisatie</string>
-    <string name="operation_select_checkinlist">Selecteer Check-in lijst</string>
+    <string name="settings_label_auto_sync">Automatische synchronisatie</string>
+    <string name="operation_select_checkinlist">Selecteer check-inlijst</string>
     <string name="operation_select_event">Kies evenement</string>
     <string name="action_search">Zoeken</string>
     <string name="debug_info_device">Apparaat: %1$s</string>
     <string name="debug_info_gate">Poort: %1$s</string>
     <string name="debug_info_list">Lijst: %1$s</string>
     <string name="debug_info_subevent">Datum: %1$s (%2$s)</string>
-    <string name="debug_info_event">Evenent: %1$s</string>
-    <string name="checktype_proxy">Basisstation verificatie</string>
+    <string name="debug_info_event">Evenement: %1$s</string>
+    <string name="checktype_proxy">Verificatie basisstation</string>
     <string name="checktype_offline">Offline verificatie</string>
     <string name="checktype_online">Online verificatie</string>
-    <string name="scantype_exit_kiosk">Scan je ticket om uit te checken</string>
-    <string name="scantype_entry_kiosk">Scan je ticket om in te checken</string>
+    <string name="scantype_exit_kiosk">Scan uw ticket om uit te checken</string>
+    <string name="scantype_entry_kiosk">Scan uw ticket om in te checken</string>
     <string name="scantype_exit">Uitgang</string>
     <string name="scantype_entry">Inkom</string>
     <string name="action_label_scantype_entry">Overschakelen naar scannen voor de binnenkomst</string>
@@ -72,9 +72,9 @@
     <string name="hint_token">Token</string>
     <string name="hint_url">URL</string>
     <string name="cont">DOORGAAN</string>
-    <string name="welcome_disclaimer1">Ik begrijp dat persoonsgegevens van gasten van mijn evenementen zullen worden opgeslagen op dit apparaat en ik zal het apparaat goed beveiligen.</string>
+    <string name="welcome_disclaimer1">Ik begrijp dat de persoonsgegevens van deelnemers van mijn evenementen zullen worden opgeslagen op dit apparaat en ik zal het apparaat goed beveiligen.</string>
     <string name="welcome_text">pretixSCAN is een app die u kunt gebruiken om tickets te controleren die u via pretix hebt verkocht.</string>
-    <string name="settings_summary_auto_switch">Met deze optie zal pretixSCAN tijdens het synchroniseren aan de server vragen of de server aanraadt om de app naar een ander evenement en inchecklijst te wisselen. Als dit het geval is zal pretixSCAN automatisch naar dit evenement wisselen.</string>
+    <string name="settings_summary_auto_switch">Met deze optie zal pretixSCAN tijdens het synchroniseren aan de server vragen of de server aanraadt om de app naar een ander evenement en inchecklijst te wisselen. Als dit het geval is, zal pretixSCAN automatisch naar dit evenement wisselen.</string>
     <string name="currently_inside">momenteel aanwezig</string>
     <string name="pin_protection_switch_mode">Modusveranderingen beveiligen</string>
     <string name="pin_protection_switch_event">Evenementen wisselen beveiligen</string>
@@ -139,8 +139,8 @@
     <string name="event_select_calendar">Toon kalender</string>
     <string name="action_label_ok">OK</string>
     <string name="action_multievent_enable">Expert modus (selecteer meerdere events)</string>
-    <string name="operation_select_events">Selecteer events</string>
-    <string name="events_selected">%s events geselecteerd</string>
+    <string name="operation_select_events">Selecteer evenementen</string>
+    <string name="events_selected">%s evenementen geselecteerd</string>
     <string name="scan_result_ambiguous">Ticket-code op de lijst is niet eenduidig</string>
     <string name="settings_label_datawedge">DataWedge-profiel installeren</string>
     <string name="scan_result_invalid_time">Ticket is momenteel niet geldig</string>
