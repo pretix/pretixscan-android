@@ -21,7 +21,7 @@
     </plurals>
     <plurals name="sync_status_time_hours">
         <item quantity="one">%d uur geleden gesynchroniseerd</item>
-        <item quantity="other">%d uren geleden gesynchroniseerd</item>
+        <item quantity="other">%d uur geleden gesynchroniseerd</item>
     </plurals>
     <plurals name="sync_status_time_minutes">
         <item quantity="one">%d minuut geleden gesynchroniseerd</item>
@@ -51,7 +51,7 @@
     <string name="action_label_statistics">Statistieken</string>
     <string name="action_label_settings">Instellingen</string>
     <string name="error_not_synchronized">Uw apparaat is nog niet volledig gesynchroniseerd met de server</string>
-    <string name="error_unknown_exception">Een onbekende fout heeft zich voorgedaan</string>
+    <string name="error_unknown_exception">Er is een onbekende fout opgetreden</string>
     <string name="progress_registering">Dit apparaat wordt geregistreerd met de server…</string>
     <string name="progress_processing">Verwerken…</string>
     <string name="progress_syncing">Synchroniseren met de server…</string>
@@ -84,7 +84,7 @@
     <string name="pin_protection_pin">PIN instellen</string>
     <string name="pin_protection">PIN-beveiliging</string>
     <string name="settings_label_kioskmode">Kioskmodus</string>
-    <string name="settings_summary_kioskmode">De kioskmodus verbergt menu\'s die niet bedoeld zijn voor gebruik door klanten als u klanten zelf hun tickets laat scannen. Als de kioskmodus is ingeschakeld kunnen gebruikers nog steeds de pretixSCAN-app verlaten via systeemfuncties (zoals de home-knop). Om de instellingen van pretixSCAN opnieuw aan te passen zult u een QR-code met uw PIN moeten scannen.</string>
+    <string name="settings_summary_kioskmode">De kioskmodus verbergt menu\'s die niet bedoeld zijn voor gebruik door klanten als u klanten zelf hun tickets laat scannen. Als de kioskmodus is ingeschakeld, kunnen gebruikers nog steeds de pretixSCAN-app verlaten via systeemfuncties (zoals de home-knop). Om de instellingen van pretixSCAN opnieuw aan te passen, zult u een QR-code met uw PIN moeten scannen.</string>
     <string name="settings_label_search_disable">Zoeken uitschakelen</string>
     <string name="label_shop_inactive">Winkel uitgeschakeld</string>
     <string name="label_shop_active">Actief</string>
@@ -97,7 +97,7 @@
     <string name="hardware_scanner_switch_to_camera">Gebruik camera</string>
     <string name="hardware_scanner">Gebruik de fysieke scanknop(pen) van uw apparaat om te scannen.</string>
     <string name="ticket_attention">Let op, speciaal ticket!</string>
-    <string name="total_tickets_sold">totaal aantal verkochte tickets</string>
+    <string name="total_tickets_sold">totaalaantal verkochte tickets</string>
     <string name="already_scanned">al gescand</string>
     <string name="preference_badgeprint_install_pretixprint">Het printen van badges vereist de extra pretixPRINT-app. Wilt u deze app installeren\?</string>
     <string name="preference_autobadgeprint_enable">Print badges automatisch</string>
@@ -107,8 +107,8 @@
     <string name="dialog_unpaid_title">Onbetaalde bestelling</string>
     <string name="error_sync_in_background">Er wordt op de achtergrond al een synchronisatie uitgevoerd.</string>
     <string name="scan_result_canceled">Bestelling geannuleerd</string>
-    <string name="scan_result_revoked">Ticketcode ingetrokken/veranderd</string>
-    <string name="scan_result_rules">Binnenkomst niet toegestaan</string>
+    <string name="scan_result_revoked">Ticketcode ingetrokken/gewijzigd</string>
+    <string name="scan_result_rules">Toegang niet toegestaan</string>
     <string name="scan_result_unpaid">Ticket niet betaald</string>
     <string name="scan_result_product">Tickettype hier niet geldig</string>
     <string name="scan_result_invalid">Ongeldig ticket</string>
@@ -120,28 +120,28 @@
     <string name="status_valid">Geldig</string>
     <string name="status_canceled">Geannuleerd</string>
     <string name="status_unpaid">Niet betaald</string>
-    <string name="status_redeemed">Verzilverd</string>
+    <string name="status_redeemed">Ingewisseld</string>
     <string name="cancel">Annuleren</string>
     <string name="yes">Ja</string>
     <string name="question_input_invalid">Deze invoer is niet geldig.</string>
     <string name="question_input_required">Dit veld is verplicht.</string>
     <string name="question_validation_error">Een deel van uw invoer kon niet worden gevalideerd.</string>
-    <string name="pref_unpaid_ask_summary">Wanneer deze instelling is ingeschakeld krijgt u een extra bevestigingsvraag als de inchecklijst is ingesteld om nog niet betaalde bestellingen mee te nemen en u een ticket scant dat nog niet is betaald.</string>
-    <string name="pref_unpaid_ask">Bevestig inchecken onbetaalde tickets</string>
+    <string name="pref_unpaid_ask_summary">Wanneer deze instelling is ingeschakeld, krijgt u een extra bevestigingsvraag als de inchecklijst is ingesteld om nog niet betaalde bestellingen mee te nemen en u een ticket scant dat nog niet is betaald.</string>
+    <string name="pref_unpaid_ask">Vragen voor het inchecken van onbetaalde tickets</string>
     <string name="settings_label_details">Details</string>
     <string name="preference_badges_twice">Print elke badge twee keer</string>
     <string name="settings_label_badges">Badges</string>
-    <string name="settings_label_sounds">Speel geluiden</string>
-    <string name="settings_summary_scan_offline">Als u offline scant zal uw apparaat alle invoer controleren aan de hand van de interne database en wanneer mogelijk deze informatie af en toe met de pretix-server synchroniseren. Dit is meer betrouwbaar dan online scannen, maar kan ervoor zorgen dat u een ticket ongewild twee keer accepteert als u meerdere apparaten gebruikt om te scannen.</string>
+    <string name="settings_label_sounds">Speel geluiden af</string>
+    <string name="settings_summary_scan_offline">Als u offline scant, zal uw apparaat alle invoer controleren aan de hand van de interne database en wanneer mogelijk deze informatie af en toe met de pretix-server synchroniseren. Dit is meer betrouwbaar dan online scannen, maar kan ervoor zorgen dat u een ticket ongewild twee keer accepteert, als u meerdere apparaten gebruikt om te scannen.</string>
     <string name="settings_label_hide_names">Verberg namen en andere persoonsgegevens</string>
     <string name="settings_label_hide_names_summary">Dit heeft geen invloed op de zoekfunctie en kan bijvoorbeeld nuttig zijn in combinatie met de kioskmodus</string>
-    <string name="error_no_available_events">Er kon geen huidig of toekomstig evenement gevonden worden. Gelieve de data en toegangsrechten van uw events te controlleren.</string>
+    <string name="error_no_available_events">Er kon geen huidig of toekomstig evenement gevonden worden. Gelieve de data en toegangsrechten van uw evenementen te controleren.</string>
     <string name="event_select_calendar">Toon kalender</string>
     <string name="action_label_ok">OK</string>
     <string name="action_multievent_enable">Expert modus (selecteer meerdere events)</string>
     <string name="operation_select_events">Selecteer evenementen</string>
     <string name="events_selected">%s evenementen geselecteerd</string>
-    <string name="scan_result_ambiguous">Ticket-code op de lijst is niet eenduidig</string>
+    <string name="scan_result_ambiguous">Ticketcode op de lijst is niet eenduidig</string>
     <string name="settings_label_datawedge">DataWedge-profiel installeren</string>
     <string name="scan_result_invalid_time">Ticket is momenteel niet geldig</string>
     <string name="scan_result_blocked">Ticket geblokkeerd</string>
@@ -153,7 +153,7 @@
     <string name="scan_result_unapproved">Bestelling niet goedgekeurd</string>
     <string name="pref_ignore_questions">Stel geen vragen tijdens check-in</string>
     <string name="pin_protection_enter">Voer PIN in</string>
-    <string name="settings_label_device_name">Apparaatnaam</string>
+    <string name="settings_label_device_name">Naam apparaat</string>
     <string name="settings_label_screen_always_on">Scherm actief houden</string>
     <string name="headline_please_reinstall">Installeer pretixSCAN opnieuw</string>
     <string name="reinstall_text">Uw vorige versie van pretixSCAN was te oud en uw lokale gegevens kunnen niet worden gebruikt voor de huidige versie.\n\nWis de opslagruimte voor de pretixSCAN-app of verwijder de app en installeer deze opnieuw.</string>
