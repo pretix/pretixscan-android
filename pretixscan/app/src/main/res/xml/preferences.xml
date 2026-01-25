@@ -44,6 +44,10 @@
             android:defaultValue="true"
             android:key="pref_sounds"
             android:title="@string/settings_label_sounds" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_haptics"
+            android:title="@string/settings_label_haptics" />
         <Preference
             android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
             android:key="pin_protect"
