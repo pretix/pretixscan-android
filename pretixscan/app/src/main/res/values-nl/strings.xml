@@ -94,7 +94,7 @@
     <string name="settings_label_troubleshooting">Probleemoplossing</string>
     <string name="settings_label_version">Versie</string>
     <string name="force_full_resync">Gedwongen synchroniseren</string>
-    <string name="hardware_scanner_switch_to_camera">Gebruik camera</string>
+    <string name="hardware_scanner_switch_to_camera">Gebruik de camera</string>
     <string name="hardware_scanner">Gebruik de fysieke scanknop(pen) van uw apparaat om te scannen.</string>
     <string name="ticket_attention">Let op, speciaal ticket!</string>
     <string name="total_tickets_sold">totaalaantal verkochte tickets</string>
