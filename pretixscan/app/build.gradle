@@ -153,7 +153,7 @@ dependencies {
     implementation 'io.sentry:sentry-android:8.18.0'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation "joda-time:joda-time:$joda_version"
-    implementation 'net.zetetic:sqlcipher-android:4.5.6'
+    implementation 'net.zetetic:sqlcipher-android:4.6.1'
     implementation "net.sourceforge.streamsupport:streamsupport-cfuture:$cfuture_version"
     implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_core_version"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
