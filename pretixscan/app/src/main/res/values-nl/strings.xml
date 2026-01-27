@@ -141,7 +141,7 @@
     <string name="action_multievent_enable">Expert modus (selecteer meerdere events)</string>
     <string name="operation_select_events">Selecteer evenementen</string>
     <string name="events_selected">%s evenementen geselecteerd</string>
-    <string name="scan_result_ambiguous">Ticketcode op de lijst is niet eenduidig</string>
+    <string name="scan_result_ambiguous">Ticketcode is dubbelzinnig op lijst</string>
     <string name="settings_label_datawedge">DataWedge-profiel installeren</string>
     <string name="scan_result_invalid_time">Ticket is momenteel niet geldig</string>
     <string name="scan_result_blocked">Ticket geblokkeerd</string>
