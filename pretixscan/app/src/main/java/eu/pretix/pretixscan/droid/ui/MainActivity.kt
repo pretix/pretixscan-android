@@ -52,17 +52,13 @@ import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
 import eu.pretix.libpretixsync.serialization.JSONArraySerializer
 import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
 import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
-import eu.pretix.libpretixsync.sync.SyncManager
-import eu.pretix.libpretixui.android.questions.QuestionsDialog
-import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
-import eu.pretix.libpretixui.android.scanning.HardwareScanner
-import eu.pretix.libpretixui.android.scanning.ScanReceiver
 import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
+import eu.pretix.pretixscan.droid.hardware.KioskHardware
 import eu.pretix.pretixscan.droid.hardware.LED
 import eu.pretix.pretixscan.droid.ui.ResultState.DIALOG
 import eu.pretix.pretixscan.droid.ui.ResultState.EMPTY
@@ -444,8 +440,12 @@ class MainActivity : BaseScanActivity() {
             window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
             }
-            launchKiosk() // FIXME: kiosk hardware detection
-            return
+            if (KioskHardware.isPretixBadgebox()) {
+                val intent = Intent(this, KioskActivity::class.java)
+                startActivity(intent)
+                finish()
+                return
+            }
         } else {
             supportActionBar?.show()
         }
@@ -467,40 +467,21 @@ class MainActivity : BaseScanActivity() {
         reloadCameraState()
     }
 
-    fun launchKiosk() {
-        val intent = Intent(this, KioskActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
     private fun setKioskAnimation() {
         if (!conf.kioskMode) return
 
-        val drawable = when (Build.BRAND) {
-            "Zebra" -> if (Build.MODEL.startsWith("CC6")) {
+        val drawable = when {
+            KioskHardware.isZebra() -> {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
-            } else {
-                null
             }
-            "NewLand" -> if (Build.MODEL.startsWith("NQ")) {
+            KioskHardware.isNewland() -> {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
-            } else {
-                null
             }
-            "Newland" -> if (Build.MODEL.startsWith("NLS-NQ")) {
+            KioskHardware.isSeuic() ->  {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
-            } else {
-                null
             }
-            "SEUIC" -> if (Build.MODEL.startsWith("AUTOID Pad Air")) {
+            KioskHardware.isM3() -> {
                 R.drawable.avd_kiosk_widescreen_barcode_bottom
-            } else {
-                null
-            }
-            "M3" -> if (Build.MODEL.startsWith("M3PC")) {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            } else {
-                null
             }
             else -> null
         } ?: return
