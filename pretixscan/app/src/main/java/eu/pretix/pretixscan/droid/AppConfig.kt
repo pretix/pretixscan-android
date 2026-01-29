@@ -247,11 +247,11 @@ class AppConfig(ctx: Context) : ConfigStore {
 
     var timeAfterGateOpen: Int
         get() = try {
-            Integer.parseInt(default_prefs.getString("gate_back_to_start_timeout", "3000")!!)
+            Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, "3000")!!)
         } catch (e: Exception) {
             3000
         }
-        set(value) = default_prefs.edit().putString("gate_back_to_start_timeout", value.toString()).apply()
+        set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, value.toString()).apply()
 
     override fun getDeviceKnownName(): String {
         return prefs.getString(PREFS_KEY_DEVICE_KNOWN_NAME, "")!!
@@ -468,6 +468,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
         val PREFS_KEY_KIOSK_OOO = "pref_kiosk_out_of_order"
+        val PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT = "gate_back_to_start_timeout"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
         private const val PREFS_KEY_SCREEN_ALWAYS_ON = "pref_screen_always_on"
     }
