@@ -20,6 +20,13 @@
     <string name="action_multievent_disable_error">Expert mode cannot be disabled if multiple events are selected.</string>
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
+    <string name="kiosk_text_scan">Please scan your ticket</string>
+    <string name="kiosk_text_reading">Reading barcode…</string>
+    <string name="kiosk_text_checking">Checking your ticket…</string>
+    <string name="kiosk_text_print">Please take your badge</string>
+    <string name="kiosk_text_gate">Please proceed through the gate</string>
+    <string name="kiosk_text_questions_reject">Ticket cannot be validated here</string>
+    <string name="kiosk_text_questions_reject_sub">Please reach out to our staff</string>
     <string name="scantype_entry_kiosk">Scan your ticket to check in</string>
     <string name="scantype_entry_kiosk_print">Scan your ticket to print your badge</string>
     <string name="scantype_exit_kiosk">Scan your ticket to check out</string>
@@ -173,4 +180,7 @@
     <string name="headline_please_reinstall">Please reinstall pretixSCAN</string>
     <string name="reinstall_text">Your previous pretixSCAN version was too old and your local data cannot be used for the current version.\n\nPlease clear the storage for the pretixSCAN app or delete and reinstall the app.</string>
     <string name="reinstall_open_app_settings">Open Android App Settings</string>
+    <string name="out_of_order">Out of order</string>
+    <string name="action_label_out_of_order">Take out of order</string>
+    <string name="action_label_remove_out_of_order">Re-enable operation</string>
 </resources>

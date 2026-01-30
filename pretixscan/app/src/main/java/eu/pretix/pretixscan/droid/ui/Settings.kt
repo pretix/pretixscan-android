@@ -31,6 +31,7 @@ import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.hardware.KioskHardware
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -175,6 +176,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+
+        findPreference<Preference>("gate_back_to_start_timeout")?.isVisible = KioskHardware.isPretixBadgebox()
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {

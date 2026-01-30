@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/settings_label_verification">
         <CheckBoxPreference
             android:defaultValue="false"
@@ -107,5 +107,11 @@
         <Preference
             android:key="full_delete"
             android:title="@string/full_delete" />
+        <EditTextPreference
+            android:key="gate_back_to_start_timeout"
+            android:defaultValue="3000"
+            android:title="Time after gate open"
+            app:isPreferenceVisible="false"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

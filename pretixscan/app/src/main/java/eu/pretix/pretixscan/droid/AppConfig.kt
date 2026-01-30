@@ -245,6 +245,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_MULTI_EVENT_MODE, false)
         set(value) = prefs.edit().putBoolean(PREFS_KEY_MULTI_EVENT_MODE, value).apply()
 
+    var timeAfterGateOpen: Int
+        get() = try {
+            Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, "3000")!!)
+        } catch (e: Exception) {
+            3000
+        }
+        set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, value.toString()).apply()
+
     override fun getDeviceKnownName(): String {
         return prefs.getString(PREFS_KEY_DEVICE_KNOWN_NAME, "")!!
     }
@@ -401,6 +409,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_SYNC_ORDERS, value).apply()
 
+    var kioskOutOfOrder: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_OOO, false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_KIOSK_OOO, value).apply()
+
     override fun getKnownLiveEventSlugs(): Set<String> {
         return default_prefs.getStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, emptySet()) as Set<String>
     }
@@ -455,6 +467,8 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
+        val PREFS_KEY_KIOSK_OOO = "pref_kiosk_out_of_order"
+        val PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT = "gate_back_to_start_timeout"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
         private const val PREFS_KEY_SCREEN_ALWAYS_ON = "pref_screen_always_on"
     }

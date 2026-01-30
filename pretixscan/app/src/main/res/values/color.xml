@@ -10,6 +10,7 @@
     <color name="fab_disable">#ff757575</color>
     <color name="text_color">#8a000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="kiosk_statusbar_text">#C699DC</color>
     <color name="scan_result_unknown">#bbcccccc</color>
     <color name="scan_result_ok">#dd5cb85c</color>
     <color name="scan_result_warn">#ddF0AD4E</color>
