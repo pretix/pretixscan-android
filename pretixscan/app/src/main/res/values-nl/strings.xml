@@ -28,7 +28,7 @@
         <item quantity="other">%d minuten geleden gesynchroniseerd</item>
     </plurals>
     <string name="settings_label_auto_switch">Selecteer het evenement automatisch</string>
-    <string name="settings_summary_orders_sync">Zonder deze optie zal pretixSCAN niet de bestellingen kunnen downloaden en niet in staat zijn om met de standaard instellingen offline tickets te scannen.</string>
+    <string name="settings_summary_orders_sync">Zonder deze optie zal pretixSCAN niet de bestellingen kunnen downloaden en niet in staat zijn om met de standaardinstellingen offlinetickets te scannen.</string>
     <string name="settings_label_orders_sync">Bestellingen downloaden</string>
     <string name="settings_label_auto_sync">Automatische synchronisatie</string>
     <string name="operation_select_checkinlist">Selecteer check-in-lijst</string>
@@ -138,7 +138,7 @@
     <string name="error_no_available_events">Er kon geen huidig of toekomstig evenement gevonden worden. Gelieve de data en toegangsrechten van uw evenementen te controleren.</string>
     <string name="event_select_calendar">Toon kalender</string>
     <string name="action_label_ok">Oké</string>
-    <string name="action_multievent_enable">Expertmodus (selecteer meerdere events)</string>
+    <string name="action_multievent_enable">Expertmodus (selecteer meerdere evenementen)</string>
     <string name="operation_select_events">Selecteer evenementen</string>
     <string name="events_selected">%s evenementen geselecteerd</string>
     <string name="scan_result_ambiguous">Ticketcode is ambigu op lijst</string>
