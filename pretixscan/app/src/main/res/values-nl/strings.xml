@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ok">Oké</string>
-    <string name="datetime_format">%1$td-%1$tm-%1$tY %1$tH:%1$tM</string>
+    <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="first_scanned">Eerst gescand: %s</string>
-    <string name="short_datetime_format">dd.MM. HH:mm</string>
+    <string name="short_datetime_format">dd.MM HH:mm</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <plurals name="sync_status_pending">
         <item quantity="one">%d wachtende upload</item>
         <item quantity="other">%d wachtende uploads</item>
     </plurals>
     <string name="sync_status_now">daarnet gesynchroniseerd</string>
-    <string name="sync_status_progress">synchronisatie is bezig</string>
+    <string name="sync_status_progress">synchronisatie is aan de gang</string>
     <string name="sync_status_never">nog niet gesynchroniseerd</string>
     <string name="sync_status_last_failed">Laatste mislukte synchronisatie:</string>
     <string name="sync_status_last">Laatste gelukte synchronisatie:</string>
