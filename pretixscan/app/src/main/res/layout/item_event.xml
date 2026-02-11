@@ -61,7 +61,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvDate"
             tools:text="democon" />
 
-        <com.apg.mobile.roundtextview.RoundTextView
+        <eu.pretix.libpretixui.android.views.RoundTextView
             android:id="@+id/tvLive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
             android:text="@{item.live ? @string/label_shop_active : @string/label_shop_inactive}"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@color/white"
-            app:allCorner="16dp"
+            app:radius="16dp"
             app:bgColor="@{item.live ? @color/pretix_brand_green : @color/pretix_brand_red}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDate"
