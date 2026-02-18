@@ -97,6 +97,7 @@
     </string-array>
     <string name="settings_summary_scan_offline">When scanning offline, your device will verify all input with its internal database instead with the server and synchronize its database with the server occasionally. This is more reliable, but allows a ticket to be scanned twice if you scan with multiple devices.</string>
     <string name="settings_label_sounds">Play sounds</string>
+    <string name="settings_label_haptics">Enable Haptic Feedback</string>
     <string name="settings_label_hide_names">Hide names and other personal information</string>
     <string name="settings_label_hide_names_summary">Does not affect search, useful e.g. in combination with kiosk mode</string>
     <string name="settings_label_badges">Badges</string>
