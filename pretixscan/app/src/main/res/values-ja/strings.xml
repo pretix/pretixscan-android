@@ -153,4 +153,5 @@
     <string name="headline_please_reinstall">pretixSCANを再インストールしてください</string>
     <string name="reinstall_text">以前のpretixSCANバージョンが古すぎるため、ローカルデータを現在のバージョンで使用できません。\n\npretixSCANアプリのストレージをクリアするか、アプリを削除して再インストールしてください。</string>
     <string name="reinstall_open_app_settings">Androidアプリ設定を開く</string>
+    <string name="settings_label_screen_always_on">ディスプレイを表示したままにする</string>
 </resources>
