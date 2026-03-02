@@ -1043,6 +1043,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         (application as PretixScan).connectivityHelper.recordSuccess(System.currentTimeMillis() - startedAt)
                     }
                 }
+            } catch (e: CheckException) {
+                (application as PretixScan).connectivityHelper.recordError()
+                checkResult = TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.INVALID, getString(R.string.error_exception))
+                checkResult.reasonExplanation = e.message
             } catch (e: Exception) {
                 Sentry.captureException(e)
                 if (BuildConfig.DEBUG) {
