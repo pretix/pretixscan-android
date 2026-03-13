@@ -14,10 +14,10 @@ fun openGate(
     val intent = Intent()
     intent.action = "eu.pretix.pretixscan.gate.OPEN_GATE"
 
-    if (isPackageInstalled("eu.pretix.kt0345service", context.packageManager)) {
-        intent.`package` = "eu.pretix.kt0345service"
+    if (isPackageInstalled("eu.pretix.ktIOservice", context.packageManager)) {
+        intent.`package` = "eu.pretix.ktIOservice"
         intent.component =
-            ComponentName("eu.pretix.kt0345service", "eu.pretix.kt0345service.GateService")
+            ComponentName("eu.pretix.ktIOservice", "eu.pretix.ktIOservice.GateService")
     } else {
         throw Exception("error_print_no_app")
     }
