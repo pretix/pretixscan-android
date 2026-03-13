@@ -681,12 +681,14 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Printing,
             KioskState.OutOfOrder -> {
                 // waiting for user, for printer, gate or administrative action. ignoring scan.
+                lastScanCode = ""  // do not consider scan "used"
                 return
             }
         }
 
         // ignore scan if same ticket was scanned two times, but gate is already open
         if (raw_result == lastScanCode && state == KioskState.GateOpen) {
+            lastScanCode = ""  // do not consider scan "used"
             return
         }
 
