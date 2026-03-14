@@ -247,9 +247,9 @@ class AppConfig(ctx: Context) : ConfigStore {
 
     var timeAfterGateOpen: Int
         get() = try {
-            Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, "3000")!!)
+            Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, "200")!!)
         } catch (e: Exception) {
-            3000
+            200
         }
         set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, value.toString()).apply()
 
