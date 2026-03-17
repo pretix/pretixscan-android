@@ -13,6 +13,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.libpretixnfc.android.platform.AndroidKeyStore
+import eu.pretix.libpretixnfc.platform.HardwareBackedKeyStore
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import org.joda.time.DateTime
 import org.json.JSONObject
@@ -409,6 +411,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         default_prefs.edit().putStringSet(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, slugs).apply()
     }
 
+    var nfcReaderType: String
+        get() = default_prefs.getString(PREFS_KEY_NFC_READER_TYPE, "native") ?: "native"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_NFC_READER_TYPE, value).apply()
+
+    val keyStore: HardwareBackedKeyStore by lazy {
+        AndroidKeyStore(ctx.applicationContext as PretixScan)
+    }
+
     companion object {
         val PREFS_NAME = "pretixdroid"
         val PREFS_KEY_API_URL = "pretix_api_url"
@@ -455,6 +465,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
+        val PREFS_KEY_NFC_READER_TYPE = "pref_nfc_type"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
         private const val PREFS_KEY_SCREEN_ALWAYS_ON = "pref_screen_always_on"
     }

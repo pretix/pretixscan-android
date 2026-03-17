@@ -102,6 +102,8 @@
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <service android:name="eu.pretix.libpretixnfc.android.hardware.acs.AcsReaderService"  android:foregroundServiceType="connectedDevice" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
