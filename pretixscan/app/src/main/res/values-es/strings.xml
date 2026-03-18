@@ -146,7 +146,7 @@
     <string name="pin_protection_enable">Activar la protección por PIN</string>
     <string name="pin_protection_settings">Proteger los ajustes de la aplicación</string>
     <string name="pin_protection_statistics">Proteger las estadísticas</string>
-    <string name="pin_protection_switch_event">PIN requerido para cambiar de evento</string>
+    <string name="pin_protection_switch_event">Interruptor de protección de eventos</string>
     <string name="pin_protection_switch_mode">Interruptor de modo de protección</string>
     <string name="pin_protection">Protección por PIN</string>
     <string name="pin_protection_pin">Establecer PIN</string>
