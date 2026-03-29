@@ -162,4 +162,5 @@
     <string name="headline_please_reinstall">Por favor, reinstale pretixSCAN</string>
     <string name="reinstall_text">La versión anterior de pretixSCAN es demasiado antigua y los datos locales no se pueden utilizar con la versión actual.\n\nBorre la memoria caché de la aplicación pretixSCAN o elimine y vuelva a instalar la aplicación.</string>
     <string name="settings_label_screen_always_on">Mantener la pantalla activa</string>
+    <string name="error_exception">Se ha producido un error</string>
 </resources>
