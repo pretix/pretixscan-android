@@ -141,7 +141,7 @@
     <string name="action_multievent_enable">Expertmodus (selecteer meerdere evenementen)</string>
     <string name="operation_select_events">Selecteer evenementen</string>
     <string name="events_selected">%s evenementen geselecteerd</string>
-    <string name="scan_result_ambiguous">Ticketcode is ambigu op lijst</string>
+    <string name="scan_result_ambiguous">Ticketcode op de lijst is niet eenduidig</string>
     <string name="settings_label_datawedge">DataWedge-profiel installeren</string>
     <string name="scan_result_invalid_time">Ticket is momenteel niet geldig</string>
     <string name="scan_result_blocked">Ticket geblokkeerd</string>
@@ -158,4 +158,5 @@
     <string name="headline_please_reinstall">Installeer pretixSCAN opnieuw</string>
     <string name="reinstall_text">Uw vorige versie van pretixSCAN was te oud en uw lokale gegevens kunnen niet worden gebruikt voor de huidige versie.\n\nWis de opslagruimte voor de pretixSCAN-app of verwijder de app en installeer deze opnieuw.</string>
     <string name="reinstall_open_app_settings">Open de instellingen van de Android-app</string>
+    <string name="error_exception">Er heeft zich een fout voorgedaan</string>
 </resources>
