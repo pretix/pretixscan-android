@@ -70,8 +70,20 @@
             android:theme="@style/AppTheme.NoActionBar.Dark" />
         <activity
             android:name=".ui.SetupActivity"
+            android:exported="true"
             android:label="@string/headline_setup"
-            android:theme="@style/AppTheme.NoActionBar.Dark" />
+            android:theme="@style/AppTheme.NoActionBar.Dark">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="pretixscan"
+                    android:host="setup" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"

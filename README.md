@@ -12,6 +12,13 @@ Security
 
 If you discover a security issue, please contact us at security@pretix.eu and see our [Responsible Disclosure Policy](https://docs.pretix.eu/trust/security/disclosure/) further information.
 
+Setup Links
+-----------
+
+pretixSCAN can be opened directly for initial device setup through a custom deep link:
+
+`pretixscan://setup?url=https%3A%2F%2Fexample.test&token=YOUR_DEVICE_TOKEN`
+
 License
 -------
 The code in this repository is published under the terms of the Apache License. 
