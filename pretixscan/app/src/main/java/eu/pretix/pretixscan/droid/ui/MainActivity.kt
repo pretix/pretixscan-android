@@ -282,6 +282,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         view_data.configDetails.set(confdetails.trim())
         view_data.isOffline.set(conf.offlineMode)
+
+        reloadNfcHandler()
     }
 
     private fun setSearchFilter(f: String) {
@@ -852,7 +854,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         check()
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback!!)
-        reloadNfcHandler()
     }
 
     private fun setKioskAnimation() {
