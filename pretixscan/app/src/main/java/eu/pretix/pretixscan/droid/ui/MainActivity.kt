@@ -1625,11 +1625,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
         if (identifier.startsWith("08")) {
             runOnUiThread {
+                showLoadingCard()
                 displayScanResult(
                     TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_random_uid), false),
                     null
                 )
             }
+            return
         }
 
         handleScan(identifier, null, !conf.unpaidAsk, source_type = mediaType.serverName)
@@ -1645,6 +1647,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
 
         runOnUiThread {
+            showLoadingCard()
             displayScanResult(
                 TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, error, false),
                 null
@@ -1687,6 +1690,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     nfcHandler!!.start(activeMediaTypes)
                 } catch (e: NfcUnsupported) {
                     runOnUiThread {
+                        showLoadingCard()
                         displayScanResult(
                             TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_not_supported), false),
                             null
@@ -1694,6 +1698,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     }
                 } catch (e: NfcDisabled) {
                     runOnUiThread {
+                        showLoadingCard()
                         displayScanResult(
                             TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_disabled), false),
                             null
