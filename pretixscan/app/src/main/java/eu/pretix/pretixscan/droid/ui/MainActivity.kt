@@ -197,6 +197,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
+        const val EXTRA_SHOW_ALREADY_CONFIGURED_WARNING = "eu.pretix.pretixscan.droid.ui.SHOW_ALREADY_CONFIGURED_WARNING"
     }
 
     private val hardwareScanner = HardwareScanner(object : ScanReceiver {
@@ -528,6 +529,34 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 pendingPinAction?.let { it(pin) }
             }
         }
+
+        consumeTransientIntentFlags(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        consumeTransientIntentFlags(intent)
+    }
+
+    private fun consumeTransientIntentFlags(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_SHOW_ALREADY_CONFIGURED_WARNING, false) != true) {
+            return
+        }
+
+        intent.removeExtra(EXTRA_SHOW_ALREADY_CONFIGURED_WARNING)
+        showAlreadyConfiguredWarningDialog()
+    }
+
+    private fun showAlreadyConfiguredWarningDialog() {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.setup_error_already_configured)
+            .setPositiveButton(R.string.ok, null)
+            .show()
     }
 
     private fun eventButtonText(): String {

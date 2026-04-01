@@ -1,6 +1,8 @@
 package eu.pretix.pretixscan.droid.ui
 
+import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -12,17 +14,28 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.lifecycleScope
+import eu.pretix.libpretixsync.setup.SetupBadRequestException
+import eu.pretix.libpretixsync.setup.SetupBadResponseException
+import eu.pretix.libpretixsync.setup.SetupException
 import eu.pretix.libpretixsync.setup.SetupManager
+import eu.pretix.libpretixsync.setup.SetupServerErrorException
+import eu.pretix.libpretixui.android.scanning.defaultToScanner
 import eu.pretix.libpretixui.android.setup.SetupCallable
 import eu.pretix.libpretixui.android.setup.SetupFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import io.sentry.Sentry
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.lang.Exception
+import javax.net.ssl.SSLException
 
 class SetupActivity : AppCompatActivity(), SetupCallable {
     companion object {
@@ -55,13 +68,8 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
         }
 
         if (savedInstanceState == null) {
-            val args = bundleOf(
-                SetupFragment.ARG_DEFAULT_HOST to if (BuildConfig.APPLICATION_ID.contains("eu.pretix")) "https://pretix.eu" else ""
-            )
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<SetupFragment>(R.id.content, FRAGMENT_TAG, args)
-            }
+            ensureSetupFragment()
+            handleSetupLink(intent.data)
         }
 
         if (dataWedgeHelper.isInstalled) {
@@ -131,5 +139,112 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
 
     override fun onGenericSetupException(e: Exception) {
         Sentry.captureException(e)
+    }
+
+    private fun ensureSetupFragment() {
+        if (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) != null) {
+            return
+        }
+        val args = bundleOf(
+            SetupFragment.ARG_DEFAULT_HOST to if (BuildConfig.APPLICATION_ID.contains("eu.pretix")) "https://pretix.eu" else ""
+        )
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<SetupFragment>(R.id.content, FRAGMENT_TAG, args)
+        }
+    }
+
+    private fun handleSetupLink(uri: Uri?) {
+        if (uri?.scheme?.equals("pretixscan", ignoreCase = true) != true) {
+            return
+        }
+        if (uri.host?.equals("setup", ignoreCase = true) != true) {
+            return
+        }
+        if (AppConfig(this).deviceRegistered) {
+            resumeScanningWithAlreadyConfiguredWarning(this)
+            return
+        }
+
+        val url = uri.getQueryParameter("url")?.trim()
+        val token = uri.getQueryParameter("token")?.trim()
+
+        if (url.isNullOrBlank() || token.isNullOrBlank()) {
+            showSetupAlert(R.string.setup_error_invalid_link)
+            return
+        }
+        val validatedUrl = validateSetupUrl(url) ?: run {
+            showSetupAlert(R.string.setup_error_invalid_link)
+            return
+        }
+        importSetupLink(validatedUrl, token)
+    }
+
+    private fun importSetupLink(url: String, token: String) {
+        val pdialog = ProgressDialog(this).apply {
+            isIndeterminate = true
+            setMessage(getString(R.string.progress_registering))
+            setTitle(R.string.progress_registering)
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+            show()
+        }
+
+        lifecycleScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    setup(url, token)
+                }
+                config(!defaultToScanner())
+                onSuccessfulSetup()
+            } catch (e: Exception) {
+                handleSetupException(e)
+            } finally {
+                if (pdialog.isShowing) {
+                    runCatching {
+                        pdialog.dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleSetupException(e: Exception) {
+        when (e) {
+            is SetupBadRequestException -> showSetupAlert(e.message ?: getString(R.string.setup_error_invalid_link))
+            is SSLException -> showSetupAlert(R.string.setup_error_ssl)
+            is IOException -> showSetupAlert(R.string.setup_error_io)
+            is SetupServerErrorException -> showSetupAlert(R.string.setup_error_server)
+            is SetupBadResponseException -> showSetupAlert(R.string.setup_error_response)
+            is SetupException -> showSetupAlert(e.message ?: getString(R.string.error_unknown_exception))
+            else -> {
+                onGenericSetupException(e)
+                showSetupAlert(e.message ?: getString(R.string.error_unknown_exception))
+            }
+        }
+    }
+
+    private fun showSetupAlert(messageRes: Int) {
+        showSetupAlert(getString(messageRes))
+    }
+
+    private fun showSetupAlert(message: CharSequence) {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+        MaterialAlertDialogBuilder(this)
+            .setMessage(message)
+            .setPositiveButton(R.string.ok, null)
+            .show()
+    }
+
+    private fun validateSetupUrl(url: String): String? {
+        val parsedUrl = Uri.parse(url.trim())
+        val isHttpUrl = parsedUrl.scheme?.equals("http", ignoreCase = true) == true ||
+                parsedUrl.scheme?.equals("https", ignoreCase = true) == true
+        if (!isHttpUrl || parsedUrl.host.isNullOrBlank()) {
+            return null
+        }
+        return url.trim()
     }
 }

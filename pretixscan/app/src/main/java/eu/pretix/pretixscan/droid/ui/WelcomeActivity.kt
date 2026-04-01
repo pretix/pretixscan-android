@@ -27,6 +27,11 @@ class WelcomeActivity : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (isSetupDeepLink() && AppConfig(this).deviceRegistered) {
+            resumeScanningWithAlreadyConfiguredWarning(this)
+            return
+        }
+
         val binding = DataBindingUtil.setContentView<ActivityWelcomeBinding>(this, R.layout.activity_welcome)
         setContentView(binding.root)
         setSupportActionBar(binding.topAppBar)
@@ -49,9 +54,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         binding.button?.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                val intent = Intent(this, SetupActivity::class.java)
-                startActivity(intent)
-                finish()
+                startSetupActivity()
             } else {
                 checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
             }
@@ -68,11 +71,9 @@ class WelcomeActivity : AppCompatActivity() {
         when (requestCode) {
             PERMISSIONS_REQUEST_CAMERA -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    val intent = Intent(this, SetupActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    startSetupActivity()
                 } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.setup_camera_permission_needed, Toast.LENGTH_SHORT).show()
                 }
                 return
             }
@@ -80,5 +81,19 @@ class WelcomeActivity : AppCompatActivity() {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
+    }
+
+    private fun startSetupActivity() {
+        val setupIntent = Intent(this, SetupActivity::class.java).apply {
+            data = intent?.data
+        }
+        startActivity(setupIntent)
+        finish()
+    }
+
+    private fun isSetupDeepLink(): Boolean {
+        val uri = intent?.data ?: return false
+        return uri.scheme.equals("pretixscan", ignoreCase = true) &&
+                uri.host.equals("setup", ignoreCase = true)
     }
 }

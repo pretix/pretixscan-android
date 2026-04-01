@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.PendingIntentCompat
 import eu.pretix.libpretixsync.sqldelight.Migrations
 import eu.pretix.libpretixsync.api.PretixApi
@@ -63,5 +64,14 @@ fun wipeApp(ctx: Context, shouldRevoke: Boolean = false) {
             exitProcess(0)
         }
     }
+}
+
+fun resumeScanningWithAlreadyConfiguredWarning(activity: AppCompatActivity) {
+    val mainIntent = Intent(activity, MainActivity::class.java).apply {
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        putExtra(MainActivity.EXTRA_SHOW_ALREADY_CONFIGURED_WARNING, true)
+    }
+    activity.startActivity(mainIntent)
+    activity.finish()
 }
 
