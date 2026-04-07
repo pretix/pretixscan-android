@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -170,7 +171,7 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
             return
         }
         if (AppConfig(this).deviceRegistered) {
-            showSetupAlert(R.string.setup_error_already_configured)
+            resumeScanningWithAlreadyConfiguredWarning()
             return
         }
         importSetupLink(url, token)
@@ -196,7 +197,11 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
             } catch (e: Exception) {
                 handleSetupException(e)
             } finally {
-                pdialog.dismiss()
+                if (pdialog.isShowing) {
+                    runCatching {
+                        pdialog.dismiss()
+                    }
+                }
             }
         }
     }
@@ -228,5 +233,14 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
             .setMessage(message)
             .setPositiveButton(R.string.ok, null)
             .show()
+    }
+
+    private fun resumeScanningWithAlreadyConfiguredWarning() {
+        Toast.makeText(applicationContext, R.string.setup_error_already_configured, Toast.LENGTH_LONG).show()
+        val mainIntent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        startActivity(mainIntent)
+        finish()
     }
 }

@@ -66,10 +66,6 @@
         </activity>
         <activity
             android:name=".ui.WelcomeActivity"
-            android:label="@string/headline_setup"
-            android:theme="@style/AppTheme.NoActionBar.Dark" />
-        <activity
-            android:name=".ui.SetupActivity"
             android:exported="true"
             android:label="@string/headline_setup"
             android:theme="@style/AppTheme.NoActionBar.Dark">
@@ -84,6 +80,10 @@
                     android:host="setup" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.SetupActivity"
+            android:label="@string/headline_setup"
+            android:theme="@style/AppTheme.NoActionBar.Dark" />
         <activity
             android:name=".ui.info.EventinfoActivity"
             android:label="@string/action_label_statistics"
