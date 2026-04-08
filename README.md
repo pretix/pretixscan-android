@@ -17,7 +17,7 @@ Setup Links
 
 pretixSCAN can be opened directly for initial device setup through a custom deep link:
 
-`pretixscan://setup?url=https%3A%2F%pretix.eu&token=YOUR_DEVICE_TOKEN`
+`pretixscan://setup?url=https%3A%2F%2Fpretix.eu&token=YOUR_DEVICE_TOKEN`
 
 License
 -------
