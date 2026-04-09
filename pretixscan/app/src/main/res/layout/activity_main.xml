@@ -533,7 +533,7 @@
                                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                                         android:textSize="@dimen/card_result_test_size_medium"
                                         android:textStyle="bold"
-                                        android:visibility="@{data.attendeeName != null &amp;&amp; !&quot;null&quot;.equals(data.attendeeName) ? View.VISIBLE : View.GONE}"
+                                        android:visibility="@{data.attendeeName != null &amp;&amp; !&quot;null&quot;.equals(data.attendeeName) ? View.VISIBLE : View.INVISIBLE}"
                                         app:layout_constraintEnd_toStartOf="@+id/tvOrderCodeAndPositionId"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent"
