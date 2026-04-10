@@ -7,6 +7,8 @@
     <string name="progress_syncing">Synchronizing with server…</string>
     <string name="progress_processing">Processing…</string>
     <string name="progress_registering">Registering device with server…</string>
+    <string name="setup_error_invalid_link">The setup link is invalid.</string>
+    <string name="setup_error_already_configured">This device is already configured. Reset the app to use a setup link.</string>
     <string name="error_access_revoked">Device access has been revoked, you need to register the device with the server again.</string>
     <string name="error_unknown_exception">An unknown error has occurred</string>
     <string name="error_exception">An error has occurred</string>
