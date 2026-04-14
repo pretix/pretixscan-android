@@ -221,7 +221,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             lastScanSourceType = ReusableMediaType.BARCODE
             lastIgnoreUnpaid = false
             lastScanResult = null
-            handleScan(result, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
+            handleScan(
+                result,
+                lastScanSourceType.serverName,
+                null,
+                !conf.unpaidAsk
+            )
         }
     })
 
@@ -309,7 +314,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         lastScanResult = null
                         lastIgnoreUnpaid = false
                         hideSearchCard()
-                        handleScan(res.secret!!, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
+                        handleScan(
+                            res.secret!!,
+                            lastScanSourceType.serverName,
+                            null,
+                            !conf.unpaidAsk
+                        )
                     }
                 })
                 runOnUiThread {
@@ -1003,7 +1013,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         super.onStop()
     }
 
-    fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false, source_type: String = "barcode") {
+    fun handleScan(
+        raw_result: String,
+        source_type: String,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean = false
+    ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
             return
@@ -1185,7 +1200,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             view_data.resultState.set(DIALOG)
             dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1195,7 +1215,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             view_data.resultState.set(DIALOG)
             dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1401,7 +1426,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         lastScanSourceType = ReusableMediaType.BARCODE
         lastScanResult = null
         lastIgnoreUnpaid = false
-        handleScan(s, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
+        handleScan(
+            s,
+            lastScanSourceType.serverName,
+            null,
+            !conf.unpaidAsk
+        )
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -1418,7 +1448,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 lastScanSourceType = ReusableMediaType.BARCODE
                 lastScanResult = null
                 lastIgnoreUnpaid = false
-                handleScan(keyboardBuffer, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
+                handleScan(
+                    keyboardBuffer,
+                    lastScanSourceType.serverName,
+                    null,
+                    !conf.unpaidAsk
+                )
                 keyboardBuffer = ""
                 true
             }
@@ -1602,7 +1637,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.onRestoreInstanceState(answers)
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1652,7 +1692,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         lastScanResult = null
         lastIgnoreUnpaid = false
 
-        handleScan(identifier, null, !conf.unpaidAsk, source_type = mediaType.serverName)
+        handleScan(
+            identifier,
+            mediaType.serverName,
+            null,
+            !conf.unpaidAsk
+        )
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
