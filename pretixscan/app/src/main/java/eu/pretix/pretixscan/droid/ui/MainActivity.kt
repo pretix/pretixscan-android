@@ -1689,22 +1689,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 nfcHandler!!.setOnChipReadListener(this)
                 try {
                     nfcHandler!!.start(activeMediaTypes)
-                } catch (e: NfcUnsupported) {
-                    runOnUiThread {
-                        showLoadingCard()
-                        displayScanResult(
-                            TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_not_supported), false),
-                            null
-                        )
-                    }
-                } catch (e: NfcDisabled) {
-                    runOnUiThread {
-                        showLoadingCard()
-                        displayScanResult(
-                            TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_disabled), false),
-                            null
-                        )
-                    }
+                } catch (_: NfcUnsupported) {
+                    // silently ignore, else users on non-nfc-devices are warned all the time
+                } catch (_: NfcDisabled) {
+                    // silently ignore, we may want to show an unobtrusive warning in the future
                 }
             }
         }
