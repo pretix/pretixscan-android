@@ -1,5 +1,6 @@
 package eu.pretix.pretixscan.droid.ui
 
+import Mf0aesKeySet
 import android.Manifest
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
@@ -58,17 +59,24 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import eu.pretix.libpretixnfc.android.hardware.NfcDisabled
+import eu.pretix.libpretixnfc.android.hardware.NfcHandler
+import eu.pretix.libpretixnfc.android.hardware.NfcUnsupported
+import eu.pretix.libpretixnfc.android.hardware.getNfcHandler
+import eu.pretix.libpretixnfc.communication.ChipReadError
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
 import eu.pretix.libpretixsync.serialization.JSONArraySerializer
 import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
 import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.libpretixsync.utils.getActiveMediaTypes
 import eu.pretix.libpretixui.android.questions.QuestionsDialog
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.libpretixui.android.scanning.HardwareScanner
@@ -80,6 +88,7 @@ import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
 import eu.pretix.pretixscan.droid.hardware.LED
 import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
+import eu.pretix.pretixscan.utils.SettingsManager
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -162,7 +171,7 @@ class ViewDataHolder(private val ctx: Context) {
     }
 }
 
-class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener {
+class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.ResultHandler, MediaPlayer.OnCompletionListener, ConnectivityChangedListener, NfcHandler.OnChipReadListener {
 
     private val REQ_EVENT = 1
 
@@ -180,6 +189,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
     private var lastIgnoreUnpaid: Boolean = false
+    private var lastScanSourceType: ReusableMediaType = ReusableMediaType.BARCODE
     private var lastScanResult: TicketCheckProvider.CheckResult? = null
     private var keyboardBuffer: String = ""
     private var dialog: QuestionsDialogInterface? = null
@@ -195,6 +205,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     private var pendingPinAction: ((pin: String) -> Unit)? = null
 
+    private var nfcHandler: NfcHandler? = null
+
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
     }
@@ -206,9 +218,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             }
             lastScanTime = System.currentTimeMillis()
             lastScanCode = result
+            lastScanSourceType = ReusableMediaType.BARCODE
             lastIgnoreUnpaid = false
             lastScanResult = null
-            handleScan(result, null, !conf.unpaidAsk)
+            handleScan(
+                result,
+                lastScanSourceType.serverName,
+                null,
+                !conf.unpaidAsk
+            )
         }
     })
 
@@ -271,6 +289,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         view_data.configDetails.set(confdetails.trim())
         view_data.isOffline.set(conf.offlineMode)
+
+        reloadNfcHandler()
     }
 
     private fun setSearchFilter(f: String) {
@@ -290,10 +310,16 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
                         lastScanTime = System.currentTimeMillis()
                         lastScanCode = res.secret!!
+                        lastScanSourceType = ReusableMediaType.BARCODE
                         lastScanResult = null
                         lastIgnoreUnpaid = false
                         hideSearchCard()
-                        handleScan(res.secret!!, null, !conf.unpaidAsk)
+                        handleScan(
+                            res.secret!!,
+                            lastScanSourceType.serverName,
+                            null,
+                            !conf.unpaidAsk
+                        )
                     }
                 })
                 runOnUiThread {
@@ -565,7 +591,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 Build.VERSION.RELEASE,
                 "pretixSCAN Android",
                 BuildConfig.VERSION_NAME,
-                null,
+                try {
+                    conf.keyStore.getOrCreateRsaPubKey("device")?.toString(Charset.defaultCharset())
+                } catch (e: NotImplementedError) { null },
                 null,
                 (application as PretixScan).connectivityHelper
         )
@@ -966,6 +994,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     override fun onPause() {
         handler.removeCallbacks(syncRunnable)
         (application as PretixScan).connectivityHelper.removeListener(this)
+        nfcHandler?.stop()
         super.onPause()
         if (conf.useCamera) {
             binding.scannerView.stopCamera()
@@ -984,7 +1013,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         super.onStop()
     }
 
-    fun handleScan(raw_result: String, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false) {
+    fun handleScan(
+        raw_result: String,
+        source_type: String,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean = false
+    ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
             return
@@ -1032,7 +1066,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
             try {
-                checkResult = provider.check(conf.eventSelectionToMap(), result, "barcode", answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
+                checkResult = provider.check(conf.eventSelectionToMap(), result, source_type, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
                     "exit" -> TicketCheckProvider.CheckInType.EXIT
                     else -> TicketCheckProvider.CheckInType.ENTRY
                 }, allowQuestions = !conf.ignoreQuestions)
@@ -1061,9 +1095,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
     }
 
-    fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
-                            values: Map<String, String>?, isResumed: Boolean,
-                            retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
+    fun showQuestionsDialog(res: TicketCheckProvider.CheckResult,
+                            secret: String,
+                            sourceType: ReusableMediaType,
+                            ignore_unpaid: Boolean,
+                            values: Map<String, String>?,
+                            isResumed: Boolean,
+                            retryHandler: ((String, ReusableMediaType, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
 
         val questions = res.requiredAnswers!!.map { it.question.toModel() }
         for (q in questions) {
@@ -1105,7 +1143,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 values_,
                 null,
                 null,
-                { answers -> retryHandler(secret, answers, ignore_unpaid) },
+                { answers -> retryHandler(secret, sourceType, answers, ignore_unpaid) },
                 null,
                 attendeeName,
                 attendeeDOB,
@@ -1160,9 +1198,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG)
-            dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1170,9 +1213,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
             view_data.resultState.set(DIALOG)
-            dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
+            dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1375,9 +1423,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
+        lastScanSourceType = ReusableMediaType.BARCODE
         lastScanResult = null
         lastIgnoreUnpaid = false
-        handleScan(s, null, !conf.unpaidAsk)
+        handleScan(
+            s,
+            lastScanSourceType.serverName,
+            null,
+            !conf.unpaidAsk
+        )
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -1391,9 +1445,15 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = keyboardBuffer
+                lastScanSourceType = ReusableMediaType.BARCODE
                 lastScanResult = null
                 lastIgnoreUnpaid = false
-                handleScan(keyboardBuffer, null, !conf.unpaidAsk)
+                handleScan(
+                    keyboardBuffer,
+                    lastScanSourceType.serverName,
+                    null,
+                    !conf.unpaidAsk
+                )
                 keyboardBuffer = ""
                 true
             }
@@ -1557,6 +1617,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             view_data.resultState.set(DIALOG)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
+            lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
 
@@ -1574,9 +1635,14 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
             }
 
-            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastIgnoreUnpaid, values, true) { secret, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(
+                    secret,
+                    sourceType.serverName,
+                    answers,
+                    ignore_unpaid
+                )
             }
             dialog!!.onRestoreInstanceState(answers)
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1601,9 +1667,102 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             outState.putString("result_state", "DIALOG")
             outState.putString("lastScanCode", lastScanCode)
+            outState.putString("lastScanType", lastScanSourceType.serverName)
             outState.putBoolean("ignore_unpaid", lastIgnoreUnpaid)
             outState.putBundle("answers", dialog!!.onSaveInstanceState())
             outState.putString("result", om.writeValueAsString(lastScanResult))
+        }
+    }
+
+    override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        if (identifier.startsWith("08")) {
+            runOnUiThread {
+                showLoadingCard()
+                displayScanResult(
+                    TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_random_uid), false),
+                    null
+                )
+            }
+            return
+        }
+
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = identifier
+        lastScanSourceType = mediaType
+        lastScanResult = null
+        lastIgnoreUnpaid = false
+
+        handleScan(
+            identifier,
+            mediaType.serverName,
+            null,
+            !conf.unpaidAsk
+        )
+    }
+
+    override fun chipReadError(error: ChipReadError, identifier: String?) {
+        val error = when (error) {
+            ChipReadError.IO_ERROR -> getString(R.string.nfc_read_error)
+            ChipReadError.UNKNOWN_CHIP_TYPE -> getString(R.string.nfc_unknown_chip_type)
+            ChipReadError.FOREIGN_CHIP -> getString(R.string.nfc_foreign_chip)
+            ChipReadError.EMPTY_CHIP -> getString(R.string.nfc_empty_chip)
+            else -> error.toString()
+        }
+
+        runOnUiThread {
+            showLoadingCard()
+            displayScanResult(
+                TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, error, false),
+                null
+            )
+        }
+    }
+
+    private fun reloadNfcHandler() {
+        if (conf.synchronizedEvents.isNotEmpty()) {
+            val eventSlug = conf.synchronizedEvents.first()
+            val settingsManager = SettingsManager(application)
+            val useRandomIdForNewTags = settingsManager.getBySlug(eventSlug)?.json?.optBoolean("reusable_media_type_nfc_mf0aes_random_uid", false) ?: false
+            val activeMediaTypes = getActiveMediaTypes(
+                settingsManager,
+                eventSlug
+            )
+            if (!activeMediaTypes.any { it.isNfcBased }) {
+                if (nfcHandler?.isRunning() == true) {
+                    nfcHandler?.stop()
+                }
+                return
+            }
+            if (nfcHandler?.isRunning() != true || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
+                nfcHandler?.stop()
+                val keySets = (this.applicationContext as PretixScan).db.mediumKeySetQueries.selectAll()
+                    .executeAsList()
+                    .map { it.toModel() }
+                    .map {
+                        Mf0aesKeySet(
+                            it.publicId,
+                            it.organizer == conf.organizerSlug && it.active,
+                            conf.keyStore.decryptRsa(
+                                "device",
+                                eu.pretix.libpretixsync.utils.codec.binary.Base64.decodeBase64(it.uidKey.toByteArray(Charset.defaultCharset()))
+                            ),
+                            conf.keyStore.decryptRsa(
+                                "device",
+                                eu.pretix.libpretixsync.utils.codec.binary.Base64.decodeBase64(it.diversificationKey.toByteArray(Charset.defaultCharset()))
+                            ),
+                        )
+                    }
+
+                nfcHandler = getNfcHandler(this, keySets, useRandomIdForNewTags, nfcReaderType = conf.nfcReaderType)
+                nfcHandler!!.setOnChipReadListener(this)
+                try {
+                    nfcHandler!!.start(activeMediaTypes)
+                } catch (_: NfcUnsupported) {
+                    // silently ignore, else users on non-nfc-devices are warned all the time
+                } catch (_: NfcDisabled) {
+                    // silently ignore, we may want to show an unobtrusive warning in the future
+                }
+            }
         }
     }
 }

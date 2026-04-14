@@ -172,6 +172,17 @@ dependencies {
     implementation(project(':libpretixsync')) {
         transitive = false
     }
+
+    // libpretixnfc
+    implementation(project(':libpretixnfc')) {
+        transitive = true
+    }
+
+    // libpretixnfc-android
+    implementation(project(':libpretixnfc-android')) {
+        transitive = true
+    }
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
