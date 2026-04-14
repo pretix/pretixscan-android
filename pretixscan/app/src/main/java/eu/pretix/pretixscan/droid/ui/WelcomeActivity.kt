@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -22,12 +21,15 @@ class WelcomeActivity : AppCompatActivity() {
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
+        const val STORE_CONSENT = "consent"
     }
+
+    lateinit var binding: ActivityWelcomeBinding
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityWelcomeBinding>(this, R.layout.activity_welcome)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_welcome)
         setContentView(binding.root)
         setSupportActionBar(binding.topAppBar)
 
@@ -47,7 +49,7 @@ class WelcomeActivity : AppCompatActivity() {
             WindowInsetsCompat.CONSUMED
         }
 
-        binding.button?.setOnClickListener {
+        binding.button.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, SetupActivity::class.java)
                 startActivity(intent)
@@ -61,6 +63,8 @@ class WelcomeActivity : AppCompatActivity() {
             val conf = AppConfig(this)
             conf.useCamera = false
         }
+
+        binding.disclaimer1 = savedInstanceState?.getBoolean(STORE_CONSENT, false) ?: false
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -80,5 +84,10 @@ class WelcomeActivity : AppCompatActivity() {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STORE_CONSENT, binding.disclaimer1)
     }
 }
