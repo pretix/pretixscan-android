@@ -1665,6 +1665,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 settingsManager,
                 eventSlug
             )
+            if (!activeMediaTypes.any { it.isNfcBased }) {
+                if (nfcHandler?.isRunning() == true) {
+                    nfcHandler?.stop()
+                }
+                return
+            }
             if (nfcHandler?.isRunning() != true || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
                 nfcHandler?.stop()
                 val keySets = (this.applicationContext as PretixScan).db.mediumKeySetQueries.selectAll()
