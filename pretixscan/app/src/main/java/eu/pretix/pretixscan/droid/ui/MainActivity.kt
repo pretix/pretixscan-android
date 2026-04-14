@@ -189,6 +189,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     private var lastScanTime: Long = 0
     private var lastScanCode: String = ""
     private var lastIgnoreUnpaid: Boolean = false
+    private var lastScanSourceType: ReusableMediaType = ReusableMediaType.BARCODE
     private var lastScanResult: TicketCheckProvider.CheckResult? = null
     private var keyboardBuffer: String = ""
     private var dialog: QuestionsDialogInterface? = null
@@ -217,9 +218,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             }
             lastScanTime = System.currentTimeMillis()
             lastScanCode = result
+            lastScanSourceType = ReusableMediaType.BARCODE
             lastIgnoreUnpaid = false
             lastScanResult = null
-            handleScan(result, null, !conf.unpaidAsk)
+            handleScan(result, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
         }
     })
 
@@ -303,10 +305,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
                         lastScanTime = System.currentTimeMillis()
                         lastScanCode = res.secret!!
+                        lastScanSourceType = ReusableMediaType.BARCODE
                         lastScanResult = null
                         lastIgnoreUnpaid = false
                         hideSearchCard()
-                        handleScan(res.secret!!, null, !conf.unpaidAsk)
+                        handleScan(res.secret!!, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
                     }
                 })
                 runOnUiThread {
@@ -1077,9 +1080,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
     }
 
-    fun showQuestionsDialog(res: TicketCheckProvider.CheckResult, secret: String, ignore_unpaid: Boolean,
-                            values: Map<String, String>?, isResumed: Boolean,
-                            retryHandler: ((String, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
+    fun showQuestionsDialog(res: TicketCheckProvider.CheckResult,
+                            secret: String,
+                            sourceType: ReusableMediaType,
+                            ignore_unpaid: Boolean,
+                            values: Map<String, String>?,
+                            isResumed: Boolean,
+                            retryHandler: ((String, ReusableMediaType, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
 
         val questions = res.requiredAnswers!!.map { it.question.toModel() }
         for (q in questions) {
@@ -1121,7 +1128,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 values_,
                 null,
                 null,
-                { answers -> retryHandler(secret, answers, ignore_unpaid) },
+                { answers -> retryHandler(secret, sourceType, answers, ignore_unpaid) },
                 null,
                 attendeeName,
                 attendeeDOB,
@@ -1176,9 +1183,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG)
-            dialog = showQuestionsDialog(result, lastScanCode, ignore_unpaid, null, false) { secret, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1186,9 +1193,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
             view_data.resultState.set(DIALOG)
-            dialog = showUnpaidDialog(this, result, lastScanCode, answers) { secret, answers, ignore_unpaid ->
+            dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
             }
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
             view_data.setLed(this, view_data.resultState.get()!!, true)
@@ -1391,9 +1398,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         lastScanTime = System.currentTimeMillis()
         lastScanCode = s
+        lastScanSourceType = ReusableMediaType.BARCODE
         lastScanResult = null
         lastIgnoreUnpaid = false
-        handleScan(s, null, !conf.unpaidAsk)
+        handleScan(s, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -1407,9 +1415,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = keyboardBuffer
+                lastScanSourceType = ReusableMediaType.BARCODE
                 lastScanResult = null
                 lastIgnoreUnpaid = false
-                handleScan(keyboardBuffer, null, !conf.unpaidAsk)
+                handleScan(keyboardBuffer, null, !conf.unpaidAsk, source_type = lastScanSourceType.serverName)
                 keyboardBuffer = ""
                 true
             }
@@ -1573,6 +1582,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             view_data.resultState.set(DIALOG)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
+            lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
 
@@ -1590,9 +1600,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 }
             }
 
-            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastIgnoreUnpaid, values, true) { secret, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
-                handleScan(secret, answers, ignore_unpaid)
+                handleScan(secret, answers, ignore_unpaid, source_type = sourceType.serverName)
             }
             dialog!!.onRestoreInstanceState(answers)
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
@@ -1617,6 +1627,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
             outState.putString("result_state", "DIALOG")
             outState.putString("lastScanCode", lastScanCode)
+            outState.putString("lastScanType", lastScanSourceType.serverName)
             outState.putBoolean("ignore_unpaid", lastIgnoreUnpaid)
             outState.putBundle("answers", dialog!!.onSaveInstanceState())
             outState.putString("result", om.writeValueAsString(lastScanResult))
@@ -1634,6 +1645,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             }
             return
         }
+
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = identifier
+        lastScanSourceType = mediaType
+        lastScanResult = null
+        lastIgnoreUnpaid = false
 
         handleScan(identifier, null, !conf.unpaidAsk, source_type = mediaType.serverName)
     }
