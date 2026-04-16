@@ -150,4 +150,5 @@
     <string name="ticket_attention"></string>
     <string name="pin_protection_statistics"></string>
     <string name="reinstall_open_app_settings"></string>
+    <string name="short_datetime_format"></string>
 </resources>
