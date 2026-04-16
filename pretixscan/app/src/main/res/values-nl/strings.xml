@@ -88,7 +88,7 @@
     <string name="settings_label_search_disable">Zoeken uitschakelen</string>
     <string name="label_shop_inactive">Winkel uitgeschakeld</string>
     <string name="label_shop_active">Actief</string>
-    <string name="full_delete_confirm">Wilt u dit apparaat echt opnieuw instellen\? U zult het apparaat opnieuw moeten koppelen met de pretix-server.</string>
+    <string name="full_delete_confirm">Wilt u dit apparaat echt opnieuw instellen? U zult het apparaat opnieuw moeten koppelen met de pretix-server.</string>
     <string name="full_delete">Verwijder alle lokale data en reset apparaat</string>
     <string name="force_full_resync_help">Hierdoor worden uw lokale gegevens niet verwijderd, maar wordt de volgende synchronisatie van alle gebeurtenissen gedwongen tot een volledige synchronisatie, d.w.z. dat alle gegevens opnieuw worden gedownload in plaats van alleen de gewijzigde gegevens.</string>
     <string name="settings_label_troubleshooting">Probleemoplossing</string>
@@ -99,11 +99,11 @@
     <string name="ticket_attention">Let op, speciaal ticket!</string>
     <string name="total_tickets_sold">totaalaantal verkochte tickets</string>
     <string name="already_scanned">al gescand</string>
-    <string name="preference_badgeprint_install_pretixprint">Het printen van badges vereist de extra pretixPRINT-app. Wilt u deze app installeren\?</string>
+    <string name="preference_badgeprint_install_pretixprint">Het printen van badges vereist de extra pretixPRINT-app. Wilt u deze app installeren?</string>
     <string name="preference_autobadgeprint_enable">Print badges automatisch</string>
     <string name="preference_badgeprint_enable">Badges printen inschakelen</string>
     <string name="dialog_unpaid_retry">Alsnog inchecken</string>
-    <string name="dialog_unpaid_text">Dit ticket behoort tot een bestelling die nog niet betaald is. Wilt u het alsnog inchecken\? Dit zal de bestelling niet markeren als betaald.</string>
+    <string name="dialog_unpaid_text">Dit ticket behoort tot een bestelling die nog niet betaald is. Wilt u het alsnog inchecken? Dit zal de bestelling niet markeren als betaald.</string>
     <string name="dialog_unpaid_title">Onbetaalde bestelling</string>
     <string name="error_sync_in_background">Er wordt op de achtergrond al een synchronisatie uitgevoerd.</string>
     <string name="scan_result_canceled">Bestelling geannuleerd</string>
