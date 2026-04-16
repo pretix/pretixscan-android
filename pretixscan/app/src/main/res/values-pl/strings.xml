@@ -161,10 +161,4 @@
     <string name="preference_autobadgeprint_enable">Automatyczne drukowanie identyfikatorów</string>
     <string name="label_shop_inactive">Sklep dezaktywowany</string>
     <string name="label_shop_active">Aktywny</string>
-    <string name="settings_label_device_name"></string>
-    <string name="settings_label_screen_always_on"></string>
-    <string name="headline_please_reinstall"></string>
-    <string name="reinstall_text"></string>
-    <string name="reinstall_open_app_settings"></string>
-    <string name="error_exception"></string>
 </resources>
