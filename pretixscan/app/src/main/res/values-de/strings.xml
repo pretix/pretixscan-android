@@ -96,11 +96,11 @@
     <string name="scan_result_canceled">Ticket storniert</string>
     <string name="error_sync_in_background">Eine Synchronisation läuft bereits im Hintergrund.</string>
     <string name="dialog_unpaid_title">Unbezahlte Bestellung</string>
-    <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken\? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
+    <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
     <string name="dialog_unpaid_retry">Trotzdem einchecken</string>
     <string name="preference_badgeprint_enable">Badge-Druck aktivieren</string>
     <string name="preference_autobadgeprint_enable">Badges automatisch drucken</string>
-    <string name="preference_badgeprint_install_pretixprint">Badge-Druck benötigt die pretixPRINT-App. Wollen Sie diese installieren\?</string>
+    <string name="preference_badgeprint_install_pretixprint">Badge-Druck benötigt die pretixPRINT-App. Wollen Sie diese installieren?</string>
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Jedes Badge doppelt drucken</string>
     <string name="pref_unpaid_ask">Abfrage beim Check-in unbezahlter Bestellungen</string>
@@ -116,7 +116,7 @@
     <string name="settings_label_troubleshooting">Fehlersuche</string>
     <string name="force_full_resync_help">Dies löscht keine lokalen Daten, aber die nächste Synchronisation jeder Veranstaltung wird alle Daten neu herunterladen, nicht nur kürzlich geänderte.</string>
     <string name="full_delete">Gerät zurücksetzen (alle lokalen Daten werden gelöscht)</string>
-    <string name="full_delete_confirm">Soll dieses Gerät wirklich zurückgesetzt werden\? Du musst es danach neu mit dem Online-System verbinden.</string>
+    <string name="full_delete_confirm">Soll dieses Gerät wirklich zurückgesetzt werden? Du musst es danach neu mit dem Online-System verbinden.</string>
     <string name="label_shop_active">Aktiv</string>
     <string name="label_shop_inactive">Shop deaktiviert</string>
     <string name="settings_label_details">Details</string>
