@@ -157,10 +157,4 @@
     <string name="status_empty">La ricerca non ha portato a nessun risultato. ASsicurarsi di aver inserito almeno quattro caratteri.</string>
     <string name="settings_summary_kioskmode">La modalità kiosk nasconde i menu che non sono necessari per essere usati in una installazione sel-service. la modalità kiosk non previene di uscire dall\' applicazione. Per accedere alle impostazioni, è necessario scannerizzare un QR code con il vostro PIN.</string>
     <string name="force_full_resync_help">Questa azione non cancellerà alcun dato locale, ma forzerà una sincornizzazione di ogli evento come sincronizzazione completa, ad esempio scaricherà tutti i dati al posto che solamente i dati modificati.</string>
-    <string name="settings_label_device_name"></string>
-    <string name="settings_label_screen_always_on"></string>
-    <string name="headline_please_reinstall"></string>
-    <string name="reinstall_text"></string>
-    <string name="reinstall_open_app_settings"></string>
-    <string name="error_exception"></string>
 </resources>
