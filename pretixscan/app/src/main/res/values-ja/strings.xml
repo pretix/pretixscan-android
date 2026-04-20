@@ -6,8 +6,8 @@
     <string name="cancel">キャンセル</string>
     <string name="debug_info_device">デバイス: %1$s</string>
     <string name="scantype_entry_kiosk_print">チケットをスキャンしてバッジを印刷</string>
-    <string name="sync_status_last">前回成功した同期:</string>
-    <string name="sync_status_last_failed">前回失敗した同期:</string>
+    <string name="sync_status_last">最後に成功した同期:</string>
+    <string name="sync_status_last_failed">最後に失敗した同期:</string>
     <string name="sync_status_never">未同期</string>
     <string name="sync_status_progress">同期実行中</string>
     <string name="sync_status">同期のステータス</string>
@@ -49,7 +49,7 @@
     <plurals name="sync_status_pending">
         <item quantity="other">保留中のアップロードが%d件</item>
     </plurals>
-    <string name="short_datetime_format">MM/dd HH:mm</string>
+    <string name="short_datetime_format">M月d日 HH:mm</string>
     <string name="first_scanned">最初のスキャン: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
