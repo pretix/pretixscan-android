@@ -85,6 +85,15 @@
             android:key="pref_ignore_questions"
             android:title="@string/pref_ignore_questions" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_nfc_head">
+        <ListPreference
+            android:defaultValue="native"
+            android:entries="@array/preference_nfc_type"
+            android:entryValues="@array/preference_nfc_type_values"
+            android:key="pref_nfc_type"
+            android:summary="%s"
+            android:title="@string/preference_nfc_type_label" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_about">
         <Preference
             android:key="version"
