@@ -16,6 +16,7 @@
     <queries>
         <package android:name="eu.pretix.pretixprint" />
         <package android:name="eu.pretix.pretixprint.debug" />
+        <package android:name="eu.pretix.ktIOservice" />
         <package android:name="de.silpion.bleuartcompanion" />
         <package android:name="com.symbol.datawedge" />
     </queries>
@@ -105,6 +106,13 @@
             android:label="@string/headline_please_reinstall"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.KioskActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.Fullscreen"
+            />
 
         <service android:name="eu.pretix.libpretixnfc.android.hardware.acs.AcsReaderService"  android:foregroundServiceType="connectedDevice" />
 
