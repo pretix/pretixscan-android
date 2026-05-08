@@ -586,6 +586,8 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
     abstract fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean = false)
 
+    open fun showLoadingCard() {}
+
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult,
                             secret: String,
                             sourceType: ReusableMediaType,
@@ -767,7 +769,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
         if (identifier.startsWith("08")) {
             runOnUiThread {
-                //showLoadingCard()
+                showLoadingCard()
                 displayScanResult(
                     TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, getString(R.string.nfc_random_uid), false),
                     null
@@ -800,7 +802,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         }
 
         runOnUiThread {
-            //showLoadingCard()
+            showLoadingCard()
             displayScanResult(
                 TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.ERROR, error, false),
                 null
