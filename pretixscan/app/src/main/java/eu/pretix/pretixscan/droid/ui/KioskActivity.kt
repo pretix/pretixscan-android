@@ -135,7 +135,7 @@ class KioskActivity : BaseScanActivity() {
 
     val printTimeout = Runnable {
         if (state == KioskState.Printing) {
-            binding.tvOutOfOrderMessage.text = "Printing failed by timeout"
+            binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed_timeout)
             state = KioskState.OutOfOrder
             updateUi()
         }
@@ -143,7 +143,7 @@ class KioskActivity : BaseScanActivity() {
 
     val gateTimeout = Runnable {
         if (state == KioskState.GateOpen) {
-            binding.tvOutOfOrderMessage.text = "Gate opening failed by timeout"
+            binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_gate_opening_failed_timeout)
             state = KioskState.OutOfOrder
             updateUi()
         }
@@ -403,7 +403,7 @@ class KioskActivity : BaseScanActivity() {
             }
 
             else -> {
-                binding.tvOutOfOrderMessage.text = "Unknown Scan Result Type"
+                binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_unknown_scan_result_type)
                 state = KioskState.OutOfOrder
                 if (conf.sounds) {
                     mediaPlayers[R.raw.error]?.start()
@@ -461,7 +461,7 @@ class KioskActivity : BaseScanActivity() {
                     } else {
                         // printing failed
                         runOnUiThread {
-                            binding.tvOutOfOrderMessage.text = "Printing failed"
+                            binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed)
                             state = KioskState.OutOfOrder
                             updateUi()
                         }
@@ -505,7 +505,7 @@ class KioskActivity : BaseScanActivity() {
                     } else {
                         // gate opening failed
                         runOnUiThread {
-                            binding.tvOutOfOrderMessage.text = resources.getString(R.string.gate_opening_failed)
+                            binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_gate_opening_failed)
                             state = KioskState.OutOfOrder
                             updateUi()
                         }
@@ -586,6 +586,7 @@ class KioskActivity : BaseScanActivity() {
 
             KioskState.OutOfOrder -> {
                 binding.llOutOfOrder.visibility = View.VISIBLE
+                conf.kioskOutOfOrder = true
                 led.error(blink = false)
             }
         }
