@@ -27,6 +27,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import eu.pretix.libpretixui.android.fragments.ForegroundNoticeDialogFragment
 import eu.pretix.pretixscan.droid.AppConfig
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -175,6 +176,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+
+        findPreference<ListPreference>("pref_nfc_type")?.setOnPreferenceChangeListener { preference, newValue ->
+            if (newValue == "acs") {
+                ForegroundNoticeDialogFragment.showConditionally(activity, "nfc_Acs")
+            }
+            return@setOnPreferenceChangeListener true
+        }
+
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {
