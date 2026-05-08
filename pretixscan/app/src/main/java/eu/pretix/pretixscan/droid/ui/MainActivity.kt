@@ -129,7 +129,7 @@ class MainActivity : BaseScanActivity() {
     }
 
     override fun reload() {
-        reloadSyncStatus()
+        super.reload()
 
         var confdetails = ""
         if (conf.deviceKnownGateName.isNotBlank()) {
