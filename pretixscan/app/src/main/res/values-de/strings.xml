@@ -189,4 +189,14 @@
     <string name="reusable_media_exchange_nfc_scan">Bitte einen NFC-Chip einlesen</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">Es wird ein NFC-Chip auf UID-Basis benötigt</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Es wird ein NFC Mifare Ultralight AES-Chip benötigt</string>
+    <string name="kiosk_text_questions_reject">Ticketkontrolle hier nicht möglich</string>
+    <string name="kiosk_text_questions_reject_sub">Bitte wenden Sie sich an das Einlasspersonal</string>
+    <string name="kiosk_text_scan">Bitte scannen Sie Ihr Ticket</string>
+    <string name="kiosk_text_reading">Barcode wird gelesen…</string>
+    <string name="kiosk_text_checking">Ticket wird geprüft…</string>
+    <string name="kiosk_text_print">Bitte entnehmen Sie Ihr Badge</string>
+    <string name="kiosk_text_gate">Bitte gehen Sie durch das Drehkreuz</string>
+    <string name="out_of_order">Außer Betrieb</string>
+    <string name="action_label_out_of_order">Außer Betrieb nehmen</string>
+    <string name="action_label_remove_out_of_order">Wieder in Betrieb nehmen</string>
 </resources>
