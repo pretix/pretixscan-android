@@ -506,7 +506,7 @@ class MainActivity : BaseScanActivity() {
         LED(this).off()
     }
 
-    fun showLoadingCard() {
+    override fun showLoadingCard() {
         stopHidingTimer()
         binding.cardResult.clearAnimation()
         view_data.resultState.set(LOADING)
