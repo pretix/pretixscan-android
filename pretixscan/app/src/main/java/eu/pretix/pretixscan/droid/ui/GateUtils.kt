@@ -19,7 +19,7 @@ fun openGate(
         intent.component =
             ComponentName("eu.pretix.ktIOservice", "eu.pretix.ktIOservice.GateService")
     } else {
-        throw Exception("error_print_no_app")
+        throw Exception("ktIO service not found")
     }
     if (recv != null) {
         intent.putExtra("resultreceiver", receiverForSending(recv))

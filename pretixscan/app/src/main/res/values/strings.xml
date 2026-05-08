@@ -184,4 +184,5 @@
     <string name="out_of_order">Out of order</string>
     <string name="action_label_out_of_order">Take out of order</string>
     <string name="action_label_remove_out_of_order">Re-enable operation</string>
+    <string name="gate_opening_failed">Gate opening failed</string>
 </resources>

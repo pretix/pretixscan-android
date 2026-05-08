@@ -487,31 +487,39 @@ class KioskActivity : BaseScanActivity() {
     }
 
     fun openGate() {
-        openGate(this, object : ResultReceiver(null) {
-            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                super.onReceiveResult(resultCode, resultData)
-                gateTimeoutHandler.removeCallbacks(gateTimeout)
-                if (resultCode == 0) {
-                    runOnUiThread {
-                        backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
-                    }
-                } else if (resultCode == 2) {
-                    // Gate opened, but did not turn.
-                    // TODO: Revert checkin?
-                    runOnUiThread {
-                        backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
-                    }
-                } else {
-                    // gate opening failed
-                    runOnUiThread {
-                        binding.tvOutOfOrderMessage.text = "Gate opening failed"
-                        state = KioskState.OutOfOrder
-                        updateUi()
+        try {
+            openGate(this, object : ResultReceiver(null) {
+                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                    super.onReceiveResult(resultCode, resultData)
+                    gateTimeoutHandler.removeCallbacks(gateTimeout)
+                    if (resultCode == 0) {
+                        runOnUiThread {
+                            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+                        }
+                    } else if (resultCode == 2) {
+                        // Gate opened, but did not turn.
+                        // TODO: Revert checkin?
+                        runOnUiThread {
+                            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+                        }
+                    } else {
+                        // gate opening failed
+                        runOnUiThread {
+                            binding.tvOutOfOrderMessage.text = resources.getString(R.string.gate_opening_failed)
+                            state = KioskState.OutOfOrder
+                            updateUi()
+                        }
                     }
                 }
+            })
+            gateTimeoutHandler.postDelayed(gateTimeout, 30_000)
+        } catch (e: Exception) {
+            runOnUiThread {
+                binding.tvOutOfOrderMessage.text = e.localizedMessage
+                state = KioskState.OutOfOrder
+                updateUi()
             }
-        })
-        gateTimeoutHandler.postDelayed(gateTimeout, 30_000)
+        }
     }
 
 
