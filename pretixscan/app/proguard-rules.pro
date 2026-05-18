@@ -72,3 +72,7 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn sun.security.x509.X509Key
+
+# Caused by org.bouncycastle.cert.dane.fetcher.*
+# and org.bouncycastle.jce.provider.X509LDAPCertStoreSpi.*
+-dontwarn javax.naming.**
