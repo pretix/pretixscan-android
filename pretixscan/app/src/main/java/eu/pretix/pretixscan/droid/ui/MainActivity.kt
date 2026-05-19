@@ -530,7 +530,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             syncNow()
         }
         scheduleSync()
-        checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
+        if (conf.useCamera) {
+            checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
+        }
 
         hideCard()
         hideSearchCard()
