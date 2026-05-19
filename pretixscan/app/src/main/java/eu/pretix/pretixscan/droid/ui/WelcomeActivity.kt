@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +55,17 @@ class WelcomeActivity : AppCompatActivity() {
         val conf = AppConfig(this)
         if (defaultToScanner()) {
             conf.useCamera = false
+        }
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            conf.useCamera = false
+        }
+        try {
+            val cameraManager = getSystemService(CAMERA_SERVICE) as CameraManager?
+            if (cameraManager == null || cameraManager.cameraIdList.size == 0) {
+                conf.useCamera = false
+            }
+        } catch (_: Exception) {
+            // ignore
         }
 
         binding.button.setOnClickListener {
