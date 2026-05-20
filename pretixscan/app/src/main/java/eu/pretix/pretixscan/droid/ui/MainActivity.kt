@@ -1189,6 +1189,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.BLOCKED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 else -> {
                 }
@@ -1243,6 +1244,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
+                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(R.string.scan_result_already_exchanged)
                 else -> null
             }
         }
@@ -1267,6 +1269,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
+            TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
         })
         view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
