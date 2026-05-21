@@ -118,7 +118,8 @@ enum class ResultState {
     EMPTY,
     LOADING,
     ERROR,
-    DIALOG,
+    DIALOG_QUESTIONS,
+    DIALOG_EXCHANGE,
     WARNING,
     SUCCESS,
     SUCCESS_EXIT
@@ -152,7 +153,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            EMPTY, DIALOG, LOADING -> R.color.pretix_brand_lightgrey
+            EMPTY, DIALOG_QUESTIONS, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
             ERROR -> R.color.pretix_brand_red
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
@@ -164,7 +165,7 @@ class ViewDataHolder(private val ctx: Context) {
         when (state) {
             EMPTY -> led.off()
             LOADING -> led.progress()
-            DIALOG, WARNING -> led.attention(blink = needsAttention)
+            DIALOG_QUESTIONS, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
             ERROR -> led.error()
             SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
         }
@@ -1191,6 +1192,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
+                TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 else -> {
                 }
             }
@@ -1198,7 +1200,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         stopHidingTimer()
         startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
                 handleScan(
@@ -1208,12 +1210,19 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     ignore_unpaid
                 )
             }
-            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            dialog!!.setOnCancelListener { hideCard() }
+            view_data.setLed(this, view_data.resultState.get()!!, true)
+            return
+        }
+        if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
+            view_data.resultState.set(DIALOG_EXCHANGE)
+            dialog = showExchangeDialog(this, result, lastScanCode, lastScanSourceType, ignore_unpaid)
+            dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
                 handleScan(
@@ -1271,6 +1280,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
             TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ERROR
         })
         view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
 
@@ -1618,7 +1628,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
@@ -1650,6 +1660,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             dialog!!.onRestoreInstanceState(answers)
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
         }
+
+        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -1660,7 +1672,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
         // we try to serialize all state required to re-create the dialog if the user returns.
 
-        if (view_data.resultState.get() == DIALOG && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() == DIALOG_QUESTIONS && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())
@@ -1675,6 +1687,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             outState.putBundle("answers", dialog!!.onSaveInstanceState())
             outState.putString("result", om.writeValueAsString(lastScanResult))
         }
+
+        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
