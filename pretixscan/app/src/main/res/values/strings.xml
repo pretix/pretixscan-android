@@ -174,4 +174,19 @@
     <string name="headline_please_reinstall">Please reinstall pretixSCAN</string>
     <string name="reinstall_text">Your previous pretixSCAN version was too old and your local data cannot be used for the current version.\n\nPlease clear the storage for the pretixSCAN app or delete and reinstall the app.</string>
     <string name="reinstall_open_app_settings">Open Android App Settings</string>
+    <string name="kiosk_text_scan">Please scan your ticket</string>
+    <string name="kiosk_text_reading">Reading barcode…</string>
+    <string name="kiosk_text_checking">Checking your ticket…</string>
+    <string name="kiosk_text_print">Please take your badge</string>
+    <string name="kiosk_text_gate">Please proceed through the gate</string>
+    <string name="kiosk_text_questions_reject">Ticket cannot be validated here</string>
+    <string name="kiosk_text_questions_reject_sub">Please reach out to our staff</string>
+    <string name="out_of_order">Out of order</string>
+    <string name="action_label_out_of_order">Take out of order</string>
+    <string name="action_label_remove_out_of_order">Re-enable operation</string>
+    <string name="kiosk_error_gate_opening_failed">Gate opening failed</string>
+    <string name="kiosk_error_gate_opening_failed_timeout">Gate opening failed by timeout</string>
+    <string name="kiosk_error_printing_failed">Printing failed</string>
+    <string name="kiosk_error_printing_failed_timeout">Printing failed by timeout</string>
+    <string name="kiosk_error_unknown_scan_result_type">Unknown Scan Result Type</string>
 </resources>
