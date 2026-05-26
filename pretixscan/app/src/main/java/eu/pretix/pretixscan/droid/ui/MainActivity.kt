@@ -64,6 +64,7 @@ import eu.pretix.libpretixnfc.android.hardware.NfcHandler
 import eu.pretix.libpretixnfc.android.hardware.NfcUnsupported
 import eu.pretix.libpretixnfc.android.hardware.getNfcHandler
 import eu.pretix.libpretixnfc.communication.ChipReadError
+import eu.pretix.libpretixsync.api.ConflictApiException
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -177,6 +178,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     private val REQ_EVENT = 1
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var api: PretixApi
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
     private val bgScope = CoroutineScope(Dispatchers.IO)
@@ -224,7 +226,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             lastScanResult = null
             handleScan(
                 result,
-                lastScanSourceType.serverName,
+                lastScanSourceType.serverName!!,
                 null,
                 !conf.unpaidAsk
             )
@@ -317,7 +319,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
-                            lastScanSourceType.serverName,
+                            lastScanSourceType.serverName!!,
                             null,
                             !conf.unpaidAsk
                         )
@@ -572,7 +574,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             binding.mainToolbar.event.text = ebt
             (binding.mainToolbar.event.parent as View?)?.forceLayout()
         }
-        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
+        api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
 
         sm = SyncManager(
                 conf,
@@ -1205,7 +1207,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -1216,7 +1218,50 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
-            dialog = showExchangeDialog(this, result, lastScanCode, lastScanSourceType, ignore_unpaid)
+            nfcHandler?.stop()
+            dialog = showExchangeDialog(this, result) { mediaIdentifier, mediaType ->
+                    bgScope.launch {
+                        if (mediaType.serverName == null) {
+                            // FIXME: show error
+                            return@launch
+                        }
+                        println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
+                        val response = api.loadMedium(mediaType.serverName!!, mediaIdentifier)
+
+                        val mediumResult = response.data?.optJSONObject("result")
+                        val mediumId = mediumResult?.optLong("id")
+                        if (mediumId == null) {
+                            // FIXME: show error
+                            return@launch
+                        }
+                        println(result.position)
+                        val position = result.position?.optLong("id")
+                        if (position == null) {
+                            // FIXME: show error
+                            return@launch
+                        }
+
+                        // if found: send server request to link reusable media
+                        val linkResponse = api.linkMedium(mediumId, position)
+                        if (linkResponse.response.code == 400) {
+                            throw ConflictApiException("Server error: medium could not be modified due to invalid submitted data")
+                            return@launch
+                        }
+
+                        runOnUiThread {
+                            // check it in (only online)
+                            hideCard()
+                            stopHidingTimer()
+                            handleScan(
+                                mediaIdentifier,
+                                mediaType.serverName!!,
+                                null,
+                                ignore_unpaid
+                            )
+                            reloadNfcHandler()
+                        }
+                    }
+            }
             dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
@@ -1227,7 +1272,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -1441,7 +1486,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         lastIgnoreUnpaid = false
         handleScan(
             s,
-            lastScanSourceType.serverName,
+            lastScanSourceType.serverName!!,
             null,
             !conf.unpaidAsk
         )
@@ -1463,7 +1508,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 lastIgnoreUnpaid = false
                 handleScan(
                     keyboardBuffer,
-                    lastScanSourceType.serverName,
+                    lastScanSourceType.serverName!!,
                     null,
                     !conf.unpaidAsk
                 )
@@ -1652,7 +1697,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -1711,7 +1756,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
         handleScan(
             identifier,
-            mediaType.serverName,
+            mediaType.serverName!!,
             null,
             !conf.unpaidAsk
         )
@@ -1744,7 +1789,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 settingsManager,
                 eventSlug
             )
-            if (!activeMediaTypes.any { it.isNfcBased }) {
+            if (!activeMediaTypes.any { it.isNfcBased() }) {
                 if (nfcHandler?.isRunning() == true) {
                     nfcHandler?.stop()
                 }
