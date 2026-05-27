@@ -175,4 +175,7 @@
     <string name="settings_label_device_name">Gerätename</string>
     <string name="hint_url">URL</string>
     <string name="hint_token">Token</string>
+    <string name="reusable_media_exchange_needed">Medientausch notwendig</string>
+    <string name="reusable_media_exchange_not_implemented">Dieses Ticket muss in ein wiederverwendbares Medium getauscht werden. Leider unterstützt diese Version von pretixSCAN dies noch nicht.</string>
+    <string name="reusable_media_exchange_nfc_scan">Bitte einen NFC-Chip einlesen</string>
 </resources>

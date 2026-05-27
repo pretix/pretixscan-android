@@ -25,7 +25,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="4dp"
-        android:text="Please scan a tag"
+        android:text="@string/reusable_media_exchange_nfc_scan"
         app:layout_constraintTop_toBottomOf="@+id/ivNfc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

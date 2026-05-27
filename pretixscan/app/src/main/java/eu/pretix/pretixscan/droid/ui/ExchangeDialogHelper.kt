@@ -23,8 +23,8 @@ interface NfcQuestionsDialogInterface : QuestionsDialogInterface {
 
 class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialogInterface {
     init {
-        setTitle("Medium Exchange Needed")
-        setMessage("This ticket requires to be exchanged to a reusable medium. Sadly this version of pretixSCAN isn't able to do this yet.")
+        setTitle(R.string.reusable_media_exchange_needed)
+        setMessage(ctx.getString(R.string.reusable_media_exchange_not_implemented))
         setButton(BUTTON_NEUTRAL, ctx.getString(R.string.ok)) { _, _ ->
             cancel()
         }
@@ -36,12 +36,12 @@ class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialo
     }
 }
 
-class ExchangeScanExistingNfcDialog(ctx: Activity, var mediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
+class ExchangeScanNfcDialog(ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
     NfcHandler.OnChipReadListener, NfcQuestionsDialogInterface {
-    private var v: View = LayoutInflater.from(context).inflate(R.layout.dialog_exchange_nfc_existing, null)
+    private var v: View = LayoutInflater.from(context).inflate(R.layout.dialog_reusable_medium_exchange_nfc, null)
 
     init {
-        setTitle("Medium Exchange Needed")
+        setTitle(R.string.reusable_media_exchange_needed)
         setView(v)
         setButton(BUTTON_NEGATIVE, ctx.getString(R.string.cancel)) { _, _ ->
             cancel()
@@ -53,6 +53,10 @@ class ExchangeScanExistingNfcDialog(ctx: Activity, var mediaType: ReusableMediaT
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        if (mediaType != requiredMediaType) {
+            // FIXME: show error
+            return
+        }
         dismiss()
         this.onSuccessfulNfcScan(identifier, mediaType)
     }
@@ -88,7 +92,7 @@ fun showExchangeDialog(
 
     // FIXME: check if nfc is supported and enabled
 
-    val dialog = ExchangeScanExistingNfcDialog(ctx, res.requiredMediaType!!, completion)
+    val dialog = ExchangeScanNfcDialog(ctx, res.requiredMediaType!!, completion)
     dialog.setCanceledOnTouchOutside(false)
     dialog.show()
     return dialog

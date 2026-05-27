@@ -1220,45 +1220,54 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
             dialog = showExchangeDialog(this, result) { mediaIdentifier, mediaType ->
-                    bgScope.launch {
-                        if (mediaType.serverName == null) {
-                            // FIXME: show error
-                            return@launch
-                        }
-                        println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
-                        val response = api.loadMedium(mediaType.serverName!!, mediaIdentifier)
+                bgScope.launch {
+                    if (mediaType.serverName == null) {
+                        // FIXME: show error, media is unsupported
+                        return@launch
+                    }
+                    println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
+                    var response: PretixApi.ApiResponse? = null
+                    try {
+                        response = api.loadMedium(mediaType.serverName!!, mediaIdentifier)
+                    } catch (e: Exception) {
+                        // FIXME: show error, loading media didn't work
+                        return@launch
+                    }
 
-                        val mediumResult = response.data?.optJSONObject("result")
-                        val mediumId = mediumResult?.optLong("id")
-                        if (mediumId == null) {
-                            // FIXME: show error
-                            return@launch
-                        }
-                        println(result.position)
-                        val position = result.position?.optLong("id")
-                        if (position == null) {
-                            // FIXME: show error
-                            return@launch
-                        }
+                    val mediumResult = response.data?.optJSONObject("result")
+                    val mediumId = mediumResult?.optLong("id")
+                    if (mediumId == null) {
+                        // FIXME: show error, media is unknown - we currently do not create a new one
+                        return@launch
+                    }
+                    println(result.position)
+                    val position = result.position?.optLong("id")
+                    if (position == null) {
+                        // FIXME: show error, ticket position is missing from checkin
+                        return@launch
+                    }
 
-                        // if found: send server request to link reusable media
+                    // if found: send server request to link reusable media
+                    try {
                         val linkResponse = api.linkMedium(mediumId, position)
                         if (linkResponse.response.code == 400) {
                             throw ConflictApiException("Server error: medium could not be modified due to invalid submitted data")
-                            return@launch
                         }
-
-                        runOnUiThread {
-                            // check it in (only online)
-                            hideCard()
-                            handleScan(
-                                mediaIdentifier,
-                                mediaType.serverName!!,
-                                null,
-                                ignore_unpaid
-                            )
-                        }
+                    } catch (e: Exception) {
+                        // FIXME: show error, linking media to ticket didn't work
                     }
+
+                    runOnUiThread {
+                        // check it in (only online)
+                        hideCard()
+                        handleScan(
+                            mediaIdentifier,
+                            mediaType.serverName!!,
+                            null,
+                            ignore_unpaid
+                        )
+                    }
+                }
             }
             dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
