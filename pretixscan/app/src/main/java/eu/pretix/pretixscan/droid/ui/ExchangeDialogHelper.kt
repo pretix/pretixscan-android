@@ -6,17 +6,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import eu.pretix.libpretixnfc.android.hardware.NfcDisabled
 import eu.pretix.libpretixnfc.android.hardware.NfcHandler
-import eu.pretix.libpretixnfc.android.hardware.NfcHandlerMode
-import eu.pretix.libpretixnfc.android.hardware.NfcUnsupported
 import eu.pretix.libpretixnfc.communication.ChipReadError
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.MediaPolicy
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.pretixscan.droid.R
-import eu.pretix.pretixscan.utils.getNfcHandler
+
+
+interface NfcQuestionsDialogInterface : QuestionsDialogInterface {
+    fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType)
+
+    fun chipReadError(error: ChipReadError, identifier: String?)
+}
 
 class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialogInterface {
     init {
@@ -33,26 +36,15 @@ class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialo
     }
 }
 
-class ExchangeScanExistingNfcDialog(ctx: Activity, mediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
-    NfcHandler.OnChipReadListener, QuestionsDialogInterface {
+class ExchangeScanExistingNfcDialog(ctx: Activity, var mediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
+    NfcHandler.OnChipReadListener, NfcQuestionsDialogInterface {
     private var v: View = LayoutInflater.from(context).inflate(R.layout.dialog_exchange_nfc_existing, null)
-    private var nfcHandler: NfcHandler?
 
     init {
+        setTitle("Medium Exchange Needed")
         setView(v)
-
-        nfcHandler = getNfcHandler(ctx, mode = NfcHandlerMode.DEFAULT)
-        if (nfcHandler == null) {
+        setButton(BUTTON_NEGATIVE, ctx.getString(R.string.cancel)) { _, _ ->
             cancel()
-        } else {
-            nfcHandler!!.setOnChipReadListener(this)
-            try {
-                nfcHandler!!.start(listOf(mediaType))
-            } catch (_: NfcUnsupported) {
-                cancel()
-            } catch (_: NfcDisabled) {
-                cancel()
-            }
         }
     }
 
@@ -67,11 +59,6 @@ class ExchangeScanExistingNfcDialog(ctx: Activity, mediaType: ReusableMediaType,
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
         TODO("Not yet implemented")
-    }
-
-    override fun dismiss() {
-        nfcHandler?.stop()
-        super.dismiss()
     }
 }
 

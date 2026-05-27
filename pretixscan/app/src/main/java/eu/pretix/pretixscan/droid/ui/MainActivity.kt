@@ -1218,7 +1218,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
-            nfcHandler?.stop()
             dialog = showExchangeDialog(this, result) { mediaIdentifier, mediaType ->
                     bgScope.launch {
                         if (mediaType.serverName == null) {
@@ -1258,7 +1257,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                                 null,
                                 ignore_unpaid
                             )
-                            reloadNfcHandler()
                         }
                     }
             }
@@ -1737,6 +1735,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcQuestionsDialogInterface) {
+            (dialog as NfcQuestionsDialogInterface).chipReadSuccessfully(identifier, mediaType)
+            return
+        }
+
         if (identifier.startsWith("08")) {
             runOnUiThread {
                 showLoadingCard()
@@ -1763,6 +1767,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcQuestionsDialogInterface) {
+            (dialog as NfcQuestionsDialogInterface).chipReadError(error, identifier)
+            return
+        }
+
         val error = when (error) {
             ChipReadError.IO_ERROR -> getString(R.string.nfc_read_error)
             ChipReadError.UNKNOWN_CHIP_TYPE -> getString(R.string.nfc_unknown_chip_type)
