@@ -921,6 +921,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     fun hideCard() {
+        stopHidingTimer()
         card_state = ResultCardState.HIDDEN
         binding.cardResult.clearAnimation()
         binding.cardResult.visibility = View.GONE
@@ -1250,7 +1251,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         runOnUiThread {
                             // check it in (only online)
                             hideCard()
-                            stopHidingTimer()
                             handleScan(
                                 mediaIdentifier,
                                 mediaType.serverName!!,
