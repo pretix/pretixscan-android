@@ -1201,11 +1201,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             }
 
         stopHidingTimer()
-        startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
-                stopHidingTimer()
                 handleScan(
                     secret,
                     sourceType.serverName!!,
@@ -1300,6 +1298,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
+        startHidingTimer()
         if (result.message == null) {
             result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
