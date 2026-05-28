@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import eu.pretix.libpretixnfc.android.hardware.NfcHandler
+import eu.pretix.libpretixnfc.android.hardware.NfcHandler.NfcState
 import eu.pretix.libpretixnfc.communication.ChipReadError
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.MediaPolicy
@@ -28,10 +29,10 @@ interface ExchangeDialogInterface {
     fun dismiss()
 }
 
-class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialogInterface {
+class ExchangeUnsupportedDialog(ctx: Activity, resId: Int): AlertDialog(ctx), QuestionsDialogInterface {
     init {
         setTitle(R.string.reusable_media_exchange_needed)
-        setMessage(ctx.getString(R.string.reusable_media_exchange_not_implemented))
+        setMessage(ctx.getString(resId))
         setButton(BUTTON_NEUTRAL, ctx.getString(R.string.ok)) { _, _ ->
             cancel()
         }
@@ -102,6 +103,7 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
 fun showExchangeDialog(
         ctx: Activity,
         res: TicketCheckProvider.CheckResult,
+        nfcState: NfcState?,
         completion: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
 
     var supported = when (res.requiredMediaType) {
@@ -117,18 +119,27 @@ fun showExchangeDialog(
     }
 
     if (!supported) {
-        val dialog = ExchangeUnsupportedDialog(ctx)
+        val dialog = ExchangeUnsupportedDialog(ctx, R.string.reusable_media_exchange_not_implemented)
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
         return dialog
     }
 
-    if (res.requiredMediaType?.isNfcBased() == true) {
-        // FIXME: check if nfc is supported and enabled
+    if (res.requiredMediaType?.isNfcBased() == true && (nfcState == null || nfcState == NfcState.UNSUPPORTED)) {
+        val dialog = ExchangeUnsupportedDialog(ctx, R.string.reusable_media_exchange_no_nfc_support)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        return dialog
     }
 
     val dialog = ExchangeScanNfcDialog(ctx, res.requiredMediaType!!, completion)
     dialog.setCanceledOnTouchOutside(false)
     dialog.show()
+
+    if (res.requiredMediaType?.isNfcBased() == true && nfcState == NfcState.DISABLED) {
+        // FIXME: offer `startActivity(new Intent(Settings.ACTION_NFC_SETTINGS))`
+        dialog.showError(R.string.nfc_disabled)
+    }
+
     return dialog
 }

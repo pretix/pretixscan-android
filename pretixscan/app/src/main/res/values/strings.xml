@@ -182,6 +182,7 @@
     <string name="reusable_media_exchange_medium_unknown">This medium is not yet known to the system</string>
     <string name="reusable_media_exchange_position_unknown">Ticket details are missing, linking the medium is currently not possible</string>
     <string name="reusable_media_exchange_linking_failed">Linking the ticket to the medium failed</string>
+    <string name="reusable_media_exchange_no_nfc_support">This ticket requires to be exchanged to a NFC-based reusable medium. This device doesn\'t support NFC, so the exchange is not possible.</string>
     <string name="reusable_media_exchange_nfc_scan">Please scan a NFC chip</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">A NFC chip on an unknown basis is needed - this is currently not supported</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">A NFC chip on UID basis is needed</string>

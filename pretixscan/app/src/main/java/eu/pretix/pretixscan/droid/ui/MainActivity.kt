@@ -1217,7 +1217,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
-            dialog = showExchangeDialog(this, result) { exchangeDialog, mediaIdentifier, mediaType ->
+            dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { exchangeDialog, mediaIdentifier, mediaType ->
                 bgScope.launch {
                     if (mediaType == ReusableMediaType.NONE || mediaType == ReusableMediaType.UNSUPPORTED || mediaType.serverName == null) {
                         runOnUiThread {
@@ -1820,12 +1820,12 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 eventSlug
             )
             if (!activeMediaTypes.any { it.isNfcBased() }) {
-                if (nfcHandler?.isRunning() == true) {
+                if (nfcHandler?.getState() == NfcHandler.NfcState.RUNNING) {
                     nfcHandler?.stop()
                 }
                 return
             }
-            if (nfcHandler?.isRunning() != true || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
+            if (nfcHandler?.getState() != NfcHandler.NfcState.RUNNING || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
                 nfcHandler?.stop()
                 val keySets = (this.applicationContext as PretixScan).db.mediumKeySetQueries.selectAll()
                     .executeAsList()

@@ -182,6 +182,7 @@
     <string name="reusable_media_exchange_medium_unknown">Dieses Medium ist dem System noch nicht bekannt</string>
     <string name="reusable_media_exchange_position_unknown">Ticket-Details fehlen, Verknüpfung des Mediums ist gerade nicht möglich</string>
     <string name="reusable_media_exchange_linking_failed">Verknüpfung des Tickets mit dem Medium schlug fehl</string>
+    <string name="reusable_media_exchange_no_nfc_support">Dieses Ticket muss in ein NFC-basiertes wiederverwendbares Medium getauscht werden. Leider unterstützt dieses Gerät kein NFC, sodass der Tausch nicht möglich ist.</string>
     <string name="reusable_media_exchange_nfc_scan">Bitte einen NFC-Chip einlesen</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">Es wird ein NFC-Chip auf UID-Basis benötigt</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Es wird ein NFC Mifare Ultralight AES-Chip benötigt</string>
