@@ -3,7 +3,7 @@ package eu.pretix.pretixscan.droid.ui
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.view.LayoutInflater
+import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import eu.pretix.libpretixnfc.android.hardware.NfcHandler
@@ -13,12 +13,20 @@ import eu.pretix.libpretixsync.db.MediaPolicy
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixui.android.questions.QuestionsDialogInterface
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.databinding.DialogReusableMediumExchangeNfcBinding
 
 
 interface NfcQuestionsDialogInterface : QuestionsDialogInterface {
     fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType)
 
     fun chipReadError(error: ChipReadError, identifier: String?)
+}
+
+interface ExchangeDialogInterface {
+    fun showError(resId: Int)
+    fun showError(text: String)
+    fun hideError()
+    fun dismiss()
 }
 
 class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialogInterface {
@@ -36,16 +44,19 @@ class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialo
     }
 }
 
-class ExchangeScanNfcDialog(ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
-    NfcHandler.OnChipReadListener, NfcQuestionsDialogInterface {
-    private var v: View = LayoutInflater.from(context).inflate(R.layout.dialog_reusable_medium_exchange_nfc, null)
+class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
+    NfcHandler.OnChipReadListener, NfcQuestionsDialogInterface, ExchangeDialogInterface {
+    private lateinit var binding: DialogReusableMediumExchangeNfcBinding
 
-    init {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        binding = DialogReusableMediumExchangeNfcBinding.inflate(layoutInflater)
         setTitle(R.string.reusable_media_exchange_needed)
-        setView(v)
+        setView(binding.root)
         setButton(BUTTON_NEGATIVE, ctx.getString(R.string.cancel)) { _, _ ->
             cancel()
         }
+
+        super.onCreate(savedInstanceState)
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -54,22 +65,45 @@ class ExchangeScanNfcDialog(ctx: Activity, var requiredMediaType: ReusableMediaT
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
         if (mediaType != requiredMediaType) {
-            // FIXME: show error
+            showError(when (requiredMediaType) {
+                ReusableMediaType.NFC_UID -> R.string.reusable_media_exchange_nfc_needs_nfc_uid
+                ReusableMediaType.NFC_MF0AES -> R.string.reusable_media_exchange_nfc_needs_nfc_mf0aes
+                else -> R.string.reusable_media_exchange_nfc_needs_nfc_unknown
+            })
             return
         }
-        dismiss()
-        this.onSuccessfulNfcScan(identifier, mediaType)
+        hideError()
+        this.onSuccessfulNfcScan(this, identifier, mediaType)
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
-        TODO("Not yet implemented")
+        showError(when (error) {
+            ChipReadError.IO_ERROR -> ctx.getString(R.string.nfc_read_error)
+            ChipReadError.UNKNOWN_CHIP_TYPE -> ctx.getString(R.string.nfc_unknown_chip_type)
+            ChipReadError.FOREIGN_CHIP -> ctx.getString(R.string.nfc_foreign_chip)
+            ChipReadError.EMPTY_CHIP -> ctx.getString(R.string.nfc_empty_chip)
+            else -> error.toString()
+        })
+    }
+
+    override fun showError(resId: Int) {
+        showError(ctx.getString(resId))
+    }
+
+    override fun showError(text: String) {
+        binding.cvWarningMessage.visibility = View.VISIBLE
+        binding.tvWarningMessage.text = text
+    }
+
+    override fun hideError() {
+        binding.cvWarningMessage.visibility = View.GONE
     }
 }
 
 fun showExchangeDialog(
         ctx: Activity,
         res: TicketCheckProvider.CheckResult,
-        completion: ((String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
+        completion: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
 
     // first version: only nfc-uid, only existing - reject everything else
     var supported = false

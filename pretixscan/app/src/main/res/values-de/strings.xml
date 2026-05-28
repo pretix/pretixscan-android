@@ -177,5 +177,12 @@
     <string name="hint_token">Token</string>
     <string name="reusable_media_exchange_needed">Medientausch notwendig</string>
     <string name="reusable_media_exchange_not_implemented">Dieses Ticket muss in ein wiederverwendbares Medium getauscht werden. Leider unterstützt diese Version von pretixSCAN dies noch nicht.</string>
+    <string name="reusable_media_exchange_unknown_type">Dieser Typ eines wiedervendbaren Mediums wird von dieser Version von pretixSCAN noch nicht unterstützt</string>
+    <string name="reusable_media_exchange_loading_failed">Konnte Informationen über dieses Medium nicht vom Server laden</string>
+    <string name="reusable_media_exchange_medium_unknown">Dieses Medium ist dem System noch nicht bekannt</string>
+    <string name="reusable_media_exchange_position_unknown">Ticket-Details fehlen, Verknüpfung des Mediums ist gerade nicht möglich</string>
+    <string name="reusable_media_exchange_linking_failed">Verknüpfung des Tickets mit dem Medium schlug fehl</string>
     <string name="reusable_media_exchange_nfc_scan">Bitte einen NFC-Chip einlesen</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_uid">Es wird ein NFC-Chip auf UID-Basis benötigt</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Es wird ein NFC Mifare Ultralight AES-Chip benötigt</string>
 </resources>

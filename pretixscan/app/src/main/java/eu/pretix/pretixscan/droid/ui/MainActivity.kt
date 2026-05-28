@@ -1219,46 +1219,58 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
-            dialog = showExchangeDialog(this, result) { mediaIdentifier, mediaType ->
+            dialog = showExchangeDialog(this, result) { exchangeDialog, mediaIdentifier, mediaType ->
                 bgScope.launch {
-                    if (mediaType.serverName == null) {
-                        // FIXME: show error, media is unsupported
+                    if (mediaType == ReusableMediaType.NONE || mediaType == ReusableMediaType.UNSUPPORTED || mediaType.serverName == null) {
+                        runOnUiThread {
+                            exchangeDialog.showError(R.string.reusable_media_exchange_unknown_type)
+                        }
                         return@launch
                     }
-                    println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
+                    // println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
                     var response: PretixApi.ApiResponse? = null
                     try {
                         response = api.loadMedium(mediaType.serverName!!, mediaIdentifier)
-                    } catch (e: Exception) {
-                        // FIXME: show error, loading media didn't work
+                    } catch (_: Exception) {
+                        runOnUiThread {
+                            exchangeDialog.showError(R.string.reusable_media_exchange_loading_failed)
+                        }
                         return@launch
                     }
 
                     val mediumResult = response.data?.optJSONObject("result")
                     val mediumId = mediumResult?.optLong("id")
                     if (mediumId == null) {
-                        // FIXME: show error, media is unknown - we currently do not create a new one
-                        return@launch
-                    }
-                    println(result.position)
-                    val position = result.position?.optLong("id")
-                    if (position == null) {
-                        // FIXME: show error, ticket position is missing from checkin
+                        runOnUiThread {
+                            exchangeDialog.showError(R.string.reusable_media_exchange_medium_unknown)
+                        }
                         return@launch
                     }
 
-                    // if found: send server request to link reusable media
+                    val position = result.position?.optLong("id")
+                    if (position == null) {
+                        runOnUiThread {
+                            exchangeDialog.showError(R.string.reusable_media_exchange_position_unknown)
+                        }
+                        return@launch
+                    }
+
+                    // FIXME: handle already linked to the same medium
+                    // FIXME: handle already linked tickets on this medium
                     try {
                         val linkResponse = api.linkMedium(mediumId, position)
                         if (linkResponse.response.code == 400) {
                             throw ConflictApiException("Server error: medium could not be modified due to invalid submitted data")
                         }
                     } catch (e: Exception) {
-                        // FIXME: show error, linking media to ticket didn't work
+                        runOnUiThread {
+                            exchangeDialog.showError(getString(R.string.reusable_media_exchange_linking_failed) + ": ${e.message}")
+                        }
+                        return@launch
                     }
 
                     runOnUiThread {
-                        // check it in (only online)
+                        exchangeDialog.dismiss()
                         hideCard()
                         handleScan(
                             mediaIdentifier,
