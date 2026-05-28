@@ -16,9 +16,8 @@ import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.DialogReusableMediumExchangeNfcBinding
 
 
-interface NfcQuestionsDialogInterface : QuestionsDialogInterface {
+interface NfcDialogInterface {
     fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType)
-
     fun chipReadError(error: ChipReadError, identifier: String?)
 }
 
@@ -45,7 +44,7 @@ class ExchangeUnsupportedDialog(ctx: Activity): AlertDialog(ctx), QuestionsDialo
 }
 
 class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
-    NfcHandler.OnChipReadListener, NfcQuestionsDialogInterface, ExchangeDialogInterface {
+    NfcHandler.OnChipReadListener, QuestionsDialogInterface, NfcDialogInterface, ExchangeDialogInterface {
     private lateinit var binding: DialogReusableMediumExchangeNfcBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,13 +104,13 @@ fun showExchangeDialog(
         res: TicketCheckProvider.CheckResult,
         completion: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
 
-    // first version: only nfc-uid, only existing - reject everything else
-    var supported = false
-
-    when (res.requiredMediaType) {
-        ReusableMediaType.NFC_UID -> { supported = true }
-        else -> {}
+    var supported = when (res.requiredMediaType) {
+        ReusableMediaType.NFC_UID -> true
+        ReusableMediaType.NFC_MF0AES -> true
+        else -> false
     }
+
+    // FIXME: implement support for MediaPolicy.NEW and MediaPolicy.REUSE_OR_NEW
     when (res.requiredMediaPolicy) {
         MediaPolicy.REUSE -> { /* supported*/ }
         else -> { supported = false }
@@ -124,18 +123,12 @@ fun showExchangeDialog(
         return dialog
     }
 
-    // FIXME: check if nfc is supported and enabled
+    if (res.requiredMediaType?.isNfcBased() == true) {
+        // FIXME: check if nfc is supported and enabled
+    }
 
     val dialog = ExchangeScanNfcDialog(ctx, res.requiredMediaType!!, completion)
     dialog.setCanceledOnTouchOutside(false)
     dialog.show()
     return dialog
-
-    // show dialog: please scan an nfc tag
-    // onSuccessfulScan -> look up reusable media in api
-    // #offline(look up uid in reusable_media)
-    // if found: send server request to link reusable media
-    // if req successful:
-    // - *not* (but remark) link locally in db too (-> note that this is done for if offline happens in the next checkin)
-    // - checkin media uid
 }

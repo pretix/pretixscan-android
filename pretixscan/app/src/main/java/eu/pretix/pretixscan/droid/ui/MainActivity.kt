@@ -1757,8 +1757,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
         // delegate to the dialog if it is active
-        if (dialog?.isShowing() == true && dialog is NfcQuestionsDialogInterface) {
-            (dialog as NfcQuestionsDialogInterface).chipReadSuccessfully(identifier, mediaType)
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadSuccessfully(identifier, mediaType)
             return
         }
 
@@ -1789,8 +1789,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
         // delegate to the dialog if it is active
-        if (dialog?.isShowing() == true && dialog is NfcQuestionsDialogInterface) {
-            (dialog as NfcQuestionsDialogInterface).chipReadError(error, identifier)
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadError(error, identifier)
             return
         }
 
