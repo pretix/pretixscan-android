@@ -26,6 +26,7 @@ class UnpaidDialog(ctx: Activity, val secret: String, val sourceType: ReusableMe
         }
         window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
+
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return false
     }

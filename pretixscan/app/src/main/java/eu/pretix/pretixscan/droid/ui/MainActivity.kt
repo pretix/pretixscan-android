@@ -118,7 +118,8 @@ enum class ResultState {
     EMPTY,
     LOADING,
     ERROR,
-    DIALOG,
+    DIALOG_QUESTIONS,
+    DIALOG_EXCHANGE,
     WARNING,
     SUCCESS,
     SUCCESS_EXIT
@@ -152,7 +153,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            EMPTY, DIALOG, LOADING -> R.color.pretix_brand_lightgrey
+            EMPTY, DIALOG_QUESTIONS, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
             ERROR -> R.color.pretix_brand_red
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
@@ -164,7 +165,7 @@ class ViewDataHolder(private val ctx: Context) {
         when (state) {
             EMPTY -> led.off()
             LOADING -> led.progress()
-            DIALOG, WARNING -> led.attention(blink = needsAttention)
+            DIALOG_QUESTIONS, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
             ERROR -> led.error()
             SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
         }
@@ -176,6 +177,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     private val REQ_EVENT = 1
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var api: PretixApi
     private lateinit var sm: SyncManager
     private lateinit var conf: AppConfig
     private val bgScope = CoroutineScope(Dispatchers.IO)
@@ -223,7 +225,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             lastScanResult = null
             handleScan(
                 result,
-                lastScanSourceType.serverName,
+                lastScanSourceType.serverName!!,
                 null,
                 !conf.unpaidAsk
             )
@@ -316,7 +318,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
-                            lastScanSourceType.serverName,
+                            lastScanSourceType.serverName!!,
                             null,
                             !conf.unpaidAsk
                         )
@@ -571,7 +573,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             binding.mainToolbar.event.text = ebt
             (binding.mainToolbar.event.parent as View?)?.forceLayout()
         }
-        val api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
+        api = PretixApi.fromConfig(conf, AndroidHttpClientFactory(application as PretixScan))
 
         sm = SyncManager(
                 conf,
@@ -918,6 +920,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     }
 
     fun hideCard() {
+        stopHidingTimer()
         card_state = ResultCardState.HIDDEN
         binding.cardResult.clearAnimation()
         binding.cardResult.visibility = View.GONE
@@ -1017,7 +1020,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         raw_result: String,
         source_type: String,
         answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean = false
+        ignore_unpaid: Boolean = false,
+        media_type: String? = null,
+        media_identifier: String? = null,
+        media_action: String? = null,
     ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
@@ -1057,6 +1063,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         showLoadingCard()
         hideSearchCard()
 
+        // FIXME: don't play sound for media exchange
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
@@ -1066,10 +1073,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
             try {
-                checkResult = provider.check(conf.eventSelectionToMap(), result, source_type, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
-                    "exit" -> TicketCheckProvider.CheckInType.EXIT
-                    else -> TicketCheckProvider.CheckInType.ENTRY
-                }, allowQuestions = !conf.ignoreQuestions)
+                checkResult = provider.check(
+                    conf.eventSelectionToMap(),
+                    result,
+                    source_type,
+                    answers,
+                    ignore_unpaid,
+                    conf.printBadges,
+                    when (conf.scanType) {
+                        "exit" -> TicketCheckProvider.CheckInType.EXIT
+                        else -> TicketCheckProvider.CheckInType.ENTRY
+                    },
+                    allowQuestions = !conf.ignoreQuestions,
+                    media_type = media_type,
+                    media_identifier = media_identifier,
+                    media_action = media_action,
+                )
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
                         (application as PretixScan).connectivityHelper.recordError()
@@ -1189,35 +1208,53 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.BLOCKED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
+                TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 else -> {
                 }
             }
 
         stopHidingTimer()
-        startHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
-                stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
             }
-            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            dialog!!.setOnCancelListener { hideCard() }
+            view_data.setLed(this, view_data.resultState.get()!!, true)
+            return
+        }
+        if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
+            view_data.resultState.set(DIALOG_EXCHANGE)
+            dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
+                hideCard()
+                handleScan(
+                    lastScanCode,
+                    lastScanSourceType.serverName!!,
+                    null,
+                    ignore_unpaid,
+                    media_type = mediaType.serverName!!,
+                    media_identifier = mediaIdentifier,
+                    media_action = "append",
+                )
+            }
+            dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
                 stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -1226,6 +1263,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
+        startHidingTimer()
         if (result.message == null) {
             result.message = when (result.type!!) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
@@ -1243,6 +1281,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
+                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(R.string.scan_result_already_exchanged)
                 else -> null
             }
         }
@@ -1267,7 +1306,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR
             TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
+            TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ERROR
         })
         view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
 
@@ -1428,7 +1469,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         lastIgnoreUnpaid = false
         handleScan(
             s,
-            lastScanSourceType.serverName,
+            lastScanSourceType.serverName!!,
             null,
             !conf.unpaidAsk
         )
@@ -1450,7 +1491,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 lastIgnoreUnpaid = false
                 handleScan(
                     keyboardBuffer,
-                    lastScanSourceType.serverName,
+                    lastScanSourceType.serverName!!,
                     null,
                     !conf.unpaidAsk
                 )
@@ -1615,7 +1656,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            view_data.resultState.set(DIALOG)
+            view_data.resultState.set(DIALOG_QUESTIONS)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
@@ -1639,7 +1680,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 stopHidingTimer()
                 handleScan(
                     secret,
-                    sourceType.serverName,
+                    sourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -1647,6 +1688,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             dialog!!.onRestoreInstanceState(answers)
             dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
         }
+
+        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -1657,7 +1700,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
         // we try to serialize all state required to re-create the dialog if the user returns.
 
-        if (view_data.resultState.get() == DIALOG && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() == DIALOG_QUESTIONS && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())
@@ -1672,9 +1715,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             outState.putBundle("answers", dialog!!.onSaveInstanceState())
             outState.putString("result", om.writeValueAsString(lastScanResult))
         }
+
+        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadSuccessfully(identifier, mediaType)
+            return
+        }
+
         if (identifier.startsWith("08")) {
             runOnUiThread {
                 showLoadingCard()
@@ -1694,13 +1745,19 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
 
         handleScan(
             identifier,
-            mediaType.serverName,
+            mediaType.serverName!!,
             null,
             !conf.unpaidAsk
         )
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadError(error, identifier)
+            return
+        }
+
         val error = when (error) {
             ChipReadError.IO_ERROR -> getString(R.string.nfc_read_error)
             ChipReadError.UNKNOWN_CHIP_TYPE -> getString(R.string.nfc_unknown_chip_type)
@@ -1727,13 +1784,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 settingsManager,
                 eventSlug
             )
-            if (!activeMediaTypes.any { it.isNfcBased }) {
-                if (nfcHandler?.isRunning() == true) {
+            if (!activeMediaTypes.any { it.isNfcBased() }) {
+                if (nfcHandler?.getState() == NfcHandler.NfcState.RUNNING) {
                     nfcHandler?.stop()
                 }
                 return
             }
-            if (nfcHandler?.isRunning() != true || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
+            if (nfcHandler?.getState() != NfcHandler.NfcState.RUNNING || activeMediaTypes.toSet() != nfcHandler?.getMediaTypes()?.toSet()) {
                 nfcHandler?.stop()
                 val keySets = (this.applicationContext as PretixScan).db.mediumKeySetQueries.selectAll()
                     .executeAsList()

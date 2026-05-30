@@ -130,6 +130,7 @@
     <string name="scan_result_invalid_time">Ticket currently not valid</string>
     <string name="scan_result_blocked">Ticket blocked</string>
     <string name="scan_result_canceled">Order canceled</string>
+    <string name="scan_result_already_exchanged">Ticket already exchanged</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>
     <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
@@ -174,4 +175,16 @@
     <string name="headline_please_reinstall">Please reinstall pretixSCAN</string>
     <string name="reinstall_text">Your previous pretixSCAN version was too old and your local data cannot be used for the current version.\n\nPlease clear the storage for the pretixSCAN app or delete and reinstall the app.</string>
     <string name="reinstall_open_app_settings">Open Android App Settings</string>
+    <string name="reusable_media_exchange_needed">Medium Exchange Needed</string>
+    <string name="reusable_media_exchange_not_implemented">This ticket requires to be exchanged to a reusable medium. Sadly this version of pretixSCAN isn\'t able to do this yet.</string>
+    <string name="reusable_media_exchange_unknown_type">This reusable medium type is not supported</string>
+    <string name="reusable_media_exchange_loading_failed">Couldn\'t load information about the medium from the server</string>
+    <string name="reusable_media_exchange_medium_unknown">This medium is not yet known to the system</string>
+    <string name="reusable_media_exchange_position_unknown">Ticket details are missing, linking the medium is currently not possible</string>
+    <string name="reusable_media_exchange_linking_failed">Linking the ticket to the medium failed</string>
+    <string name="reusable_media_exchange_no_nfc_support">This ticket requires to be exchanged to a NFC-based reusable medium. This device doesn\'t support NFC, so the exchange is not possible.</string>
+    <string name="reusable_media_exchange_nfc_scan">Please scan a NFC chip</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_unknown">A NFC chip on an unknown basis is needed - this is currently not supported</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_uid">A NFC chip on UID basis is needed</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">A NFC Mifare Ultralight AES chip is needed</string>
 </resources>
