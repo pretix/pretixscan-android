@@ -22,13 +22,6 @@ interface NfcDialogInterface {
     fun chipReadError(error: ChipReadError, identifier: String?)
 }
 
-interface ExchangeDialogInterface {
-    fun showError(resId: Int)
-    fun showError(text: String)
-    fun hideError()
-    fun dismiss()
-}
-
 class ExchangeUnsupportedDialog(ctx: Activity, resId: Int): AlertDialog(ctx), QuestionsDialogInterface {
     init {
         setTitle(R.string.reusable_media_exchange_needed)
@@ -44,8 +37,8 @@ class ExchangeUnsupportedDialog(ctx: Activity, resId: Int): AlertDialog(ctx), Qu
     }
 }
 
-class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
-    NfcHandler.OnChipReadListener, QuestionsDialogInterface, NfcDialogInterface, ExchangeDialogInterface {
+class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
+    NfcHandler.OnChipReadListener, QuestionsDialogInterface, NfcDialogInterface {
     private lateinit var binding: DialogReusableMediumExchangeNfcBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +57,10 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        if (mediaType == ReusableMediaType.NONE || mediaType == ReusableMediaType.UNSUPPORTED || mediaType.serverName == null) {
+            showError(R.string.reusable_media_exchange_unknown_type)
+            return
+        }
         if (mediaType != requiredMediaType) {
             showError(when (requiredMediaType) {
                 ReusableMediaType.NFC_UID -> R.string.reusable_media_exchange_nfc_needs_nfc_uid
@@ -72,8 +69,10 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
             })
             return
         }
+
         hideError()
-        this.onSuccessfulNfcScan(this, identifier, mediaType)
+        dismiss()
+        this.onSuccessfulNfcScan(identifier, mediaType)
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
@@ -86,16 +85,16 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
         })
     }
 
-    override fun showError(resId: Int) {
+    fun showError(resId: Int) {
         showError(ctx.getString(resId))
     }
 
-    override fun showError(text: String) {
+    fun showError(text: String) {
         binding.cvWarningMessage.visibility = View.VISIBLE
         binding.tvWarningMessage.text = text
     }
 
-    override fun hideError() {
+    fun hideError() {
         binding.cvWarningMessage.visibility = View.GONE
     }
 }
@@ -104,7 +103,7 @@ fun showExchangeDialog(
         ctx: Activity,
         res: TicketCheckProvider.CheckResult,
         nfcState: NfcState?,
-        completion: ((ExchangeDialogInterface, String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
+        completion: ((String, ReusableMediaType) -> Unit)): QuestionsDialogInterface {
 
     var supported = when (res.requiredMediaType) {
         ReusableMediaType.NFC_UID -> true

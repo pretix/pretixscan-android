@@ -64,7 +64,6 @@ import eu.pretix.libpretixnfc.android.hardware.NfcHandler
 import eu.pretix.libpretixnfc.android.hardware.NfcUnsupported
 import eu.pretix.libpretixnfc.android.hardware.getNfcHandler
 import eu.pretix.libpretixnfc.communication.ChipReadError
-import eu.pretix.libpretixsync.api.ConflictApiException
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
@@ -1021,7 +1020,10 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         raw_result: String,
         source_type: String,
         answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean = false
+        ignore_unpaid: Boolean = false,
+        media_type: String? = null,
+        media_identifier: String? = null,
+        media_action: String? = null,
     ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
@@ -1061,6 +1063,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         showLoadingCard()
         hideSearchCard()
 
+        // FIXME: don't play sound for media exchange
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
@@ -1070,10 +1073,22 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             val provider = (application as PretixScan).getCheckProvider(conf)
             val startedAt = System.currentTimeMillis()
             try {
-                checkResult = provider.check(conf.eventSelectionToMap(), result, source_type, answers, ignore_unpaid, conf.printBadges, when (conf.scanType) {
-                    "exit" -> TicketCheckProvider.CheckInType.EXIT
-                    else -> TicketCheckProvider.CheckInType.ENTRY
-                }, allowQuestions = !conf.ignoreQuestions)
+                checkResult = provider.check(
+                    conf.eventSelectionToMap(),
+                    result,
+                    source_type,
+                    answers,
+                    ignore_unpaid,
+                    conf.printBadges,
+                    when (conf.scanType) {
+                        "exit" -> TicketCheckProvider.CheckInType.EXIT
+                        else -> TicketCheckProvider.CheckInType.ENTRY
+                    },
+                    allowQuestions = !conf.ignoreQuestions,
+                    media_type = media_type,
+                    media_identifier = media_identifier,
+                    media_action = media_action,
+                )
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
                         (application as PretixScan).connectivityHelper.recordError()
@@ -1217,67 +1232,17 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
             view_data.resultState.set(DIALOG_EXCHANGE)
-            dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { exchangeDialog, mediaIdentifier, mediaType ->
-                bgScope.launch {
-                    if (mediaType == ReusableMediaType.NONE || mediaType == ReusableMediaType.UNSUPPORTED || mediaType.serverName == null) {
-                        runOnUiThread {
-                            exchangeDialog.showError(R.string.reusable_media_exchange_unknown_type)
-                        }
-                        return@launch
-                    }
-                    // println("Got media to exchange to: ${mediaType} / ${mediaIdentifier}")
-                    var response: PretixApi.ApiResponse? = null
-                    try {
-                        response = api.loadMedium(mediaType.serverName!!, mediaIdentifier)
-                    } catch (_: Exception) {
-                        runOnUiThread {
-                            exchangeDialog.showError(R.string.reusable_media_exchange_loading_failed)
-                        }
-                        return@launch
-                    }
-
-                    val mediumResult = response.data?.optJSONObject("result")
-                    val mediumId = mediumResult?.optLong("id")
-                    if (mediumId == null) {
-                        runOnUiThread {
-                            exchangeDialog.showError(R.string.reusable_media_exchange_medium_unknown)
-                        }
-                        return@launch
-                    }
-
-                    val position = result.position?.optLong("id")
-                    if (position == null) {
-                        runOnUiThread {
-                            exchangeDialog.showError(R.string.reusable_media_exchange_position_unknown)
-                        }
-                        return@launch
-                    }
-
-                    // FIXME: handle already linked to the same medium
-                    // FIXME: handle already linked tickets on this medium
-                    try {
-                        val linkResponse = api.linkMedium(mediumId, position)
-                        if (linkResponse.response.code == 400) {
-                            throw ConflictApiException("Server error: medium could not be modified due to invalid submitted data")
-                        }
-                    } catch (e: Exception) {
-                        runOnUiThread {
-                            exchangeDialog.showError(getString(R.string.reusable_media_exchange_linking_failed) + ": ${e.message}")
-                        }
-                        return@launch
-                    }
-
-                    runOnUiThread {
-                        exchangeDialog.dismiss()
-                        hideCard()
-                        handleScan(
-                            mediaIdentifier,
-                            mediaType.serverName!!,
-                            null,
-                            ignore_unpaid
-                        )
-                    }
-                }
+            dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
+                hideCard()
+                handleScan(
+                    lastScanCode,
+                    lastScanSourceType.serverName!!,
+                    null,
+                    ignore_unpaid,
+                    media_type = mediaType.serverName!!,
+                    media_identifier = mediaIdentifier,
+                    media_action = "append",
+                )
             }
             dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
