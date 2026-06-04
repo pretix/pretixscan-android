@@ -63,7 +63,7 @@ class DataWedgeHelper(private val ctx: Context) {
                 fileToImport.setExecutable(true, false)
                 fileToImport.setReadable(true, false)
                 fileToImport.setWritable(true, false)
-                Log.i("DataWedge", "DataWedge profile written successfully.")
+                Log.i("DataWedge", "DataWedge profile successfully written to legacy autoimport directory: $outputDirectory")
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             } catch (e: IOException) {
@@ -101,6 +101,7 @@ class DataWedgeHelper(private val ctx: Context) {
 
         val rawin = ctx.resources.openRawResource(eu.pretix.pretixscan.droid.R.raw.dwprofile)
         copyFile(rawin, stgout)
+        Log.i("DataWedge", "DataWedge profile copied to staging directory: $stagingDirectory")
 
         // Legacy DataWedge Profile import
         copyAllStagedFiles()
@@ -112,6 +113,7 @@ class DataWedgeHelper(private val ctx: Context) {
         importIntent.action = "com.symbol.datawedge.api.ACTION"
         importIntent.putExtra("com.symbol.datawedge.api.IMPORT_CONFIG", importBundle)
         ctx.sendBroadcast(importIntent)
+        Log.i("DataWedge", "DataWedge profile import broadcast sent")
 
         prefs.edit().putInt("__dwprofile_installed_version", dwprofileVersion).apply()
     }
