@@ -1023,7 +1023,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         ignore_unpaid: Boolean = false,
         exchange_medium_type: String? = null,
         exchange_medium_identifier: String? = null,
-        exchange_link_action: String? = null,
     ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
@@ -1087,7 +1086,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     allowQuestions = !conf.ignoreQuestions,
                     exchange_medium_type = exchange_medium_type,
                     exchange_medium_identifier = exchange_medium_identifier,
-                    exchange_link_action = exchange_link_action,
                 )
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
@@ -1243,7 +1241,6 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     ignore_unpaid,
                     exchange_medium_type = mediaType.serverName!!,
                     exchange_medium_identifier = mediaIdentifier,
-                    exchange_link_action = "append",
                 )
             }
             dialog!!.setOnCancelListener { hideCard() }
