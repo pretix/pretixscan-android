@@ -1021,9 +1021,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         source_type: String,
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean = false,
-        media_type: String? = null,
-        media_identifier: String? = null,
-        media_action: String? = null,
+        exchange_medium_type: String? = null,
+        exchange_medium_identifier: String? = null,
+        exchange_link_action: String? = null,
     ) {
         if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             supportActionBar?.show()
@@ -1085,9 +1085,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                         else -> TicketCheckProvider.CheckInType.ENTRY
                     },
                     allowQuestions = !conf.ignoreQuestions,
-                    media_type = media_type,
-                    media_identifier = media_identifier,
-                    media_action = media_action,
+                    exchange_medium_type = exchange_medium_type,
+                    exchange_medium_identifier = exchange_medium_identifier,
+                    exchange_link_action = exchange_link_action,
                 )
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
@@ -1239,9 +1239,9 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                     lastScanSourceType.serverName!!,
                     null,
                     ignore_unpaid,
-                    media_type = mediaType.serverName!!,
-                    media_identifier = mediaIdentifier,
-                    media_action = "append",
+                    exchange_medium_type = mediaType.serverName!!,
+                    exchange_medium_identifier = mediaIdentifier,
+                    exchange_link_action = "append",
                 )
             }
             dialog!!.setOnCancelListener { hideCard() }
