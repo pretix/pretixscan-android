@@ -1209,6 +1209,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> mediaPlayers[R.raw.error]?.start()
+                TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 else -> {
@@ -1282,6 +1284,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
                 TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(R.string.scan_result_already_exchanged)
+                TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> getString(R.string.scan_result_medium_invalid)
+                TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> getString(R.string.scan_result_medium_exists)
                 else -> null
             }
         }
@@ -1307,6 +1311,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
             TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
             TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> ERROR
+            TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> ERROR
+            TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
             TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ERROR
         })
