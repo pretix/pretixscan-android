@@ -14,6 +14,7 @@ import eu.pretix.libpretixsync.sqldelight.QueuedCheckIn
 import eu.pretix.libpretixsync.sqldelight.Receipt
 import eu.pretix.libpretixsync.sqldelight.ReceiptLine
 import eu.pretix.libpretixsync.sqldelight.ReceiptPayment
+import eu.pretix.libpretixsync.sqldelight.ReusableMedium
 import eu.pretix.libpretixsync.sqldelight.SubEvent
 import eu.pretix.pretixscan.sqldelight.SyncDatabase
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
@@ -76,6 +77,10 @@ fun createSyncDatabase(
         Discount.Adapter(
             available_fromAdapter = dateAdapter,
             available_untilAdapter = dateAdapter,
+        ),
+        ReusableMediumAdapter =
+        ReusableMedium.Adapter(
+            expiresAdapter = dateAdapter,
         )
     )
 }
