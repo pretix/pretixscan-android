@@ -111,9 +111,14 @@ fun showExchangeDialog(
         else -> false
     }
 
-    // FIXME: implement support for MediaPolicy.NEW and MediaPolicy.REUSE_OR_NEW
     when (res.requiredMediaPolicy) {
+        MediaPolicy.NEW,
+        MediaPolicy.REUSE_OR_NEW,
+        MediaPolicy.APPEND_OR_NEW -> {
+            supported = (res.requiredMediaType != ReusableMediaType.NFC_MF0AES)
+        }
         MediaPolicy.REUSE -> { /* supported*/ }
+        MediaPolicy.APPEND -> { /* supported*/ }
         else -> { supported = false }
     }
 
