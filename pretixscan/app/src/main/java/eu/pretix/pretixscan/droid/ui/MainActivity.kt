@@ -1211,6 +1211,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
                 TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> mediaPlayers[R.raw.error]?.start()
                 TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
                 TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
+                TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> mediaPlayers[R.raw.attention]?.start()
                 else -> {
                 }
             }
@@ -1312,6 +1313,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> ERROR
             TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
             TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ERROR
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> ERROR
         })
         view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
 
@@ -1326,7 +1328,11 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             view_data.ticketAndVariationName.set(null)
         }
         if (!result.reasonExplanation.isNullOrBlank()) {
-            view_data.reasonExplanation.set(result.reasonExplanation)
+            if (result.type!! == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE) {
+                view_data.reasonExplanation.set(getString(R.string.scan_result_medium_exchange_required_offline))
+            } else {
+                view_data.reasonExplanation.set(result.reasonExplanation)
+            }
         } else {
             view_data.reasonExplanation.set(null)
         }
