@@ -1651,7 +1651,8 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        if (savedInstanceState.getString("result_state", "") == "DIALOG") {
+        val resultState = savedInstanceState.getString("result_state", "")
+        if (resultState.startsWith("DIALOG_")) {
             val module = SimpleModule()
             module.addDeserializer(JSONObject::class.java, JSONObjectDeserializer())
             module.addDeserializer(JSONArray::class.java, JSONArrayDeserializer())
@@ -1659,40 +1660,56 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            view_data.resultState.set(DIALOG_QUESTIONS)
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
             lastScanResult = om.readValue(savedInstanceState.getString("result"), TicketCheckProvider.CheckResult::class.java)
 
-            val answers = savedInstanceState.getBundle("answers")!!
-            val values = mutableMapOf<String, String>()
+            if (resultState == "DIALOG_QUESTIONS") {
+                view_data.resultState.set(DIALOG_QUESTIONS)
+                val answers = savedInstanceState.getBundle("answers")!!
+                val values = mutableMapOf<String, String>()
 
-            val questionServerIds = lastScanResult!!.requiredAnswers!!.map { it.question.server_id }
-            val questionIdentifiers = (application as PretixScan).db.questionQueries.selectByServerIdList(questionServerIds)
-                    .executeAsList()
-                    .map { it.toModel().identifier }
-            questionIdentifiers.forEach { identifier ->
-                val v = answers.getString(identifier, "")
-                if (v.isNotBlank()) {
-                    values[identifier] = v
+                val questionServerIds = lastScanResult!!.requiredAnswers!!.map { it.question.server_id }
+                val questionIdentifiers = (application as PretixScan).db.questionQueries.selectByServerIdList(questionServerIds)
+                        .executeAsList()
+                        .map { it.toModel().identifier }
+                questionIdentifiers.forEach { identifier ->
+                    val v = answers.getString(identifier, "")
+                    if (v.isNotBlank()) {
+                        values[identifier] = v
+                    }
                 }
-            }
 
-            dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
-                stopHidingTimer()
-                handleScan(
-                    secret,
-                    sourceType.serverName!!,
-                    answers,
-                    ignore_unpaid
-                )
+                dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
+                    stopHidingTimer()
+                    handleScan(
+                        secret,
+                        sourceType.serverName!!,
+                        answers,
+                        ignore_unpaid
+                    )
+                }
+                dialog!!.onRestoreInstanceState(answers)
+                dialog!!.setOnCancelListener { hideCard() }
+            } else if (resultState == "DIALOG_EXCHANGE") {
+                view_data.resultState.set(DIALOG_EXCHANGE)
+                reloadNfcHandler() // else nfchandler is null
+                dialog = showExchangeDialog(this, lastScanResult!!, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
+                    hideCard()
+                    handleScan(
+                        lastScanCode,
+                        lastScanSourceType.serverName!!,
+                        null,
+                        lastIgnoreUnpaid,
+                        exchange_medium_type = mediaType.serverName!!,
+                        exchange_medium_identifier = mediaIdentifier,
+                    )
+                }
+                dialog!!.setOnCancelListener { hideCard() }
             }
-            dialog!!.onRestoreInstanceState(answers)
-            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            view_data.setLed(this, view_data.resultState.get()!!, true)
         }
-
-        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -1703,7 +1720,7 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
         // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
         // we try to serialize all state required to re-create the dialog if the user returns.
 
-        if (view_data.resultState.get() == DIALOG_QUESTIONS && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE) && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())
@@ -1711,15 +1728,13 @@ class MainActivity : AppCompatActivity(), ReloadableActivity, ScannerView.Result
             om.registerModule(module)
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-            outState.putString("result_state", "DIALOG")
+            outState.putString("result_state", view_data.resultState.get().toString().uppercase())
             outState.putString("lastScanCode", lastScanCode)
             outState.putString("lastScanType", lastScanSourceType.serverName)
             outState.putBoolean("ignore_unpaid", lastIgnoreUnpaid)
             outState.putBundle("answers", dialog!!.onSaveInstanceState())
             outState.putString("result", om.writeValueAsString(lastScanResult))
         }
-
-        // FIXME: handle DIALOG_EXCHANGE too
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
