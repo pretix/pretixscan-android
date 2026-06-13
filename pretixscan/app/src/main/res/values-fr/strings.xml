@@ -163,4 +163,19 @@
     <string name="reinstall_text">Votre version de pretixSCAN était trop ancienne et vos données locales ne peuvent pas être utilisées avec la version actuelle.\n\nVeuillez effacer la mémoire de l\'application pretixSCAN ou supprimer et réinstaller l\'application.</string>
     <string name="settings_label_screen_always_on">Maintenir l\'écran allumé</string>
     <string name="error_exception">Une erreur s\'est produite</string>
+    <string name="scan_result_already_exchanged">Le billet a déjà été échangé</string>
+    <string name="scan_result_medium_invalid">Support réutilisable non valide</string>
+    <string name="scan_result_medium_exists">Il existe déjà un support réutilisable</string>
+    <string name="scan_result_medium_exchange_required_offline">Ce billet doit être échangé, mais cela n\'est pas possible hors ligne</string>
+    <string name="reusable_media_exchange_needed">Il faut un moyen d\'échange</string>
+    <string name="reusable_media_exchange_not_implemented">Ce billet doit être transféré sur un support réutilisable. Malheureusement, cette version de pretixSCAN ne permet pas encore d\'effectuer cette opération.</string>
+    <string name="reusable_media_exchange_unknown_type">Ce type de support réutilisable n\'est pas pris en charge</string>
+    <string name="reusable_media_exchange_loading_failed">Impossible de charger les informations relatives au support depuis le serveur</string>
+    <string name="reusable_media_exchange_medium_unknown">Ce support n\'est pas encore reconnu par le système</string>
+    <string name="reusable_media_exchange_linking_failed">L\'association du ticket au support a échoué</string>
+    <string name="reusable_media_exchange_no_nfc_support">Ce billet doit être échangé contre un support réutilisable compatible NFC. Cet appareil ne prend pas en charge la technologie NFC ; l\'échange n\'est donc pas possible.</string>
+    <string name="reusable_media_exchange_nfc_scan">Veuillez passer votre carte à puce NFC</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_unknown">La puce NFC scannée n\'est pas prise en charge par cette version de pretixSCAN</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_uid">Une puce NFC utilisant un identifiant unique (UID) est nécessaire</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Une puce NFC Mifare Ultralight AES est nécessaire</string>
 </resources>
