@@ -163,4 +163,19 @@
     <string name="reinstall_text">La versión anterior de pretixSCAN es demasiado antigua y los datos locales no se pueden utilizar con la versión actual.\n\nBorre la memoria caché de la aplicación pretixSCAN o elimine y vuelva a instalar la aplicación.</string>
     <string name="settings_label_screen_always_on">Mantener la pantalla activa</string>
     <string name="error_exception">Se ha producido un error</string>
+    <string name="scan_result_already_exchanged">Entrada ya canjeada</string>
+    <string name="scan_result_medium_invalid">Soporte reutilizable no válido</string>
+    <string name="scan_result_medium_exists">Ya existe un soporte reutilizable</string>
+    <string name="scan_result_medium_exchange_required_offline">Hay que cambiar este billete, pero no es posible hacerlo sin conexión</string>
+    <string name="reusable_media_exchange_not_implemented">Esta entrada debe canjearse por un soporte reutilizable. Lamentablemente, esta versión de pretixSCAN aún no permite hacerlo.</string>
+    <string name="reusable_media_exchange_unknown_type">Este tipo de soporte reutilizable no es compatible</string>
+    <string name="reusable_media_exchange_loading_failed">No se ha podido cargar la información sobre el soporte desde el servidor</string>
+    <string name="reusable_media_exchange_medium_unknown">El sistema aún no reconoce este medio</string>
+    <string name="reusable_media_exchange_linking_failed">No se ha podido vincular el ticket al medio</string>
+    <string name="reusable_media_exchange_no_nfc_support">Este billete debe canjearse por un soporte reutilizable con tecnología NFC. Este dispositivo no es compatible con NFC, por lo que no es posible realizar el canje.</string>
+    <string name="reusable_media_exchange_nfc_scan">Por favor, acerque el chip NFC</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Esta versión de pretixSCAN no es compatible con el chip NFC escaneado</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_uid">Se necesita un chip NFC basado en UID</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Se necesita un chip NFC Mifare Ultralight AES</string>
+    <string name="reusable_media_exchange_needed">Se necesita un medio de intercambio</string>
 </resources>
