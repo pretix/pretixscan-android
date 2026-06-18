@@ -95,6 +95,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     var lastIgnoreUnpaid: Boolean = false
     var lastScanSourceType: ReusableMediaType = ReusableMediaType.BARCODE
     var lastScanResult: TicketCheckProvider.CheckResult? = null
+    open var useOrderLocale: Boolean = false
     var keyboardBuffer: String = ""
     var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
@@ -556,6 +557,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                         else -> TicketCheckProvider.CheckInType.ENTRY
                     },
                     allowQuestions = !conf.ignoreQuestions,
+                    useOrderLocale = useOrderLocale,
                     exchange_medium_type = exchange_medium_type,
                     exchange_medium_identifier = exchange_medium_identifier,
                 )

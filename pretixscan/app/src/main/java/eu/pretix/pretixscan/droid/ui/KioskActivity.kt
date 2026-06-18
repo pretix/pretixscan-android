@@ -84,6 +84,7 @@ class KioskActivity : BaseScanActivity() {
         }
     var lastTicketRequireAttention = false
     var localizedContext: Context? = null
+    override var useOrderLocale = true
 
     fun setTemporaryLocale(overrideLocale: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -323,11 +324,9 @@ class KioskActivity : BaseScanActivity() {
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean
     ) {
-        /* // FIXME: preparation for libpretixsync#54
         if (result.locale != null) {
             setTemporaryLocale(result.locale!!)
         }
-        */
         lastTicketRequireAttention = result.isRequireAttention
         var isPrintable = false
         val mayBePrintable = (conf.printBadges &&
