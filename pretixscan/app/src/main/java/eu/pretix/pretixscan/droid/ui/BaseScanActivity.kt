@@ -509,7 +509,6 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
              */
             return
         }
-        //hardwareScanner.stop(this) // Fixme: Raphael Review comment: Where is this line coming from? It never get started again, so currently with this branch you can only scan once.    }
 
         val result =
             if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.uppercase(Locale.getDefault()))) {
