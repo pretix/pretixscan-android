@@ -5,7 +5,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 
 object KioskHardware {
     fun isTR51(): Boolean {
-        return Build.MODEL == "pretix TR51"
+        return Build.BRAND == "pretix" && Build.MODEL == "TR51"
     }
 
     fun isZebra(): Boolean {
