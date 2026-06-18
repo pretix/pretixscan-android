@@ -20,4 +20,6 @@
     <color name="viewfinder_border">#00000000</color>
     <color name="dialog_background_scrim">#99323232</color>
     <color name="transparent">#00000000</color>
+    <color name="kiosk_statusbar_text">#C699DC</color>
+    <color name="black_overlay">#66000000</color>
 </resources>

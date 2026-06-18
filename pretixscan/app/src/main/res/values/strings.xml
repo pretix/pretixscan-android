@@ -189,4 +189,19 @@
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">The scanned NFC chip is not supported by this version of pretixSCAN</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">A UID-based NFC chip is needed</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">A NFC Mifare Ultralight AES chip is needed</string>
+    <string name="kiosk_text_scan">Please scan your ticket</string>
+    <string name="kiosk_text_reading">Reading barcode…</string>
+    <string name="kiosk_text_checking">Checking your ticket…</string>
+    <string name="kiosk_text_print">Please take your badge</string>
+    <string name="kiosk_text_gate">Please proceed through the gate</string>
+    <string name="kiosk_text_questions_reject">Ticket cannot be validated here</string>
+    <string name="kiosk_text_questions_reject_sub">Please reach out to our staff</string>
+    <string name="out_of_order">Out of order</string>
+    <string name="action_label_out_of_order">Take out of order</string>
+    <string name="action_label_remove_out_of_order">Re-enable operation</string>
+    <string name="kiosk_error_gate_opening_failed">Gate opening failed</string>
+    <string name="kiosk_error_gate_opening_failed_timeout">Gate opening failed by timeout</string>
+    <string name="kiosk_error_printing_failed">Printing failed</string>
+    <string name="kiosk_error_printing_failed_timeout">Printing failed by timeout</string>
+    <string name="kiosk_error_unknown_scan_result_type">Unknown Scan Result Type</string>
 </resources>
