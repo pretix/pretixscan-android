@@ -1,9 +1,11 @@
 package eu.pretix.pretixscan.droid.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -32,7 +34,9 @@ class SetupActivity : AppCompatActivity(), SetupCallable {
     private val dataWedgeHelper = DataWedgeHelper(this)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_generic_fragment)
         setSupportActionBar(findViewById(R.id.topAppBar))
