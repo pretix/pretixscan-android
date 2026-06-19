@@ -178,4 +178,19 @@
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">La puce NFC scannée n\'est pas prise en charge par cette version de pretixSCAN</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">Une puce NFC utilisant un identifiant unique (UID) est nécessaire</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Une puce NFC Mifare Ultralight AES est nécessaire</string>
+    <string name="kiosk_text_scan">Veuillez scanner votre billet</string>
+    <string name="kiosk_text_reading">Lecture du code-barres…</string>
+    <string name="kiosk_text_checking">Vérification de votre billet…</string>
+    <string name="kiosk_text_print">Veuillez prendre votre badge</string>
+    <string name="kiosk_text_gate">Veuillez passer le portillon</string>
+    <string name="kiosk_text_questions_reject">Ce billet ne peut pas être validé ici</string>
+    <string name="kiosk_text_questions_reject_sub">Veuillez contacter notre personnel</string>
+    <string name="out_of_order">Hors service</string>
+    <string name="action_label_out_of_order">Mettre hors service</string>
+    <string name="action_label_remove_out_of_order">Réactiver le fonctionnement</string>
+    <string name="kiosk_error_gate_opening_failed">Échec de l\'ouverture du portillon</string>
+    <string name="kiosk_error_gate_opening_failed_timeout">Échec de l\'ouverture de la barrière en raison d\'un délai d\'attente dépassé</string>
+    <string name="kiosk_error_printing_failed">Échec de l\'impression</string>
+    <string name="kiosk_error_printing_failed_timeout">Échec de l\'impression en raison d\'un délai d\'attente dépassé</string>
+    <string name="kiosk_error_unknown_scan_result_type">Type de résultat de scan inconnu</string>
 </resources>
