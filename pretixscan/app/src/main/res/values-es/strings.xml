@@ -178,4 +178,19 @@
     <string name="reusable_media_exchange_nfc_needs_nfc_uid">Se necesita un chip NFC basado en UID</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Se necesita un chip NFC Mifare Ultralight AES</string>
     <string name="reusable_media_exchange_needed">Se necesita un medio de intercambio</string>
+    <string name="kiosk_text_scan">Por favor, escanee su billete</string>
+    <string name="kiosk_text_reading">Leyendo el código de barras…</string>
+    <string name="kiosk_text_checking">Comprobando el billete…</string>
+    <string name="kiosk_text_print">Por favor, recoja su acreditación</string>
+    <string name="kiosk_text_gate">Por favor, adelante hacia el control de entradas</string>
+    <string name="kiosk_text_questions_reject">Este billete no se puede validar aquí</string>
+    <string name="kiosk_text_questions_reject_sub">Póngase en contacto con nuestro personal</string>
+    <string name="out_of_order">Fuera de servicio</string>
+    <string name="action_label_out_of_order">Retirar del servicio</string>
+    <string name="action_label_remove_out_of_order">Reactivar el funcionamiento</string>
+    <string name="kiosk_error_gate_opening_failed">Error al abrir la puerta de entrada</string>
+    <string name="kiosk_error_gate_opening_failed_timeout">Error en la apertura de la puerta por agotamiento del tiempo de espera</string>
+    <string name="kiosk_error_printing_failed">Error de impresión</string>
+    <string name="kiosk_error_printing_failed_timeout">Error de impresión por tiempo de espera agotado</string>
+    <string name="kiosk_error_unknown_scan_result_type">Tipo de resultado de escaneo desconocido</string>
 </resources>
