@@ -10,6 +10,10 @@
     android:paddingTop="16dp"
     android:paddingBottom="8dp">
 
+    <include
+        android:id="@+id/ticketInformation"
+        layout="@layout/dialog_questions" />
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvWarningMessage"
         style="?attr/materialCardViewElevatedStyle"
