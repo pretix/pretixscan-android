@@ -54,19 +54,6 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
         } else {
             binding.ticketInformation.tvAttendeeName.text = res.attendee_name
         }
-        var attendeeDOB: String? = null
-        val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
-        for (i in 0 until qlen) {
-            val answ = res.position!!.getJSONArray("answers").getJSONObject(i)
-            if (answ.getString("question_identifier") == "dob") {
-                attendeeDOB = answ.getString("answer")
-            }
-        }
-        if (attendeeDOB.isNullOrBlank()) {
-            binding.ticketInformation.tvAttendeeDOB.visibility = View.GONE
-        } else {
-            binding.ticketInformation.tvAttendeeDOB.text = attendeeDOB
-        }
         if (res.ticket.isNullOrBlank()) {
             binding.ticketInformation.tvTicketType.visibility = View.GONE
         } else {
