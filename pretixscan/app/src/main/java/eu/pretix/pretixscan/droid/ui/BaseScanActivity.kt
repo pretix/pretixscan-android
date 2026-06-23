@@ -618,17 +618,6 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             res.position?.optString("attendee_name")
         }
 
-        var attendeeDOB: String? = null
-        if (!conf.hideNames) {
-            val qlen = res.position?.getJSONArray("answers")?.length() ?: 0
-            for (i in 0 until qlen) {
-                val answ = res.position!!.getJSONArray("answers")!!.getJSONObject(i)
-                if (answ.getString("question_identifier") == "dob") {
-                    attendeeDOB = answ.getString("answer")
-                }
-            }
-        }
-
         return eu.pretix.libpretixui.android.questions.showQuestionsDialog(
             QuestionsDialog.Companion.QuestionsType.LINE_ITEM_QUESTIONS,
             this,
@@ -639,7 +628,6 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             { answers -> retryHandler(secret, sourceType, answers, ignore_unpaid) },
             null,
             attendeeName,
-            attendeeDOB,
             res.orderCodeAndPositionId(),
             if (res.ticket != null) {
                 if (res.variation != null) {

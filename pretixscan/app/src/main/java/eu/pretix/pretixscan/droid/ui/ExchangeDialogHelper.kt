@@ -37,7 +37,7 @@ class ExchangeUnsupportedDialog(ctx: Activity, resId: Int): AlertDialog(ctx), Qu
     }
 }
 
-class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit)): AlertDialog(ctx),
+class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMediaType, var onSuccessfulNfcScan: ((String, ReusableMediaType) -> Unit), var res: TicketCheckProvider.CheckResult): AlertDialog(ctx),
     NfcHandler.OnChipReadListener, QuestionsDialogInterface, NfcDialogInterface {
     private lateinit var binding: DialogReusableMediumExchangeNfcBinding
 
@@ -47,6 +47,31 @@ class ExchangeScanNfcDialog(var ctx: Activity, var requiredMediaType: ReusableMe
         setView(binding.root)
         setButton(BUTTON_NEGATIVE, ctx.getString(R.string.cancel)) { _, _ ->
             cancel()
+        }
+
+        if (res.attendee_name.isNullOrBlank()) {
+            binding.ticketInformation.tvAttendeeName.visibility = View.GONE
+        } else {
+            binding.ticketInformation.tvAttendeeName.text = res.attendee_name
+        }
+        if (res.ticket.isNullOrBlank()) {
+            binding.ticketInformation.tvTicketType.visibility = View.GONE
+        } else {
+            binding.ticketInformation.tvTicketType.text = res.ticket
+        }
+        if (res.orderCodeAndPositionId().isNullOrBlank()) {
+            binding.ticketInformation.tvTicketId.visibility = View.GONE
+        } else {
+            binding.ticketInformation.tvTicketId.text = res.orderCodeAndPositionId()
+        }
+        if (res.orderCodeAndPositionId().isNullOrBlank() && res.ticket.isNullOrBlank() && res.attendee_name.isNullOrBlank()) {
+            binding.ticketInformation.clAttendeeInfo.visibility = View.GONE
+        }
+        if (!res.checkinTexts.isNullOrEmpty()) {
+            binding.ticketInformation.tvOrderHeadline.text =
+                res.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim()
+        } else {
+            binding.ticketInformation.clOrderInfo.visibility = View.GONE
         }
 
         super.onCreate(savedInstanceState)
@@ -136,7 +161,7 @@ fun showExchangeDialog(
         return dialog
     }
 
-    val dialog = ExchangeScanNfcDialog(ctx, res.requiredMediaType!!, completion)
+    val dialog = ExchangeScanNfcDialog(ctx, res.requiredMediaType!!, completion, res)
     dialog.setCanceledOnTouchOutside(false)
     dialog.show()
 
