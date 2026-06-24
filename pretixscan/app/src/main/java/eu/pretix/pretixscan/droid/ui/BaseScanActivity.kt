@@ -756,6 +756,12 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     }
 
     override fun chipReadSuccessfully(identifier: String, mediaType: ReusableMediaType) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadSuccessfully(identifier, mediaType)
+            return
+        }
+
         if (identifier.startsWith("08")) {
             runOnUiThread {
                 showLoadingCard()
@@ -782,6 +788,12 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     }
 
     override fun chipReadError(error: ChipReadError, identifier: String?) {
+        // delegate to the dialog if it is active
+        if (dialog?.isShowing() == true && dialog is NfcDialogInterface) {
+            (dialog as NfcDialogInterface).chipReadError(error, identifier)
+            return
+        }
+
         val error = when (error) {
             ChipReadError.IO_ERROR -> getString(R.string.nfc_read_error)
             ChipReadError.UNKNOWN_CHIP_TYPE -> getString(R.string.nfc_unknown_chip_type)
