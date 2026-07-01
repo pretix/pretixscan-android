@@ -196,6 +196,8 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+        // NOTE: binding initialization happens in the child class *after* this function
+        // make sure you don't depend on it here or in the functions called here
         super.onCreate(savedInstanceState)
         conf = AppConfig(this)
 

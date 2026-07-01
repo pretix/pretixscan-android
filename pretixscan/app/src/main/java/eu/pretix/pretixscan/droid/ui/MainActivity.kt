@@ -245,6 +245,8 @@ class MainActivity : BaseScanActivity() {
     }
 
     override fun reloadSyncStatus() {
+        if (!this::binding.isInitialized) return
+
         if (conf.lastFailedSync > conf.lastSync || System.currentTimeMillis() - conf.lastDownload > 5 * 60 * 1000) {
             binding.textViewStatus.setTextColor(ContextCompat.getColor(this, R.color.pretix_brand_red))
         } else {
@@ -314,8 +316,8 @@ class MainActivity : BaseScanActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         view_data.resultState.set(EMPTY)
         view_data.scanType.set(conf.scanType)
@@ -372,10 +374,12 @@ class MainActivity : BaseScanActivity() {
     }
 
     override fun setupApi() {
-        val ebt = eventButtonText()
-        if (binding.mainToolbar.event != null && binding.mainToolbar.event.text != ebt) {  // can be null if search bar is open
-            binding.mainToolbar.event.text = ebt
-            (binding.mainToolbar.event.parent as View?)?.forceLayout()
+        if (this::binding.isInitialized) {
+            val ebt = eventButtonText()
+            if (binding.mainToolbar.event != null && binding.mainToolbar.event.text != ebt) {  // can be null if search bar is open
+                binding.mainToolbar.event.text = ebt
+                (binding.mainToolbar.event.parent as View?)?.forceLayout()
+            }
         }
         super.setupApi()
     }
