@@ -386,7 +386,7 @@ class MainActivity : BaseScanActivity() {
 
     override fun selectEvent() {
         val intent = Intent(this, EventConfigActivity::class.java)
-        if (binding.mainToolbar.event != null && ViewCompat.isLaidOut(binding.mainToolbar.event)) {
+        if (this::binding.isInitialized && binding.mainToolbar.event != null && ViewCompat.isLaidOut(binding.mainToolbar.event)) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this@MainActivity, binding.mainToolbar.event, "morph_transition")
             startWithPIN(intent, "switch_event", REQ_EVENT, options.toBundle())
