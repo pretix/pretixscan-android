@@ -449,8 +449,6 @@ class MainActivity : BaseScanActivity() {
             supportActionBar?.show()
         }
 
-        scheduleSync()
-
         LED(this).off()
 
         if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
