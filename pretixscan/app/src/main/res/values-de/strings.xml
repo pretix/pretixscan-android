@@ -204,4 +204,5 @@
     <string name="kiosk_error_printing_failed">Druck fehlgeschlagen</string>
     <string name="kiosk_error_printing_failed_timeout">Drucker Timeout</string>
     <string name="kiosk_error_unknown_scan_result_type">Unbekannter Scanergebnis Typus</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Der gescannte NFC-Chip wird von dieser pretixSCAN-Version nicht unterstützt</string>
 </resources>
