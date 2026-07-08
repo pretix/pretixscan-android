@@ -165,7 +165,7 @@
     <string name="error_exception">Se ha producido un error</string>
     <string name="scan_result_already_exchanged">Entrada ya canjeada</string>
     <string name="scan_result_medium_invalid">Soporte reutilizable no válido</string>
-    <string name="scan_result_medium_exists">Ya existe un soporte reutilizable</string>
+    <string name="scan_result_medium_exists">El soporte reutilizable ya existe</string>
     <string name="scan_result_medium_exchange_required_offline">Hay que cambiar este billete, pero no es posible hacerlo sin conexión</string>
     <string name="reusable_media_exchange_not_implemented">Esta entrada debe canjearse por un soporte reutilizable. Lamentablemente, esta versión de pretixSCAN aún no permite hacerlo.</string>
     <string name="reusable_media_exchange_unknown_type">Este tipo de soporte reutilizable no es compatible</string>
