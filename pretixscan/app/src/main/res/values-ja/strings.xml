@@ -155,9 +155,9 @@
     <string name="reinstall_open_app_settings">Androidアプリ設定を開く</string>
     <string name="settings_label_screen_always_on">ディスプレイを表示したままにする</string>
     <string name="error_exception">エラーが起こりました</string>
-    <string name="scan_result_already_exchanged">チケットは既に交換済みです</string>
-    <string name="scan_result_medium_invalid">再利用可能なメディアは無効です</string>
-    <string name="scan_result_medium_exists">再利用可能なメディアは既に存在します</string>
+    <string name="scan_result_already_exchanged">チケットは交換済みです</string>
+    <string name="scan_result_medium_invalid">再利用可能メディアが無効です</string>
+    <string name="scan_result_medium_exists">再利用可能メディアがすでに存在します</string>
     <string name="scan_result_medium_exchange_required_offline">このチケットは交換が必要ですが、オフラインでは交換できません</string>
     <string name="reusable_media_exchange_needed">メディアの交換が必要</string>
     <string name="reusable_media_exchange_not_implemented">このチケットは再利用可能なメディアへの交換が必要です。残念ながら、このバージョンの pretixSCAN ではまだ対応していません。</string>
