@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.ResultReceiver
+import eu.pretix.pretixscan.droid.BuildConfig
 
 
 fun openGate(
@@ -14,7 +15,11 @@ fun openGate(
     val intent = Intent()
     intent.action = "eu.pretix.pretixscan.gate.OPEN_GATE"
 
-    if (isPackageInstalled("eu.pretix.ktIOservice", context.packageManager)) {
+    if (isPackageInstalled("eu.pretix.ktIOservice.debug", context.packageManager) && BuildConfig.DEBUG) {
+        intent.`package` = "eu.pretix.ktIOservice.debug"
+        intent.component =
+            ComponentName("eu.pretix.ktIOservice.debug", "eu.pretix.ktIOservice.GateService")
+    } else if (isPackageInstalled("eu.pretix.ktIOservice", context.packageManager)) {
         intent.`package` = "eu.pretix.ktIOservice"
         intent.component =
             ComponentName("eu.pretix.ktIOservice", "eu.pretix.ktIOservice.GateService")
