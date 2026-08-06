@@ -210,7 +210,13 @@
     <string name="info_mode_no_name">Kein Name hinterlegt</string>
     <string name="info_mode_history_title">Check-in-Historie (alle Listen)</string>
     <string name="info_mode_history_empty">Für dieses Ticket sind noch keine Check-ins erfasst</string>
+    <string name="info_mode_status_ok">Simuliert: Gültig</string>
+    <string name="info_mode_status_attention">Simuliert: Achtung nötig</string>
+    <string name="info_mode_status_invalid">Simuliert: Ungültig</string>
     <string name="info_mode_presence_present">Aktuell anwesend (diese Liste)</string>
     <string name="info_mode_presence_not_present">Nicht anwesend (ausgecheckt)</string>
     <string name="info_mode_presence_not_scanned_yet">Auf dieser Liste noch nicht gescannt</string>
+    <string name="info_mode_checkin_type_entry">Eingang</string>
+    <string name="info_mode_checkin_type_exit">Ausgang</string>
+    <string name="pin_protection_info_mode">Info-Modus</string>
 </resources>

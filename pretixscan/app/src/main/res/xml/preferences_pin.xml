@@ -10,6 +10,11 @@
         android:key="pref_pin_enable"
         android:title="@string/pin_protection_enable" />
     <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="pref_pin_enable"
+        android:key="pref_pin_info_mode"
+        android:title="@string/pin_protection_info_mode" />
+    <CheckBoxPreference
         android:defaultValue="true"
         android:dependency="pref_pin_enable"
         android:enabled="false"

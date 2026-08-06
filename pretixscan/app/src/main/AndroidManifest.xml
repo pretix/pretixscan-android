@@ -113,6 +113,11 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.Fullscreen"
             />
+        <activity
+            android:name=".ui.info.InfoModeActivity"
+            android:label="@string/info_mode_title"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name="eu.pretix.libpretixnfc.android.hardware.acs.AcsReaderService"  android:foregroundServiceType="connectedDevice" />
 
