@@ -503,9 +503,9 @@ class KioskActivity : BaseScanActivity() {
                         }
                     } else if (resultCode == 2) {
                         // Gate opened, but did not turn.
-						if (conf.sounds) {
-							mediaPlayers[R.raw.error]?.start()
-						}
+                        if (conf.sounds) {
+                            mediaPlayers[R.raw.error]?.start()
+                        }
                         runOnUiThread {
                             annullCheckin()
                             binding.tvRejectedMessage.text = getString(R.string.kiosk_text_noentry)
