@@ -193,4 +193,6 @@
     <string name="kiosk_error_printing_failed">Échec de l\'impression</string>
     <string name="kiosk_error_printing_failed_timeout">Échec de l\'impression en raison d\'un délai d\'attente dépassé</string>
     <string name="kiosk_error_unknown_scan_result_type">Type de résultat de scan inconnu</string>
+    <string name="kiosk_text_noentry">Aucune entrée détectée</string>
+    <string name="kiosk_text_noentry_description">Votre billet sera de nouveau valide sous peu</string>
 </resources>
