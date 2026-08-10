@@ -525,8 +525,9 @@ class KioskActivity : BaseScanActivity() {
                     }
                 }
             })
-            gateTimeoutHandler.postDelayed(gateTimeout, 30_000)
+            gateTimeoutHandler.postDelayed(gateTimeout, 90_000)
         } catch (e: Exception) {
+            gateTimeoutHandler.removeCallbacks(gateTimeout)
             runOnUiThread {
                 binding.tvOutOfOrderMessage.text = e.localizedMessage
                 state = KioskState.OutOfOrder
