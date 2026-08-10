@@ -1,3 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">pretixSCAN</string>
+    <string name="title_activity_main">pretixSCAN</string>
+    <string name="headline_setup">欢迎使用pretixSCAN！</string>
+    <string name="action_sync">现在同步</string>
+    <string name="progress_syncing_first">正在下载活动设置…</string>
+    <string name="progress_syncing">正在和服务器同步中…</string>
+    <string name="progress_processing">进行中…</string>
+    <string name="progress_registering">正在向服务器注册设备…</string>
+    <string name="error_access_revoked">此设备已被吊销，你需要重新在服务器上注册此设备。</string>
+    <string name="error_unknown_exception">发生未知错误</string>
+    <string name="error_exception">发生错误</string>
+    <string name="error_not_synchronized">您的设备没有正确地与服务器同步</string>
+    <string name="action_label_ok">确定</string>
+    <string name="action_label_settings">设定</string>
+    <string name="action_label_statistics">统计</string>
+    <string name="action_label_scantype_entry">切换至入口扫描</string>
+    <string name="action_label_scantype_exit">切换至出口扫描</string>
+    <string name="action_multievent_enable">高级模式（选择多个活动）</string>
+    <string name="action_multievent_disable">禁用高级模式</string>
+    <string name="action_multievent_disable_error">在选择多个活动的情况下高级模式无法禁用。</string>
+    <string name="scantype_entry">入口</string>
+    <string name="scantype_exit">出口</string>
+    <string name="scantype_entry_kiosk">扫描您的门票以检票</string>
+    <string name="scantype_entry_kiosk_print">扫描您的门票以打印徽章</string>
+    <string name="scantype_exit_kiosk">扫描您的门票以离开</string>
+    <string name="checktype_online">在线验证</string>
+    <string name="checktype_offline">离线验证</string>
+    <string name="checktype_proxy">基站验证</string>
+    <string name="debug_info_event">活动: %1$s</string>
+    <string name="debug_info_subevent">时间: %1$s (%2$s)</string>
+    <string name="debug_info_list">列表: %1$s</string>
 </resources>
