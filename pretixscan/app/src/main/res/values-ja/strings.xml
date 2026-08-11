@@ -185,4 +185,6 @@
     <string name="kiosk_error_printing_failed">印刷に失敗しました</string>
     <string name="kiosk_error_printing_failed_timeout">タイムアウトにより印刷に失敗しました</string>
     <string name="kiosk_error_unknown_scan_result_type">不明なスキャン結果タイプ</string>
+    <string name="kiosk_text_noentry">エントリーが未検出</string>
+    <string name="kiosk_text_noentry_description">あなたのチケットはまもなく再有効化されます</string>
 </resources>
