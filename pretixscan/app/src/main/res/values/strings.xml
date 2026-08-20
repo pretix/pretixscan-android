@@ -217,5 +217,8 @@
     <string name="info_mode_presence_not_scanned_yet">Not scanned on this list yet</string>
     <string name="info_mode_checkin_type_entry">Entry</string>
     <string name="info_mode_checkin_type_exit">Exit</string>
-    <string name="pin_protection_info_mode">Info mode</string>
+    <string name="info_mode_rescan_button">Scan again</string>
+    <string name="info_mode_checkin_button">Check in ticket</string>
+    <string name="info_mode_checkin_success">Checked in successfully</string>
+    <string name="info_mode_checkin_failed">Check-in failed</string>
 </resources>

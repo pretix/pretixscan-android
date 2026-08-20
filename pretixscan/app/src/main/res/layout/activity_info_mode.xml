@@ -96,6 +96,19 @@
                                 android:layout_marginEnd="16dp"
                                 android:background="@color/pretix_brand_lightgrey" />
 
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultEventSlug}"
+                                android:textAppearance="?attr/textAppearanceCaption"
+                                android:textAllCaps="true"
+                                android:visibility="@{data.hasEventSlug ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="demo-event-2026" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -255,6 +268,34 @@
                                 android:visibility="@{data.hasPresence ? View.VISIBLE : View.GONE}"
                                 tools:visibility="visible"
                                 tools:text="Anwesend (zuletzt: Vortrag: Einführung in Kotlin)" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/rescan_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="8dp"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:text="@string/info_mode_rescan_button" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/check_in_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/info_mode_checkin_button" />
+
+                            </LinearLayout>
 
                             <View
                                 android:layout_width="match_parent"

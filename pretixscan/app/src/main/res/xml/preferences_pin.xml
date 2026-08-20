@@ -13,7 +13,7 @@
         android:defaultValue="false"
         android:dependency="pref_pin_enable"
         android:key="pref_pin_info_mode"
-        android:title="@string/pin_protection_info_mode" />
+        android:title="@string/info_mode_title" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:dependency="pref_pin_enable"

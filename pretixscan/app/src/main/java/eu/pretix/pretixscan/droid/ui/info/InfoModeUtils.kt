@@ -5,28 +5,8 @@ import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.droid.R
 import java.time.OffsetDateTime
+import java.time.ZoneId
 
-/**
- * Small, stateless helper functions for Info mode - kept together in one file, same convention
- * as GateUtils.kt/PrintUtils.kt (flat *Utils.kt files in ui/, not a separate utils package).
- * Adapters stay in their own file (CheckinHistoryAdapter.kt), consistent with how the rest of
- * the project keeps adapters separate from Utils files.
- */
-
-// ---------------------------------------------------------------------------------------------
-// Status accent mapping (was InfoModeAccent.kt)
-// ---------------------------------------------------------------------------------------------
-
-/**
- * Maps the (many) CheckResult.Type values onto three muted accent buckets for Info mode.
- * Deliberately just icon tint / text color / thin stroke - never a flat full-area fill -
- * so this reads as visually distinct from the real scan-result screen (which fills the
- * whole result card with @{data.getColor(data.resultState)}, see activity_main.xml).
- *
- * Reuses the existing white status icons (ic_check_circle_white_24dp etc.) - they're plain
- * single-color vectors, so tinting them to a different color via setColorFilter works fine
- * and keeps the iconography consistent with the rest of the app.
- */
 enum class InfoModeAccent(val colorRes: Int, val iconRes: Int, val labelRes: Int) {
     OK(R.color.pretix_brand_green, R.drawable.ic_check_circle_white_24dp, R.string.info_mode_status_ok),
     ATTENTION(R.color.pretix_brand_orange, R.drawable.ic_warning_white_24dp, R.string.info_mode_status_attention),
@@ -36,7 +16,6 @@ enum class InfoModeAccent(val colorRes: Int, val iconRes: Int, val labelRes: Int
 fun TicketCheckProvider.CheckResult.Type?.toInfoModeAccent(): InfoModeAccent = when (this) {
     TicketCheckProvider.CheckResult.Type.VALID -> InfoModeAccent.OK
 
-    // "Would work, but needs something first" - shown as attention/orange, not a hard error
     TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED,
     TicketCheckProvider.CheckResult.Type.UNPAID,
     TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
@@ -44,7 +23,6 @@ fun TicketCheckProvider.CheckResult.Type?.toInfoModeAccent(): InfoModeAccent = w
     TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE,
     TicketCheckProvider.CheckResult.Type.USED -> InfoModeAccent.ATTENTION
 
-    // Everything else - genuinely wouldn't work
     TicketCheckProvider.CheckResult.Type.INVALID,
     TicketCheckProvider.CheckResult.Type.ERROR,
     TicketCheckProvider.CheckResult.Type.BLOCKED,
@@ -73,6 +51,7 @@ enum class PresenceStatus {
     NOT_SCANNED_YET
 }
 
+// TODO: hängt vom letzten Sync-Zeitpunkt ab, keine Live-Server-Abfrage
 fun loadCheckinHistory(db: SyncDatabase, positionServerId: Long?): List<TicketCheckinHistoryEntry> {
     if (positionServerId == null) return emptyList()
 
@@ -94,6 +73,29 @@ fun loadCheckinHistory(db: SyncDatabase, positionServerId: Long?): List<TicketCh
     }.sortedBy { it.dateTime }
 }
 
+fun mergeImmediateCheckin(
+    db: SyncDatabase,
+    dbHistory: List<TicketCheckinHistoryEntry>,
+    result: TicketCheckProvider.CheckResult,
+    activeListServerId: Long?,
+): List<TicketCheckinHistoryEntry> {
+    val firstScanned = result.firstScanned ?: return dbHistory
+    if (activeListServerId == null) return dbHistory
+    if (dbHistory.any { it.listServerId == activeListServerId }) return dbHistory
+
+    val listName = db.checkInListQueries.selectByServerId(activeListServerId).executeAsOneOrNull()?.name
+        ?: return dbHistory
+
+    val entry = TicketCheckinHistoryEntry(
+        listServerId = activeListServerId,
+        listName = listName,
+        type = "entry",
+        dateTime = OffsetDateTime.ofInstant(firstScanned.toInstant(), ZoneId.systemDefault()),
+    )
+    return (dbHistory + entry).sortedBy { it.dateTime }
+}
+
+// TODO: berücksichtigt noch nicht allow_multiple_entries/allow_entry_after_exit der Check-in-Liste
 fun currentPresenceStatus(history: List<TicketCheckinHistoryEntry>, activeListServerId: Long?): PresenceStatus {
     val lastOnActiveList = history
         .filter { it.listServerId == activeListServerId }

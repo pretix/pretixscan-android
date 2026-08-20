@@ -218,5 +218,8 @@
     <string name="info_mode_presence_not_scanned_yet">Auf dieser Liste noch nicht gescannt</string>
     <string name="info_mode_checkin_type_entry">Eingang</string>
     <string name="info_mode_checkin_type_exit">Ausgang</string>
-    <string name="pin_protection_info_mode">Info-Modus</string>
+    <string name="info_mode_rescan_button">Neu scannen</string>
+    <string name="info_mode_checkin_button">Ticket einchecken</string>
+    <string name="info_mode_checkin_success">Erfolgreich eingecheckt</string>
+    <string name="info_mode_checkin_failed">Check-in fehlgeschlagen</string>
 </resources>

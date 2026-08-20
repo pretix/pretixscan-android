@@ -55,10 +55,6 @@ class InfoModeViewDataHolder {
     val historyEmpty = ObservableField(true)
 }
 
-/**
- * TODO (step 2, later): "Book entry now" / "Book exit now" buttons that turn the currently
- * shown simulated result into a real check-in (re-call with simulate=false).
- */
 class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
 
     private lateinit var binding: ActivityInfoModeBinding
@@ -69,6 +65,7 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
     private var activeCheckinListServerId: Long? = null
     private var lastScanCode: String? = null
     private var lastScanTime: Long = 0L
+    private var lastScannedSecret: String? = null
 
     companion object {
         private const val EXTRA_PIN = "pin"
@@ -119,6 +116,9 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
             viewData.hasResult.set(false)
         }
 
+        binding.rescanButton.setOnClickListener { onRescanClicked() }
+        binding.checkInButton.setOnClickListener { onCheckInClicked() }
+
         checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
     }
 
@@ -158,11 +158,47 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
     }
 
     private fun onTicketScanned(secret: String) {
+        lastScannedSecret = secret
         viewData.isScanning.set(true)
         lifecycleScope.launch {
             val (result, history) = performSimulatedCheck(secret)
             renderResult(result, history)
             viewData.isScanning.set(false)
+        }
+    }
+
+    private fun onRescanClicked() {
+        viewData.hasResult.set(false)
+        lastScanCode = null
+        lastScannedSecret = null
+    }
+
+    private fun onCheckInClicked() {
+        val secret = lastScannedSecret ?: return
+        viewData.isScanning.set(true)
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                checkProvider.check(
+                    config.eventSelectionToMap(),
+                    secret,
+                    "barcode",
+                    null,
+                    false,
+                    false,
+                    CheckInType.ENTRY,
+                    simulate = false,
+                )
+            }
+            viewData.isScanning.set(false)
+            val message = result.message
+                ?: result.reasonExplanation
+                ?: if (result.type == TicketCheckProvider.CheckResult.Type.VALID) {
+                    getString(R.string.info_mode_checkin_success)
+                } else {
+                    getString(R.string.info_mode_checkin_failed)
+                }
+            Toast.makeText(this@InfoModeActivity, message, Toast.LENGTH_SHORT).show()
+            onRescanClicked()
         }
     }
 
@@ -183,7 +219,8 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         }
         val positionServerId = result.position?.optLong("id")
         val history = withContext(Dispatchers.IO) {
-            loadCheckinHistory((application as PretixScan).db, positionServerId)
+            val dbHistory = loadCheckinHistory((application as PretixScan).db, positionServerId)
+            mergeImmediateCheckin((application as PretixScan).db, dbHistory, result, activeCheckinListServerId)
         }
         return result to history
     }
