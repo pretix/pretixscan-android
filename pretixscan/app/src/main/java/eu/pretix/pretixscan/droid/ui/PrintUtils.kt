@@ -216,12 +216,19 @@ fun logSuccessfulPrint(
     db: SyncDatabase,
     eventSlug: String,
     positionId: Long,
-    type: String
+    type: String,
+    printApp: String,
+    printAppVersion: String,
 ) {
     val logbody = JSONObject()
-    logbody.put("source", "pretixSCAN")
+    logbody.put("source", "pretixSCAN ${BuildConfig.VERSION_NAME}")
     logbody.put("type", type)
-    logbody.put("info", JSONObject())
+    val info = JSONObject()
+    if (printApp.isNotBlank() && printAppVersion.isNotBlank()) {
+        info.put("print_app", printApp)
+        info.put("print_app_version", printAppVersion)
+    }
+    logbody.put("info", info)
     val tz = TimeZone.getTimeZone("UTC")
     val df: DateFormat = SimpleDateFormat(
         "yyyy-MM-dd'T'HH:mm:ss'Z'",
