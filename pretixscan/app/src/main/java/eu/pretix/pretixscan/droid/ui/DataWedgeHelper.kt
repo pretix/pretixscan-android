@@ -4,11 +4,18 @@ package eu.pretix.pretixscan.droid.ui
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.util.Log
 import androidx.core.content.ContextCompat.getExternalFilesDirs
-import java.io.*
+import androidx.preference.PreferenceManager
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 
 class DataWedgeHelper(private val ctx: Context) {
@@ -37,14 +44,21 @@ class DataWedgeHelper(private val ctx: Context) {
         }
 
     @Throws(IOException::class)
-    private fun copyAllStagedFiles() {
+    private fun copyAllStagedFiles(path: String): Boolean {
         val stagingDirectory = stagingDirectory
         val filesToStage = stagingDirectory.listFiles()
-        val outputDirectory = File("/enterprise/device/settings/datawedge/autoimport")
-        if (!outputDirectory.exists())
-            outputDirectory.mkdirs()
+        val outputDirectory = File(path)
+        if (!outputDirectory.exists()) {
+            try {
+                outputDirectory.mkdirs()
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                return false
+            }
+        }
         if (filesToStage!!.size == 0)
-            return
+            return false
+        var success = true
         for (i in filesToStage.indices) {
             //  Write the file as .tmp to the autoimport directory
             try {
@@ -63,14 +77,15 @@ class DataWedgeHelper(private val ctx: Context) {
                 fileToImport.setExecutable(true, false)
                 fileToImport.setReadable(true, false)
                 fileToImport.setWritable(true, false)
-                Log.i("DataWedge", "DataWedge profile successfully written to legacy autoimport directory: $outputDirectory")
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
+                success = false
             } catch (e: IOException) {
                 e.printStackTrace()
+                success = false
             }
-
         }
+        return success
     }
 
     @Throws(IOException::class)
@@ -104,12 +119,29 @@ class DataWedgeHelper(private val ctx: Context) {
         Log.i("DataWedge", "DataWedge profile copied to staging directory: $stagingDirectory")
 
         // Legacy DataWedge Profile import
-        copyAllStagedFiles()
+        val autoimportPath = "/enterprise/device/settings/datawedge/autoimport"
+        if (copyAllStagedFiles(autoimportPath)) {
+            Log.i("DataWedge", "DataWedge profile successfully written to legacy autoimport directory: $autoimportPath")
+        } else {
+            Log.e("DataWedge", "Failed to write DataWedge profile to legacy autoimport directory: $autoimportPath")
+        }
 
         // New DataWedge Profile import (available since DataWedge 6.7)
+        var importPath = stagingDirectory.toString()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            importPath = "/data/tmp/public"
+            if (copyAllStagedFiles(importPath)) {
+                Log.i("DataWedge", "DataWedge profile successfully written to public import directory: $importPath")
+            } else {
+                Log.i("DataWedge", "Failed to write DataWedge profile to public import directory: $importPath")
+                // then try with the app specific path
+                importPath = stagingDirectory.toString()
+            }
+        }
+
         val importIntent = Intent()
         val importBundle = Bundle()
-        importBundle.putString("FOLDER_PATH", stagingDirectory.toString())
+        importBundle.putString("FOLDER_PATH", importPath)
         importIntent.action = "com.symbol.datawedge.api.ACTION"
         importIntent.putExtra("com.symbol.datawedge.api.IMPORT_CONFIG", importBundle)
         ctx.sendBroadcast(importIntent)
