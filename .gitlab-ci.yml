@@ -5,6 +5,7 @@ default:
 stages:
   - test
   - release
+  - sbom
 test:
   stage: test
   script:
@@ -20,12 +21,25 @@ release:
     - cat $LOCALPROP > local.properties
     - git submodule init
     - git submodule update
-    - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew --no-daemon -Dmaven.repo.local=$(pwd)/repo assemblePretixRelease --stacktrace
+    - GRADLE_USER_HOME=/cache ANDROID_HOME=/android-sdk-linux ./gradlew --no-daemon -Dmaven.repo.local=$(pwd)/repo assemblePretixRelease cyclonedxBom --stacktrace
   artifacts:
     paths:
       - pretixscan/app/build/outputs/apk/pretix/release/*.apk
+      - pretixscan/build/reports/cyclonedx/bom.json
     expire_in: '6 weeks'
   only:
     - '/^v.*$/'
+sbom upload:
+  stage: sbom
+  image:
+    name: python:3.13
+  dependencies:
+    - release
+  before_script:
+    - pip install prisma-sbom-submit
+  script:
+    - prisma-sbom-submit upload --server https://prisma.pretix.com pretixscan/build/reports/cyclonedx/bom.json
+  only:
+    - '/^.*\..*$/'
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
