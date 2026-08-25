@@ -27,7 +27,7 @@ class DataWedgeHelper(private val ctx: Context) {
                 val pm = ctx.packageManager
                 pm.getPackageInfo("com.symbol.datawedge", 0)
                 return true
-            } catch (e: PackageManager.NameNotFoundException) {
+            } catch (_: PackageManager.NameNotFoundException) {
                 return false
             }
 
@@ -60,7 +60,7 @@ class DataWedgeHelper(private val ctx: Context) {
             return false
         var success = true
         for (i in filesToStage.indices) {
-            //  Write the file as .tmp to the autoimport directory
+            // Write the file as .tmp to the autoimport directory
             try {
                 val `in` = FileInputStream(filesToStage[i])
                 val outputFile = File(outputDirectory, filesToStage[i].name + ".tmp")
@@ -68,12 +68,12 @@ class DataWedgeHelper(private val ctx: Context) {
 
                 copyFile(`in`, out)
 
-                //  Rename the temp file
+                // Rename the temp file
                 var outputFileName = outputFile.absolutePath
                 outputFileName = outputFileName.substring(0, outputFileName.length - 4)
                 val fileToImport = File(outputFileName)
                 outputFile.renameTo(fileToImport)
-                //set permission to the file to read, write and exec.
+                // set permission to the file to read, write and exec.
                 fileToImport.setExecutable(true, false)
                 fileToImport.setReadable(true, false)
                 fileToImport.setWritable(true, false)
