@@ -456,7 +456,9 @@ class KioskActivity : BaseScanActivity() {
                             (application as PretixScan).db,
                             result.eventSlug!!,
                             result.position!!.getLong("id"),
-                            "badge"
+                            "badge",
+                            resultData?.getString("app", "") ?: "",
+                            resultData?.getString("app_version", "") ?: "",
                         )
                         runOnUiThread {
                             state = KioskState.GateOpen
