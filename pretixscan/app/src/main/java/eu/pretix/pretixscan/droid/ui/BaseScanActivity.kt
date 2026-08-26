@@ -210,21 +210,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             registerDevice()
             return
         }
-        try {
-            setupApi()
-        } catch (e: IllegalStateException) {
-            // IllegalStateException is thrown by db access -> Migrations.minVersionCallback
-            Sentry.captureException(e)
-            panicPleaseReinstall()
-            return
-        }
 
         if (conf.synchronizedEvents.isEmpty()) {
             selectEvent()
-        } else if (conf.lastDownload < 1) {
-            syncNow()
         }
-        scheduleSync()
 
         if (dataWedgeHelper.isInstalled) {
             try {
@@ -441,7 +430,11 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         }
         getRestrictions(this)
 
-        scheduleSync()
+        if (conf.lastDownload < 1) {
+            syncNow()
+        } else {
+            scheduleSync()
+        }
 
         hardwareScanner.start(this)
         (application as PretixScan).connectivityHelper.addListener(this)
