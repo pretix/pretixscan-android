@@ -221,7 +221,7 @@ fun logSuccessfulPrint(
     printAppVersion: String,
 ) {
     val logbody = JSONObject()
-    logbody.put("source", "pretixSCAN ${BuildConfig.VERSION_NAME}")
+    logbody.put("source", "pretixSCAN Android ${BuildConfig.VERSION_NAME}")
     logbody.put("type", type)
     val info = JSONObject()
     if (printApp.isNotBlank() && printAppVersion.isNotBlank()) {
