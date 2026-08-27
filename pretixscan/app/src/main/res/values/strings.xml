@@ -206,4 +206,5 @@
     <string name="kiosk_error_unknown_scan_result_type">Unknown Scan Result Type</string>
     <string name="kiosk_text_noentry">No entry detected</string>
     <string name="kiosk_text_noentry_description">Your ticket will be valid again shortly</string>
+    <string name="addons_label">Add-ons:</string>
 </resources>

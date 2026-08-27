@@ -520,7 +520,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="12dp"
                                     android:background="@color/transparent"
-                                    android:visibility="@{data.attendeeName != null || data.orderCodeAndPositionId != null || data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{data.attendeeName != null || data.orderCodeAndPositionId != null || data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null || data.addonTexts != null ? View.VISIBLE : View.GONE}">
 
                                     <TextView
                                         android:id="@+id/tvAttendeeName"
@@ -564,7 +564,7 @@
                                         android:layout_marginTop="4dp"
                                         android:layout_marginEnd="16dp"
                                         android:orientation="vertical"
-                                        android:visibility="@{((data.seat != null &amp;&amp; !&quot;null&quot;.equals(data.seat)) || (data.questionAndAnswers != null &amp;&amp; !&quot;null&quot;.equals(data.questionAndAnswers)) || (data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts))) ? View.VISIBLE : View.GONE}"
+                                        android:visibility="@{((data.seat != null &amp;&amp; !&quot;null&quot;.equals(data.seat)) || (data.questionAndAnswers != null &amp;&amp; !&quot;null&quot;.equals(data.questionAndAnswers)) || (data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts))  || (data.addonTexts != null &amp;&amp; !&quot;null&quot;.equals(data.addonTexts))) ? View.VISIBLE : View.GONE}"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
@@ -606,6 +606,31 @@
                                             android:textSize="@dimen/card_result_test_size_small"
                                             android:visibility="@{data.checkInTexts != null &amp;&amp; !&quot;null&quot;.equals(data.checkInTexts) ? View.VISIBLE : View.GONE}"
                                             tools:text="Order, Item, Variation\nCheck-In Texts" />
+                                        <TextView
+                                            android:id="@+id/tvAddonLabel"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="8dp"
+                                            android:text="@string/addons_label"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/text_color"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:textStyle="bold"
+                                            android:visibility="@{data.addonTexts != null &amp;&amp; !&quot;null&quot;.equals(data.addonTexts) ? View.VISIBLE : View.GONE}" />
+                                        <TextView
+                                            android:id="@+id/tvAddonTexts"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:ellipsize="end"
+                                            android:gravity="start"
+                                            android:lineSpacingMultiplier="1.1"
+                                            android:text="@{data.addonTexts}"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                            android:textColor="@color/text_color"
+                                            android:textSize="@dimen/card_result_test_size_small"
+                                            android:visibility="@{data.addonTexts != null &amp;&amp; !&quot;null&quot;.equals(data.addonTexts) ? View.VISIBLE : View.GONE}"
+                                            tools:text="Workshop A\nLunch – Vegetarian" />
 
                                     </LinearLayout>
 
