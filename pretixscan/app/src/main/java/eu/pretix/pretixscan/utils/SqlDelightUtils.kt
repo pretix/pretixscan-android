@@ -31,6 +31,7 @@ fun createSyncDatabase(
         CheckInAdapter =
         CheckIn.Adapter(
             datetimeAdapter = dateAdapter,
+            local_annulledAdapter = dateAdapter,
         ),
         ClosingAdapter =
         Closing.Adapter(
@@ -46,6 +47,7 @@ fun createSyncDatabase(
         ),
         QueuedCheckInAdapter = QueuedCheckIn.Adapter(
             datetimeAdapter = dateAdapter,
+            annulledAdapter = dateAdapter,
         ),
         ReceiptLineAdapter =
         ReceiptLine.Adapter(

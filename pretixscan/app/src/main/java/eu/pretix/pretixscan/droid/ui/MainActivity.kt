@@ -449,8 +449,6 @@ class MainActivity : BaseScanActivity() {
             supportActionBar?.show()
         }
 
-        scheduleSync()
-
         LED(this).off()
 
         if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -842,7 +840,9 @@ class MainActivity : BaseScanActivity() {
                             (application as PretixScan).db,
                             result.eventSlug!!,
                             result.position!!.getLong("id"),
-                            "badge"
+                            "badge",
+                            resultData?.getString("app", "") ?: "",
+                            resultData?.getString("app_version", "") ?: "",
                         )
                     }
                 }

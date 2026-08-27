@@ -1,0 +1,40 @@
+name: SBOM
+
+on:
+  push:
+    branches: [ master, main, sbom ]
+    tags: [ 'v.*' ]
+
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Submission
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+      - name: Submodules
+        run: git submodule update --init
+        working-directory: ./pretixscan
+      - name: Install Python dependencies
+        run: pip3 install -U "prisma-sbom-submit"
+      - name: Creat BOM
+        run: TERM=dumb ./gradlew cyclonedxBom
+        working-directory: ./pretixscan
+      - name: Submit SBOM
+        run: prisma-sbom-submit upload --server https://prisma.pretix.com pretixscan/build/reports/cyclonedx/bom.json
+        env:
+          PRISMA_UPLOAD_TOKEN: ${{ secrets.PRISMA_UPLOAD_TOKEN }}

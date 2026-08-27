@@ -37,6 +37,8 @@ import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
 import eu.pretix.pretixscan.droid.hardware.LED
+import io.sentry.Sentry
+import kotlinx.coroutines.launch
 import java.util.IllformedLocaleException
 import java.util.Locale
 
@@ -83,6 +85,7 @@ class KioskActivity : BaseScanActivity() {
             field = value
         }
     var lastTicketRequireAttention = false
+    var lastScanNonce: String? = null
     var localizedContext: Context? = null
     override var useOrderLocale = true
 
@@ -328,6 +331,7 @@ class KioskActivity : BaseScanActivity() {
             setTemporaryLocale(result.locale!!)
         }
         lastTicketRequireAttention = result.isRequireAttention
+        lastScanNonce = result.nonce
         var isPrintable = false
         val mayBePrintable = (conf.printBadges &&
                 result.scanType != TicketCheckProvider.CheckInType.EXIT &&
@@ -452,7 +456,9 @@ class KioskActivity : BaseScanActivity() {
                             (application as PretixScan).db,
                             result.eventSlug!!,
                             result.position!!.getLong("id"),
-                            "badge"
+                            "badge",
+                            resultData?.getString("app", "") ?: "",
+                            resultData?.getString("app_version", "") ?: "",
                         )
                         runOnUiThread {
                             state = KioskState.GateOpen
@@ -499,9 +505,17 @@ class KioskActivity : BaseScanActivity() {
                         }
                     } else if (resultCode == 2) {
                         // Gate opened, but did not turn.
-                        // TODO: Revert checkin?
+                        if (conf.sounds) {
+                            mediaPlayers[R.raw.error]?.start()
+                        }
                         runOnUiThread {
-                            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+                            annullCheckin()
+                            binding.tvRejectedMessage.text = getString(R.string.kiosk_text_noentry)
+                            binding.tvRejectedReason.visibility = View.VISIBLE
+                            binding.tvRejectedReason.text = getString(R.string.kiosk_text_noentry_description)
+                            state = KioskState.Rejected
+                            updateUi()
+                            backToStartHandler.postDelayed(backToStart, 5_000)
                         }
                     } else {
                         // gate opening failed
@@ -513,12 +527,33 @@ class KioskActivity : BaseScanActivity() {
                     }
                 }
             })
-            gateTimeoutHandler.postDelayed(gateTimeout, 30_000)
+            gateTimeoutHandler.postDelayed(gateTimeout, 90_000)
         } catch (e: Exception) {
+            gateTimeoutHandler.removeCallbacks(gateTimeout)
             runOnUiThread {
                 binding.tvOutOfOrderMessage.text = e.localizedMessage
                 state = KioskState.OutOfOrder
                 updateUi()
+            }
+        }
+    }
+
+    fun annullCheckin() {
+        val nonce = lastScanNonce ?: return
+        bgScope.launch {
+            try {
+                val provider = (application as PretixScan).getCheckProvider(conf)
+                provider.annul(
+                    conf.eventSelectionToMap(),
+                    nonce,
+                    "Turnstile did not turn"
+                )
+            } catch (e: Exception) {
+                // Nothing we can do, we already gave user feedback
+                Sentry.captureException(e)
+                if (BuildConfig.DEBUG) {
+                    e.printStackTrace()
+                }
             }
         }
     }
