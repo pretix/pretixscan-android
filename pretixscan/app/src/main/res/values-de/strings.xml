@@ -217,4 +217,5 @@
     <string name="settings_summary_success_back_to_start_timeout">Wartezeit in Millisekunden nach erfolgreichem Check-in bis zum nächsten Scan aufgefordert wird</string>
     <string name="kiosk_text_noentry">Kein Eingang festgestellt</string>
     <string name="kiosk_text_noentry_description">Ihr Ticket wird in Kürze wieder gültig sein</string>
+    <string name="addons_label">Add-ons:</string>
 </resources>

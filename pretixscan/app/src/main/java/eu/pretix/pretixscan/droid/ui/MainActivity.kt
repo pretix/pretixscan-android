@@ -91,6 +91,7 @@ class ViewDataHolder(private val ctx: Context) {
     val isOffline = ObservableField<Boolean>()
     val hideTimerVisible = ObservableField<Boolean>()
     val hideTimerProgress = ObservableField<Int>()
+    val addonTexts = ObservableField<String>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -525,6 +526,7 @@ class MainActivity : BaseScanActivity() {
         view_data.reasonExplanation.set(null)
         view_data.questionAndAnswers.set(null)
         view_data.checkInTexts.set(null)
+        view_data.addonTexts.set(null)
         view_data.firstScanned.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
@@ -809,6 +811,16 @@ class MainActivity : BaseScanActivity() {
             view_data.checkInTexts.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
         } else {
             view_data.checkInTexts.set(null)
+        }
+
+        if (!result.addons.isNullOrEmpty()) {
+            view_data.addonTexts.set(
+                result.addons!!.joinToString("\n") { addon ->
+                    "+ " + listOfNotNull(addon.itemName, addon.variationName).joinToString(" – ")
+                }
+            )
+        } else {
+            view_data.addonTexts.set(null)
         }
 
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
