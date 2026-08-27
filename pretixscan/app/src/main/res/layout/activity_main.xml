@@ -623,6 +623,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_marginTop="4dp"
                                             android:ellipsize="end"
+                                            android:maxLines="8"
                                             android:gravity="start"
                                             android:lineSpacingMultiplier="1.1"
                                             android:text="@{data.addonTexts}"
