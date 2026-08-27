@@ -151,9 +151,6 @@ class EventinfoActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * implementation of an adapter for a listview to hold EventCards and EventItemCards
-     */
     inner class EventItemAdapter(ctx: Context) : BaseAdapter() {
 
         private val mData = ArrayList<EventinfoListItem>()

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="data"
+            type="eu.pretix.pretixscan.droid.ui.info.InfoModeViewDataHolder" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:title="@string/info_mode_title" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/pretix_brand_background"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="@string/info_mode_banner"
+                android:textAllCaps="true"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/pretix_brand_dark" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <eu.pretix.libpretixui.android.scanning.ScannerView
+                    android:id="@+id/scanner_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:background="?attr/colorSurface"
+                    android:fillViewport="true"
+                    android:visibility="@{data.isScanning || data.hasResult ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="16dp"
+                            android:visibility="@{data.isScanning ? View.VISIBLE : View.GONE}"
+                            tools:visibility="visible" />
+
+                        <LinearLayout
+                            android:id="@+id/result_card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}"
+                            tools:visibility="visible">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:background="@color/pretix_brand_lightgrey" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultEventSlug}"
+                                android:textAppearance="?attr/textAppearanceCaption"
+                                android:textAllCaps="true"
+                                android:visibility="@{data.hasEventSlug ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="demo-event-2026" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="12dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:id="@+id/result_icon"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:contentDescription="@null"
+                                    tools:src="@drawable/ic_check_circle_white_24dp" />
+
+                                <TextView
+                                    android:id="@+id/result_status_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@{data.resultStatusLabel}"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    tools:text="Simuliert: Gültig" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:gravity="center_vertical"
+                                android:visibility="@{data.hasAttention ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible">
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_warning_white_24dp"
+                                    app:tint="@color/pretix_brand_blue" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="@string/ticket_attention"
+                                    android:textColor="@color/pretix_brand_blue"
+                                    android:textStyle="bold"
+                                    android:textAppearance="?attr/textAppearanceCaption" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultTicketName}"
+                                android:textAppearance="?attr/textAppearanceBody1"
+                                tools:text="Konferenzticket – Tagesticket" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultAddonText}"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:visibility="@{data.hasAddonText ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="+ 1x Konferenz-Shirt (L)" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@{data.resultAttendeeName}"
+                                    android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="monospace"
+                                    android:text="@{data.resultDetails}"
+                                    android:textAppearance="?attr/textAppearanceBody2"
+                                    tools:text="ABCDE-1" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultSeat}"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:visibility="@{data.hasSeat ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="Zone A, Reihe 3, Platz 5" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultCheckinTexts}"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:visibility="@{data.hasCheckinTexts ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="Bitte Ausweis kontrollieren\nErmäßigt" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:lineSpacingMultiplier="1.1"
+                                android:text="@{data.resultQuestionAnswers}"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:visibility="@{data.hasQuestionAnswers ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="T-Shirt-Größe: L\nAllergien: Keine" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultReason}"
+                                android:textAppearance="?attr/textAppearanceCaption"
+                                android:visibility="@{data.hasReason ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="already redeemed" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.presenceLabel}"
+                                android:textAppearance="?attr/textAppearanceSubtitle2"
+                                android:visibility="@{data.hasPresence ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="Anwesend (zuletzt: Vortrag: Einführung in Kotlin)" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/rescan_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="8dp"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:text="@string/info_mode_rescan_button" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/check_in_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/info_mode_checkin_button" />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:background="@color/pretix_brand_lightgrey" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/info_mode_history_title"
+                            android:textAppearance="?attr/textAppearanceSubtitle2"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="8dp"
+                            android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/info_mode_history_empty"
+                            android:gravity="center"
+                            android:padding="24dp"
+                            android:textAppearance="?attr/textAppearanceBody2"
+                            android:visibility="@{data.hasResult &amp;&amp; data.historyEmpty ? View.VISIBLE : View.GONE}"
+                            tools:visibility="visible" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/history_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="240dp"
+                            android:clipToPadding="false"
+                            android:paddingBottom="8dp"
+                            android:nestedScrollingEnabled="false"
+                            tools:listitem="@layout/item_info_checkin_history" />
+
+                    </LinearLayout>
+                </ScrollView>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

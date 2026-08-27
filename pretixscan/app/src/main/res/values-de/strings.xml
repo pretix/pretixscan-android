@@ -205,4 +205,21 @@
     <string name="kiosk_error_printing_failed_timeout">Drucker Timeout</string>
     <string name="kiosk_error_unknown_scan_result_type">Unbekannter Scanergebnis Typus</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Der gescannte NFC-Chip wird von dieser pretixSCAN-Version nicht unterstützt</string>
+    <string name="info_mode_title">Info-Modus</string>
+    <string name="info_mode_banner">Simulation – es wird kein Check-in durchgeführt</string>
+    <string name="info_mode_no_name">Kein Name hinterlegt</string>
+    <string name="info_mode_history_title">Check-in-Historie (alle Listen)</string>
+    <string name="info_mode_history_empty">Für dieses Ticket sind noch keine Check-ins erfasst</string>
+    <string name="info_mode_status_ok">Simuliert: Gültig</string>
+    <string name="info_mode_status_attention">Simuliert: Achtung nötig</string>
+    <string name="info_mode_status_invalid">Simuliert: Ungültig</string>
+    <string name="info_mode_presence_present">Aktuell anwesend (diese Liste)</string>
+    <string name="info_mode_presence_not_present">Nicht anwesend (ausgecheckt)</string>
+    <string name="info_mode_presence_not_scanned_yet">Auf dieser Liste noch nicht gescannt</string>
+    <string name="info_mode_checkin_type_entry">Eingang</string>
+    <string name="info_mode_checkin_type_exit">Ausgang</string>
+    <string name="info_mode_rescan_button">Neu scannen</string>
+    <string name="info_mode_checkin_button">Ticket einchecken</string>
+    <string name="info_mode_checkin_success">Erfolgreich eingecheckt</string>
+    <string name="info_mode_checkin_failed">Check-in fehlgeschlagen</string>
 </resources>

@@ -975,6 +975,12 @@ class MainActivity : BaseScanActivity() {
             R.id.action_sync -> {
                 syncNow()
             }
+            R.id.action_infomode -> {
+                pinProtect("info_mode") { pin ->
+                    startActivity(eu.pretix.pretixscan.droid.ui.info.InfoModeActivity.newIntent(this@MainActivity, pin))
+                }
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
