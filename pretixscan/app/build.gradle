@@ -1,9 +1,9 @@
 plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-    id "org.jetbrains.kotlin.kapt"
-    id "app.cash.sqldelight"
-    id "com.jaredsburrows.license"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(syncLibs.plugins.kotlin.kapt)
+    alias(syncLibs.plugins.sqldelight)
+    alias(libs.plugins.license)
 }
 
 def flavors = [:]
@@ -14,7 +14,6 @@ try {
     // Optional
 }
 
-apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
 android {
     namespace = "eu.pretix.pretixscan.droid"
@@ -133,40 +132,40 @@ repositories {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation 'androidx.sqlite:sqlite:2.2.0'  // 2.4.0 requires compileSDK 34
+    implementation uiLibs.androidx.appcompat
+    implementation uiLibs.material
+    implementation libs.androidx.legacy.support.v4
+    implementation libs.androidx.vectordrawable
+    implementation uiLibs.androidx.constraintlayout
+    implementation libs.androidx.cardview
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.multidex
+    implementation uiLibs.androidx.preferenceKtx
+    implementation syncLibs.androidx.sqlite
 
-    implementation 'com.louiscad.splitties:splitties-toast:3.0.0'
-    implementation 'com.github.kizitonwose:CalendarView:1.0.4'
+    implementation libs.splitties.toast
+    implementation libs.calendarview
 
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
-    implementation "com.squareup.okhttp3:okhttp-tls:$okhttp_version"
-    implementation 'io.sentry:sentry-android:8.18.0'
-    implementation 'org.slf4j:slf4j-nop:1.7.30'
-    implementation "joda-time:joda-time:$joda_version"
-    implementation 'net.zetetic:sqlcipher-android:4.6.1'
-    implementation "net.sourceforge.streamsupport:streamsupport-cfuture:$cfuture_version"
-    implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_core_version"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_kotlin_version"
-    implementation "net.i2p.crypto:eddsa:$eddsa_version"
-    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
-    implementation "app.cash.sqldelight:android-driver:$sqldelight_version"
+    implementation syncLibs.okhttp
+    implementation syncLibs.okhttp.tls
+    implementation libs.sentry.android
+    implementation libs.slf4j.nop
+    implementation syncLibs.joda.time
+    implementation syncLibs.sqlcipher.android
+    implementation syncLibs.streamsupport.cfuture
+    implementation syncLibs.jackson.databind
+    implementation syncLibs.jackson.moduleKotlin
+    implementation syncLibs.jackson.datatype.joda
+    implementation syncLibs.eddsa
+    implementation syncLibs.protobuf.javalite
+    implementation syncLibs.sqldelight.android.driver
 
     // libpretixui
     implementation(project(':libpretixui-android')) {
         transitive = true
     }
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    implementation uiLibs.glide
+    coreLibraryDesugaring uiLibs.desugar.jdk.libs
 
     // libpretixsync
     implementation(project(':libpretixsync')) {
@@ -183,7 +182,7 @@ dependencies {
         transitive = true
     }
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation libs.kotlin.stdlib.jdk7
 }
 
 sqldelight {
@@ -196,7 +195,7 @@ sqldelight {
             // Oldest dialect supported by SQLDelight 2.1.0
             // In Android projects, it will auto-select based on SDK
             // but not go lower than 3.18 (Android 9 is still on 3.8)
-            dialect "app.cash.sqldelight:sqlite-3-18-dialect:$sqldelight_version"
+            dialect "app.cash.sqldelight:sqlite-3-18-dialect:${syncLibs.versions.sqldelight.get()}"
         }
     }
 }
