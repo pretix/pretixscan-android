@@ -1,25 +1,15 @@
 [versions]
 agp = "8.13.0"
-calendarview = "1.0.4"
-cardview = "1.0.0"
 cyclonedx-bom = "3.2.4"
 jaredsburrows-license = "0.9.7"
 kotlin = "2.2.21"
 legacy-support-v4 = "1.0.0"
-multidex = "2.0.1"
-recyclerview = "1.4.0"
 sentry = "8.18.0"
 slf4j-nop = "1.7.30"
 splitties-toast = "3.0.0"
-vectordrawable = "1.2.0"
 
 [libraries]
-androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacy-support-v4" }
-androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
-androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
-androidx-vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
-calendarview = { module = "com.github.kizitonwose:CalendarView", version.ref = "calendarview" }
 kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }

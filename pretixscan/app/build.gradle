@@ -135,16 +135,16 @@ dependencies {
     implementation uiLibs.androidx.appcompat
     implementation uiLibs.material
     implementation libs.androidx.legacy.support.v4
-    implementation libs.androidx.vectordrawable
+    implementation uiLibs.androidx.vectordrawable
     implementation uiLibs.androidx.constraintlayout
-    implementation libs.androidx.cardview
-    implementation libs.androidx.recyclerview
-    implementation libs.androidx.multidex
+    implementation uiLibs.androidx.cardview
+    implementation uiLibs.androidx.recyclerview
+    implementation uiLibs.androidx.multidex
     implementation uiLibs.androidx.preferenceKtx
     implementation syncLibs.androidx.sqlite
 
     implementation libs.splitties.toast
-    implementation libs.calendarview
+    implementation uiLibs.calendarview
 
     implementation syncLibs.okhttp
     implementation syncLibs.okhttp.tls
