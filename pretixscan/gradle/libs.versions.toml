@@ -1,0 +1,25 @@
+[versions]
+agp = "8.13.0"
+cyclonedx-bom = "3.2.4"
+jaredsburrows-license = "0.9.7"
+kotlin = "2.2.21"
+legacy-support-v4 = "1.0.0"
+sentry = "8.18.0"
+slf4j-nop = "1.7.30"
+splitties-toast = "3.0.0"
+
+[libraries]
+androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacy-support-v4" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry" }
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
+splitties-toast = { module = "com.louiscad.splitties:splitties-toast", version.ref = "splitties-toast" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+bom = { id = "org.cyclonedx.bom", version.ref = "cyclonedx-bom" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+license = { id = "com.jaredsburrows.license", version.ref = "jaredsburrows-license" }
