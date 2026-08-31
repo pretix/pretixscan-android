@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "eu.pretix.pretixscan.droid"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 35
         versionCode = 117
         versionName = "3.4.2"
