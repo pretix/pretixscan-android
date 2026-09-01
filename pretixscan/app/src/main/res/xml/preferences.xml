@@ -119,7 +119,8 @@
         <EditTextPreference
             android:key="gate_back_to_start_timeout"
             android:defaultValue="200"
-            android:title="Time after gate open"
+            android:title="@string/settings_label_gate_back_to_start_timeout"
+            android:summary="@string/settings_summary_gate_back_to_start_timeout"
             app:isPreferenceVisible="false" />
     </PreferenceCategory>
 </PreferenceScreen>

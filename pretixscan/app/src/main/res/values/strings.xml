@@ -159,6 +159,8 @@
     <string name="settings_label_search_disable">Disable search</string>
     <string name="settings_label_kioskmode">Kiosk mode</string>
     <string name="settings_summary_kioskmode">Kiosk mode hides menus that are not supposed to be used in a self-service installation. Kiosk mode does not prevent users from exiting the app through system features. To access settings, you need to scan a QR code with your PIN.</string>
+    <string name="settings_label_gate_back_to_start_timeout">Time after gate open</string>
+    <string name="settings_summary_gate_back_to_start_timeout">Delay in milliseconds after the gate opened until the ticket scanning screen is shown again</string>
     <string name="pin_protection">PIN protection</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>
