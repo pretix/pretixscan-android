@@ -34,7 +34,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -197,8 +196,7 @@ class KioskActivity : BaseScanActivity() {
             else -> null
         }
         if (scanDrawable != null) {
-            val animated = AnimatedVectorDrawableCompat.create(this, scanDrawable)
-            binding.ivKioskScanAnimation.setImageDrawable(animated)
+            binding.ivKioskScanAnimation.setImageDrawable(AppCompatResources.getDrawable(this, scanDrawable))
         }
 
         if (KioskHardware.isTR51()) {
