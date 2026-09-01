@@ -185,7 +185,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             return@setOnPreferenceChangeListener true
         }
 
-        findPreference<Preference>("gate_back_to_start_timeout")?.isVisible = KioskHardware.isTR51() || KioskHardware.isWA1053T()
+        findPreference<Preference>("gate_back_to_start_timeout")?.isVisible = conf.kioskMode
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {

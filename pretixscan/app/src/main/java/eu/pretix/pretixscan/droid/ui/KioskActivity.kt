@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -43,6 +44,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import eu.pretix.pretixscan.droid.hardware.KioskHardware
 import eu.pretix.pretixscan.droid.hardware.LED
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
@@ -53,7 +55,7 @@ import java.util.Locale
 class KioskActivity : BaseScanActivity() {
     companion object {
         /**
-         * Some older devices needs a small delay between UI widget updates
+         * Some older devices need a small delay between UI widget updates
          * and a change of the status and navigation bar.
          */
         private const val UI_ANIMATION_DELAY = 300
@@ -79,6 +81,7 @@ class KioskActivity : BaseScanActivity() {
     }
 
     private lateinit var binding: ActivityKioskBinding
+    private var deviceHasGate: Boolean = false
     private val hideHandler = Handler(Looper.myLooper()!!)
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
@@ -171,6 +174,36 @@ class KioskActivity : BaseScanActivity() {
 
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
+
+        val scanDrawable = when {
+            KioskHardware.isTR51() -> {
+                R.drawable.avd_kiosk_portrait_kt0345_scan
+            }
+            KioskHardware.isWA1053T() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isZebra() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isNewland() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isSeuic() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isM3() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            else -> null
+        }
+        if (scanDrawable != null) {
+            val animated = AnimatedVectorDrawableCompat.create(this, scanDrawable)
+            binding.ivKioskScanAnimation.setImageDrawable(animated)
+        }
+
+        if (KioskHardware.isTR51()) {
+            deviceHasGate = true
+        }
     }
 
     val loopCallback =
@@ -182,17 +215,17 @@ class KioskActivity : BaseScanActivity() {
 
     fun resetAnimations() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            (binding.ivKioskAnimation.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskScanAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation2.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskPrintAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation3.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskGateAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
@@ -507,6 +540,10 @@ class KioskActivity : BaseScanActivity() {
     }
 
     fun openGate() {
+        if (!deviceHasGate) {
+            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+            return
+        }
         try {
             openGate(this, object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
@@ -577,6 +614,7 @@ class KioskActivity : BaseScanActivity() {
         binding.clPrinting.visibility = View.GONE
         binding.clRejected.visibility = View.GONE
         binding.clGate.visibility = View.GONE
+        binding.clSuccess.visibility = View.GONE
         binding.clChecking.visibility = View.GONE
         binding.llOutOfOrder.visibility = View.GONE
         val led = LED(this)
@@ -624,8 +662,18 @@ class KioskActivity : BaseScanActivity() {
             }
 
             KioskState.GateOpen -> {
-                binding.clGate.visibility = View.VISIBLE
-                binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                if (deviceHasGate) {
+                    binding.clGate.visibility = View.VISIBLE
+                    binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                } else {
+                    binding.clSuccess.visibility = View.VISIBLE
+                    binding.tvSuccessMessage.text = when (conf.scanType) {
+                        "exit" -> localizedString(R.string.scan_result_exit)
+                        "entry" -> localizedString(R.string.scan_result_valid)
+                        else -> localizedString(R.string.scan_result_valid)
+                    }
+                    // binding.tvSuccessReason.text = ticketAndVariationName // FIXME, but not shown yet
+                }
                 if (lastTicketRequireAttention) {
                     led.attention()
                 } else {
