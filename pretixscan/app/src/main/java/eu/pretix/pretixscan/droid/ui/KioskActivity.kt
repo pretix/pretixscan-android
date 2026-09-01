@@ -19,14 +19,21 @@ import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
 import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -36,6 +43,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import eu.pretix.pretixscan.droid.hardware.KioskHardware
 import eu.pretix.pretixscan.droid.hardware.LED
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
@@ -46,7 +54,7 @@ import java.util.Locale
 class KioskActivity : BaseScanActivity() {
     companion object {
         /**
-         * Some older devices needs a small delay between UI widget updates
+         * Some older devices need a small delay between UI widget updates
          * and a change of the status and navigation bar.
          */
         private const val UI_ANIMATION_DELAY = 300
@@ -72,6 +80,7 @@ class KioskActivity : BaseScanActivity() {
     }
 
     private lateinit var binding: ActivityKioskBinding
+    private var deviceHasGate: Boolean = false
     private val hideHandler = Handler(Looper.myLooper()!!)
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
@@ -164,6 +173,35 @@ class KioskActivity : BaseScanActivity() {
 
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
+
+        val scanDrawable = when {
+            KioskHardware.isTR51() -> {
+                R.drawable.avd_kiosk_portrait_kt0345_scan
+            }
+            KioskHardware.isWA1053T() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isZebra() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isNewland() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isSeuic() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            KioskHardware.isM3() -> {
+                R.drawable.avd_kiosk_widescreen_barcode_bottom
+            }
+            else -> null
+        }
+        if (scanDrawable != null) {
+            binding.ivKioskScanAnimation.setImageDrawable(AppCompatResources.getDrawable(this, scanDrawable))
+        }
+
+        if (KioskHardware.isTR51()) {
+            deviceHasGate = true
+        }
     }
 
     val loopCallback =
@@ -175,17 +213,17 @@ class KioskActivity : BaseScanActivity() {
 
     fun resetAnimations() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            (binding.ivKioskAnimation.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskScanAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation2.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskPrintAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation3.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskGateAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
@@ -237,6 +275,12 @@ class KioskActivity : BaseScanActivity() {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         updateNetworkType(connectivityManager)
         updateUi()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) {
+            fullscreen()
+        }
     }
 
     private fun updateNetworkType(connectivityManager: ConnectivityManager) {
@@ -494,6 +538,10 @@ class KioskActivity : BaseScanActivity() {
     }
 
     fun openGate() {
+        if (!deviceHasGate) {
+            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+            return
+        }
         try {
             openGate(this, object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
@@ -564,6 +612,7 @@ class KioskActivity : BaseScanActivity() {
         binding.clPrinting.visibility = View.GONE
         binding.clRejected.visibility = View.GONE
         binding.clGate.visibility = View.GONE
+        binding.clSuccess.visibility = View.GONE
         binding.clChecking.visibility = View.GONE
         binding.llOutOfOrder.visibility = View.GONE
         val led = LED(this)
@@ -611,8 +660,18 @@ class KioskActivity : BaseScanActivity() {
             }
 
             KioskState.GateOpen -> {
-                binding.clGate.visibility = View.VISIBLE
-                binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                if (deviceHasGate) {
+                    binding.clGate.visibility = View.VISIBLE
+                    binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                } else {
+                    binding.clSuccess.visibility = View.VISIBLE
+                    binding.tvSuccessMessage.text = when (conf.scanType) {
+                        "exit" -> localizedString(R.string.scan_result_exit)
+                        "entry" -> localizedString(R.string.scan_result_valid)
+                        else -> localizedString(R.string.scan_result_valid)
+                    }
+                    // binding.tvSuccessReason.text = ticketAndVariationName // FIXME, but not shown yet
+                }
                 if (lastTicketRequireAttention) {
                     led.attention()
                 } else {
@@ -662,18 +721,29 @@ class KioskActivity : BaseScanActivity() {
 
     fun openMenu(pin: String) {
         val optstrings = arrayOf(
+            if (conf.scanType == "exit")
+                getString(R.string.action_label_scantype_entry)
+            else
+                getString(R.string.action_label_scantype_exit),
             getString(R.string.action_label_settings),
             getString(R.string.action_sync),
             getString(R.string.operation_select_event),
-            // TODO: Change direction
             if (conf.kioskOutOfOrder)
                 getString(R.string.action_label_remove_out_of_order)
             else
                 getString(R.string.action_label_out_of_order)
         )
-        MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
                 when (optstrings[i]) {
+                    getString(R.string.action_label_scantype_entry) -> {
+                        conf.scanType = "entry"
+                        updateUi()
+                    }
+                    getString(R.string.action_label_scantype_exit) -> {
+                        conf.scanType = "exit"
+                        updateUi()
+                    }
                     getString(R.string.action_label_settings) -> {
                         val intent = Intent(this, SettingsActivity::class.java)
                         intent.putExtra("pin", pin)
@@ -700,7 +770,21 @@ class KioskActivity : BaseScanActivity() {
                     }
                 }
             }
-            .show()
+            .setOnDismissListener {
+                updateUi()
+                fullscreen()
+            }
+            .create()
+        dialog.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        dialog.show()
+        if (dialog.window != null) {
+            val windowInsetsController =
+                WindowCompat.getInsetsController(dialog.window!!, dialog.window!!.decorView)
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        }
+        dialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
 
     override fun handleScan(
@@ -853,6 +937,36 @@ class KioskActivity : BaseScanActivity() {
 
             else -> return super.onTouchEvent(event)
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_F5,
+            KeyEvent.KEYCODE_REFRESH -> {
+                syncNow()
+                return true
+            }
+            KeyEvent.KEYCODE_F9 -> {
+                pinProtect("settings") { pin ->
+                    openMenu(pin)
+                }
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>?, menu: Menu?, deviceId: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val group = KeyboardShortcutGroup(getString(R.string.app_name))
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_F5, 0))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_REFRESH, 0))
+            }
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_label_settings), KeyEvent.KEYCODE_F9, 0))
+            data?.add(group)
+        }
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
 
 }
