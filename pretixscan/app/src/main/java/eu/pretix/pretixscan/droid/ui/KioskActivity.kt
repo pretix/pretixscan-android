@@ -27,9 +27,13 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -240,6 +244,12 @@ class KioskActivity : BaseScanActivity() {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         updateNetworkType(connectivityManager)
         updateUi()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) {
+            fullscreen()
+        }
     }
 
     private fun updateNetworkType(connectivityManager: ConnectivityManager) {
@@ -677,7 +687,7 @@ class KioskActivity : BaseScanActivity() {
             else
                 getString(R.string.action_label_out_of_order)
         )
-        MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
                 when (optstrings[i]) {
                     getString(R.string.action_label_scantype_entry) -> {
@@ -714,7 +724,21 @@ class KioskActivity : BaseScanActivity() {
                     }
                 }
             }
-            .show()
+            .setOnDismissListener {
+                updateUi()
+                fullscreen()
+            }
+            .create()
+        dialog.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        dialog.show()
+        if (dialog.window != null) {
+            val windowInsetsController =
+                WindowCompat.getInsetsController(dialog.window!!, dialog.window!!.decorView)
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        }
+        dialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
 
     override fun handleScan(
