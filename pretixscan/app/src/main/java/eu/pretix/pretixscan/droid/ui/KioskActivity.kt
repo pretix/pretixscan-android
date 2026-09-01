@@ -665,10 +665,13 @@ class KioskActivity : BaseScanActivity() {
 
     fun openMenu(pin: String) {
         val optstrings = arrayOf(
+            if (conf.scanType == "exit")
+                getString(R.string.action_label_scantype_entry)
+            else
+                getString(R.string.action_label_scantype_exit),
             getString(R.string.action_label_settings),
             getString(R.string.action_sync),
             getString(R.string.operation_select_event),
-            // TODO: Change direction
             if (conf.kioskOutOfOrder)
                 getString(R.string.action_label_remove_out_of_order)
             else
@@ -677,6 +680,14 @@ class KioskActivity : BaseScanActivity() {
         MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
                 when (optstrings[i]) {
+                    getString(R.string.action_label_scantype_entry) -> {
+                        conf.scanType = "entry"
+                        updateUi()
+                    }
+                    getString(R.string.action_label_scantype_exit) -> {
+                        conf.scanType = "exit"
+                        updateUi()
+                    }
                     getString(R.string.action_label_settings) -> {
                         val intent = Intent(this, SettingsActivity::class.java)
                         intent.putExtra("pin", pin)
