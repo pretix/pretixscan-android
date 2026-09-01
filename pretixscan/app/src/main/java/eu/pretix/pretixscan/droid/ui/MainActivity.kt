@@ -9,7 +9,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
@@ -36,8 +35,6 @@ import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -83,8 +80,6 @@ class ViewDataHolder(private val ctx: Context) {
     val firstScanned = ObservableField<String>()
     val attention = ObservableField<Boolean>()
     val hardwareScan = ObservableField<Boolean>()
-    val kioskMode = ObservableField<Boolean>()
-    val kioskWithAnimation = ObservableField<Boolean>()
     val badgePrintEnabled = ObservableField<Boolean>()
     val scanType = ObservableField<String>()
     val configDetails = ObservableField<String>()
@@ -135,10 +130,8 @@ class MainActivity : BaseScanActivity() {
             confdetails += getString(R.string.debug_info_gate, conf.deviceKnownGateName)
             confdetails += "\n"
         }
-        if (!conf.kioskMode) {
-            confdetails += getString(R.string.debug_info_device, conf.deviceKnownName)
-            confdetails += "\n"
-        }
+        confdetails += getString(R.string.debug_info_device, conf.deviceKnownName)
+        confdetails += "\n"
         if (conf.synchronizedEvents.isNotEmpty()) {
             val events = (application as PretixScan).db.eventQueries.selectBySlugList(conf.synchronizedEvents)
                 .executeAsList()
@@ -172,17 +165,14 @@ class MainActivity : BaseScanActivity() {
                     }
                 }
             }
-            if (!conf.kioskMode) {
-                if (conf.proxyMode) {
-                    confdetails += getString(R.string.checktype_proxy)
-                } else if (conf.offlineMode) {
-                    confdetails += getString(R.string.checktype_offline)
-                } else {
-                    confdetails += getString(R.string.checktype_online)
-                }
-                confdetails += "\n"
+            if (conf.proxyMode) {
+                confdetails += getString(R.string.checktype_proxy)
+            } else if (conf.offlineMode) {
+                confdetails += getString(R.string.checktype_offline)
+            } else {
+                confdetails += getString(R.string.checktype_online)
             }
-
+            confdetails += "\n"
         }
         view_data.configDetails.set(confdetails.trim())
         view_data.isOffline.set(conf.offlineMode)
@@ -433,18 +423,11 @@ class MainActivity : BaseScanActivity() {
     override fun onResume() {
         super.onResume()
 
-        view_data.kioskMode.set(conf.kioskMode)
         if (conf.kioskMode) {
-            supportActionBar?.hide()
-            window.decorView.apply {
-                systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-            }
-            if (KioskHardware.isTR51() || KioskHardware.isWA1053T()) {
-                val intent = Intent(this, KioskActivity::class.java)
-                startActivity(intent)
-                finish()
-                return
-            }
+            val intent = Intent(this, KioskActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
         } else {
             supportActionBar?.show()
         }
@@ -459,40 +442,7 @@ class MainActivity : BaseScanActivity() {
         view_data.hardwareScan.set(!conf.useCamera)
         view_data.badgePrintEnabled.set(conf.printBadges && conf.autoPrintBadges != "false")
 
-        setKioskAnimation()
-
         reloadCameraState()
-    }
-
-    private fun setKioskAnimation() {
-        if (!conf.kioskMode) return
-
-        val drawable = when {
-            KioskHardware.isZebra() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isNewland() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isSeuic() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isM3() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            else -> null
-        } ?: return
-
-        view_data.kioskWithAnimation.set(true)
-        val animated = AnimatedVectorDrawableCompat.create(this, drawable)
-        animated?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                animated.start()
-            }
-
-        })
-        binding.ivKioskAnimation.setImageDrawable(animated)
-        animated?.start()
     }
 
     fun hideSearchCard() {
@@ -597,11 +547,6 @@ class MainActivity : BaseScanActivity() {
             return
         }
         LED(this).off()
-
-        if (conf.kioskMode && conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
-            supportActionBar?.show()
-            return
-        }
 
         showLoadingCard()
         hideSearchCard()
