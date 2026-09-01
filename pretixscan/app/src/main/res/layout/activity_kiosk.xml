@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/tvWaitingForScan"
@@ -34,7 +34,7 @@
                 android:gravity="center"
                 android:text="@string/kiosk_text_scan"
                 android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
-                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskScanAnimation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
                 app:layout_constraintVertical_chainStyle="packed" />
 
             <ImageView
-                android:id="@+id/iv_kioskAnimation"
+                android:id="@+id/iv_kioskScanAnimation"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
@@ -114,7 +114,7 @@
                 android:gravity="center"
                 android:text="@string/kiosk_text_print"
                 android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
-                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation2"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskPrintAnimation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +122,7 @@
                 app:layout_constraintVertical_chainStyle="packed" />
 
             <ImageView
-                android:id="@+id/iv_kioskAnimation2"
+                android:id="@+id/iv_kioskPrintAnimation"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
@@ -141,20 +141,22 @@
             android:id="@+id/clRejected"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/pretix_brand_red"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
-            <View
-                android:id="@+id/vRejectedBackground"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/pretix_brand_red"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvRejectedMessage"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/ic_block_24px"
+                app:tint="@color/white" />
 
             <TextView
                 android:id="@+id/tvRejectedMessage"
@@ -189,19 +191,6 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvRejectedMessage" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="128dp"
-                android:layout_height="128dp"
-                android:layout_marginBottom="32dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvRejectedMessage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/vRejectedBackground"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:srcCompat="@drawable/ic_block_24px"
-                app:tint="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -223,7 +212,7 @@
                 android:gravity="center"
                 android:text="@string/kiosk_text_gate"
                 android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
-                app:layout_constraintBottom_toTopOf="@+id/iv_kioskAnimation3"
+                app:layout_constraintBottom_toTopOf="@+id/iv_kioskGateAnimation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -231,7 +220,7 @@
                 app:layout_constraintVertical_chainStyle="packed" />
 
             <ImageView
-                android:id="@+id/iv_kioskAnimation3"
+                android:id="@+id/iv_kioskGateAnimation"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
@@ -244,6 +233,64 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvGate"
                 app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_turn" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSuccess"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pretix_brand_green"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivStatusIconSuccess"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvSuccessMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/ic_check_circle_white_24dp"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvSuccessMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/scan_result_valid"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvSuccessReason"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivStatusIconSuccess"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/tvSuccessReason"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                tools:text="Ticket detail"
+                android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvSuccessMessage" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
