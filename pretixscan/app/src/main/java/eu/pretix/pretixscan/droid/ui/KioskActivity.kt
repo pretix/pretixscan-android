@@ -19,6 +19,9 @@ import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
 import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
@@ -853,6 +856,36 @@ class KioskActivity : BaseScanActivity() {
 
             else -> return super.onTouchEvent(event)
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_F5,
+            KeyEvent.KEYCODE_REFRESH -> {
+                syncNow()
+                return true
+            }
+            KeyEvent.KEYCODE_F9 -> {
+                pinProtect("settings") { pin ->
+                    openMenu(pin)
+                }
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>?, menu: Menu?, deviceId: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val group = KeyboardShortcutGroup(getString(R.string.app_name))
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_F5, 0))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_REFRESH, 0))
+            }
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_label_settings), KeyEvent.KEYCODE_F9, 0))
+            data?.add(group)
+        }
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
 
 }
