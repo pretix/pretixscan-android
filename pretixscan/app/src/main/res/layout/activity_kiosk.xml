@@ -54,7 +54,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvWaitingForScan"
-                app:srcCompat="@drawable/avd_kiosk_portrait_kt0345_scan" />
+                app:srcCompat="@drawable/avd_kiosk_widescreen_barcode_bottom" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
