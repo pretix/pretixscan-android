@@ -96,6 +96,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     var lastScanSourceType: ReusableMediaType = ReusableMediaType.BARCODE
     var lastScanResult: TicketCheckProvider.CheckResult? = null
     open var useOrderLocale: Boolean = false
+    protected open val simulateChecks: Boolean = false
     var keyboardBuffer: String = ""
     var dialog: QuestionsDialogInterface? = null
     private var pdialog: ProgressDialog? = null
@@ -545,7 +546,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                     source_type,
                     answers,
                     ignore_unpaid,
-                    conf.printBadges,
+                    conf.printBadges && !simulateChecks,
                     when (conf.scanType) {
                         "exit" -> TicketCheckProvider.CheckInType.EXIT
                         else -> TicketCheckProvider.CheckInType.ENTRY
@@ -554,6 +555,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                     useOrderLocale = useOrderLocale,
                     exchange_medium_type = exchange_medium_type,
                     exchange_medium_identifier = exchange_medium_identifier,
+                    simulate = simulateChecks,
                 )
                 if (provider is OnlineCheckProvider) {
                     if (checkResult?.type == TicketCheckProvider.CheckResult.Type.ERROR) {

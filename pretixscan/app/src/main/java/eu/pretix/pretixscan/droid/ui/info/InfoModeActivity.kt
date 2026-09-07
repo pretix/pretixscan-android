@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.view.ViewCompat
@@ -20,12 +19,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider.CheckInType
-import eu.pretix.libpretixui.android.scanning.ScannerView
-import eu.pretix.pretixscan.droid.AppConfig
+import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityInfoModeBinding
+import eu.pretix.pretixscan.droid.ui.BaseScanActivity
+import eu.pretix.pretixscan.droid.ui.applyDefaultMessage
 import eu.pretix.pretixscan.droid.ui.checkPermission
+import eu.pretix.pretixscan.droid.ui.reasonExplanationText
+import eu.pretix.pretixscan.droid.ui.resultState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +36,8 @@ import kotlinx.coroutines.withContext
 class InfoModeViewDataHolder {
     val isScanning = ObservableField(false)
     val hasResult = ObservableField(false)
+    val hardwareScan = ObservableField(false)
+    val scanType = ObservableField("entry")
     val resultEventSlug = ObservableField("")
     val hasEventSlug = ObservableField(false)
     val resultStatusLabel = ObservableField("")
@@ -48,6 +53,8 @@ class InfoModeViewDataHolder {
     val hasCheckinTexts = ObservableField(false)
     val resultQuestionAnswers = ObservableField<CharSequence>("")
     val hasQuestionAnswers = ObservableField(false)
+    val resultMessage = ObservableField("")
+    val hasMessage = ObservableField(false)
     val resultReason = ObservableField("")
     val hasReason = ObservableField(false)
     val presenceLabel = ObservableField("")
@@ -55,17 +62,14 @@ class InfoModeViewDataHolder {
     val historyEmpty = ObservableField(true)
 }
 
-class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
+class InfoModeActivity : BaseScanActivity() {
 
     private lateinit var binding: ActivityInfoModeBinding
-    private lateinit var config: AppConfig
-    private lateinit var checkProvider: TicketCheckProvider
     private val viewData = InfoModeViewDataHolder()
     private val historyAdapter = CheckinHistoryAdapter()
     private var activeCheckinListServerId: Long? = null
-    private var lastScanCode: String? = null
-    private var lastScanTime: Long = 0L
-    private var lastScannedSecret: String? = null
+
+    override val simulateChecks = true
 
     companion object {
         private const val EXTRA_PIN = "pin"
@@ -82,19 +86,18 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        config = AppConfig(this)
-        checkProvider = (application as PretixScan).getCheckProvider(config)
-
-        if (config.requiresPin("info_mode") &&
-            (!intent.hasExtra(EXTRA_PIN) || !config.verifyPin(intent.getStringExtra(EXTRA_PIN)!!))
+        if (conf.requiresPin("info_mode") &&
+            (!intent.hasExtra(EXTRA_PIN) || !conf.verifyPin(intent.getStringExtra(EXTRA_PIN)!!))
         ) {
             finish()
             return
         }
 
-        activeCheckinListServerId = config.eventSelectionToMap().values.firstOrNull()
+        activeCheckinListServerId = conf.eventSelectionToMap().values.firstOrNull()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_info_mode)
+        viewData.scanType.set(conf.scanType)
+        viewData.hardwareScan.set(!conf.useCamera)
         binding.data = viewData
 
         setSupportActionBar(binding.toolbar)
@@ -112,19 +115,23 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         binding.historyList.layoutManager = LinearLayoutManager(this)
         binding.historyList.adapter = historyAdapter
 
-        binding.resultCard.setOnClickListener {
-            viewData.hasResult.set(false)
-        }
-
-        binding.rescanButton.setOnClickListener { onRescanClicked() }
+        binding.resultCard.setOnClickListener { clearResult() }
+        binding.rescanButton.setOnClickListener { clearResult() }
         binding.checkInButton.setOnClickListener { onCheckInClicked() }
 
-        checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
+        if (conf.useCamera) {
+            checkPermission(Manifest.permission.CAMERA, PERMISSIONS_REQUEST_CAMERA)
+        }
     }
+
+    override fun reloadSyncStatus() {}
 
     override fun onResume() {
         super.onResume()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        if (!this::binding.isInitialized) return
+        viewData.scanType.set(conf.scanType)
+        viewData.hardwareScan.set(!conf.useCamera)
+        if (conf.useCamera && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             binding.scannerView.setResultHandler(this)
             binding.scannerView.startCamera()
         }
@@ -132,6 +139,7 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
 
     override fun onPause() {
         super.onPause()
+        if (!this::binding.isInitialized) return
         binding.scannerView.stopCamera()
     }
 
@@ -147,41 +155,47 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun handleResult(rawResult: ScannerView.Result) {
-        val secret = rawResult.text
-        if (secret == lastScanCode && System.currentTimeMillis() - lastScanTime < 5000) {
-            return
-        }
-        lastScanTime = System.currentTimeMillis()
-        lastScanCode = secret
-        onTicketScanned(secret)
+    override fun handleScan(
+        raw_result: String,
+        source_type: String,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean,
+        exchange_medium_type: String?,
+        exchange_medium_identifier: String?,
+    ) {
+        showLoadingCard()
+        super.handleScan(
+            raw_result,
+            lastScanSourceType.serverName!!,
+            answers,
+            ignore_unpaid,
+            exchange_medium_type,
+            exchange_medium_identifier
+        )
     }
 
-    private fun onTicketScanned(secret: String) {
-        lastScannedSecret = secret
+    override fun showLoadingCard() {
         viewData.isScanning.set(true)
-        lifecycleScope.launch {
-            val (result, history) = performSimulatedCheck(secret)
-            renderResult(result, history)
-            viewData.isScanning.set(false)
-        }
+        viewData.hasResult.set(false)
     }
 
-    private fun onRescanClicked() {
+    private fun clearResult() {
         viewData.hasResult.set(false)
-        lastScanCode = null
-        lastScannedSecret = null
+        viewData.isScanning.set(false)
+        lastScanCode = ""
+        lastScanResult = null
     }
 
     private fun onCheckInClicked() {
-        val secret = lastScannedSecret ?: return
+        val secret = lastScanCode.takeIf { it.isNotEmpty() } ?: return
+        val sourceType = lastScanSourceType
         viewData.isScanning.set(true)
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
-                checkProvider.check(
-                    config.eventSelectionToMap(),
+                (application as PretixScan).getCheckProvider(conf).check(
+                    conf.eventSelectionToMap(),
                     secret,
-                    "barcode",
+                    sourceType.serverName!!,
                     null,
                     false,
                     false,
@@ -190,6 +204,7 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
                 )
             }
             viewData.isScanning.set(false)
+            result.applyDefaultMessage(this@InfoModeActivity)
             val message = result.message
                 ?: result.reasonExplanation
                 ?: if (result.type == TicketCheckProvider.CheckResult.Type.VALID) {
@@ -198,39 +213,35 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
                     getString(R.string.info_mode_checkin_failed)
                 }
             Toast.makeText(this@InfoModeActivity, message, Toast.LENGTH_SHORT).show()
-            onRescanClicked()
+            clearResult()
         }
     }
 
-    private suspend fun performSimulatedCheck(
-        secret: String
-    ): Pair<TicketCheckProvider.CheckResult, List<TicketCheckinHistoryEntry>> {
-        val result = withContext(Dispatchers.IO) {
-            checkProvider.check(
-                config.eventSelectionToMap(),
-                secret,
-                "barcode",
-                null,
-                false,
-                false,
-                CheckInType.ENTRY,
-                simulate = true,
-            )
-        }
+    override fun displayScanResult(
+        result: TicketCheckProvider.CheckResult,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean
+    ) {
+        lastScanResult = result
+        renderResult(result)
+        viewData.isScanning.set(false)
+
         val positionServerId = result.position?.optLong("id")
-        val history = withContext(Dispatchers.IO) {
-            val dbHistory = loadCheckinHistory((application as PretixScan).db, positionServerId)
-            mergeImmediateCheckin((application as PretixScan).db, dbHistory, result, activeCheckinListServerId)
+        lifecycleScope.launch {
+            val history = withContext(Dispatchers.IO) {
+                val dbHistory = loadCheckinHistory((application as PretixScan).db, positionServerId)
+                mergeImmediateCheckin((application as PretixScan).db, dbHistory, result, activeCheckinListServerId)
+            }
+            renderHistory(history)
         }
-        return result to history
     }
 
-    private fun renderResult(result: TicketCheckProvider.CheckResult, history: List<TicketCheckinHistoryEntry>) {
-        val isMultiEvent = config.eventSelectionToMap().size > 1
+    private fun renderResult(result: TicketCheckProvider.CheckResult) {
+        val isMultiEvent = conf.eventSelectionToMap().size > 1
         viewData.resultEventSlug.set(result.eventSlug.takeIf { isMultiEvent }.orEmpty())
         viewData.hasEventSlug.set(isMultiEvent && !result.eventSlug.isNullOrEmpty())
 
-        val accent = result.type.toInfoModeAccent()
+        val accent = result.resultState().toInfoModeAccent(result.isRequireAttention)
         val resolvedColor = ContextCompat.getColor(this, accent.colorRes)
 
         binding.resultIcon.setImageResource(accent.iconRes)
@@ -240,7 +251,7 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         viewData.resultStatusLabel.set(getString(accent.labelRes))
         viewData.hasAttention.set(result.isRequireAttention)
         viewData.resultAttendeeName.set(
-            result.attendee_name ?: getString(R.string.info_mode_no_name)
+            result.attendee_name?.takeIf { !conf.hideNames } ?: getString(R.string.info_mode_no_name)
         )
         viewData.resultTicketName.set(
             when {
@@ -253,19 +264,21 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
         viewData.resultAddonText.set(result.addonText.orEmpty())
         viewData.hasAddonText.set(!result.addonText.isNullOrEmpty())
 
-        val seat = result.seat.takeIf { result.scanType == CheckInType.ENTRY }
+        val isExit = result.scanType == CheckInType.EXIT
+
+        val seat = result.seat.takeIf { !isExit }
         viewData.resultSeat.set(seat.orEmpty())
         viewData.hasSeat.set(!seat.isNullOrEmpty())
 
         val checkinTexts = result.checkinTexts
             ?.filterNot { it.isBlank() }
-            ?.takeIf { it.isNotEmpty() && result.scanType == CheckInType.ENTRY }
+            ?.takeIf { it.isNotEmpty() && !isExit }
             ?.joinToString("\n")
         viewData.resultCheckinTexts.set(checkinTexts.orEmpty())
         viewData.hasCheckinTexts.set(!checkinTexts.isNullOrEmpty())
 
         val shownAnswers = result.shownAnswers
-        if (result.scanType == CheckInType.ENTRY && !shownAnswers.isNullOrEmpty()) {
+        if (!isExit && !shownAnswers.isNullOrEmpty()) {
             val qanda = SpannableStringBuilder()
             shownAnswers.forEachIndexed { index, questionAnswer ->
                 val question = questionAnswer.question.toModel().question
@@ -283,11 +296,18 @@ class InfoModeActivity : AppCompatActivity(), ScannerView.ResultHandler {
             viewData.hasQuestionAnswers.set(false)
         }
 
-        val reason = result.message ?: result.reasonExplanation
+        result.applyDefaultMessage(this)
+        viewData.resultMessage.set(result.message.orEmpty())
+        viewData.hasMessage.set(!result.message.isNullOrEmpty())
+
+        val reason = result.reasonExplanationText(this)
         viewData.resultReason.set(reason.orEmpty())
         viewData.hasReason.set(!reason.isNullOrEmpty())
-        viewData.hasResult.set(true)
 
+        viewData.hasResult.set(true)
+    }
+
+    private fun renderHistory(history: List<TicketCheckinHistoryEntry>) {
         val presence = currentPresenceStatus(history, activeCheckinListServerId)
         viewData.presenceLabel.set(
             when (presence) {

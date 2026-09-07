@@ -4,6 +4,7 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import eu.pretix.pretixscan.droid.R
+import eu.pretix.pretixscan.droid.ui.ResultState
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
@@ -13,29 +14,11 @@ enum class InfoModeAccent(val colorRes: Int, val iconRes: Int, val labelRes: Int
     INVALID(R.color.pretix_brand_red, R.drawable.ic_error_white_24dp, R.string.info_mode_status_invalid)
 }
 
-fun TicketCheckProvider.CheckResult.Type?.toInfoModeAccent(): InfoModeAccent = when (this) {
-    TicketCheckProvider.CheckResult.Type.VALID -> InfoModeAccent.OK
-
-    TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED,
-    TicketCheckProvider.CheckResult.Type.UNPAID,
-    TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
-    TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
-    TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE,
-    TicketCheckProvider.CheckResult.Type.USED -> InfoModeAccent.ATTENTION
-
-    TicketCheckProvider.CheckResult.Type.INVALID,
-    TicketCheckProvider.CheckResult.Type.ERROR,
-    TicketCheckProvider.CheckResult.Type.BLOCKED,
-    TicketCheckProvider.CheckResult.Type.INVALID_TIME,
-    TicketCheckProvider.CheckResult.Type.CANCELED,
-    TicketCheckProvider.CheckResult.Type.PRODUCT,
-    TicketCheckProvider.CheckResult.Type.RULES,
-    TicketCheckProvider.CheckResult.Type.REVOKED,
-    TicketCheckProvider.CheckResult.Type.UNAPPROVED,
-    TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
-    TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
-    TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
-    null -> InfoModeAccent.INVALID
+fun ResultState.toInfoModeAccent(requiresAttention: Boolean): InfoModeAccent = when (this) {
+    ResultState.SUCCESS, ResultState.SUCCESS_EXIT ->
+        if (requiresAttention) InfoModeAccent.ATTENTION else InfoModeAccent.OK
+    ResultState.WARNING, ResultState.DIALOG_QUESTIONS, ResultState.DIALOG_EXCHANGE -> InfoModeAccent.ATTENTION
+    ResultState.ERROR, ResultState.EMPTY, ResultState.LOADING -> InfoModeAccent.INVALID
 }
 
 data class TicketCheckinHistoryEntry(

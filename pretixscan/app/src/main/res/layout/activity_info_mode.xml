@@ -55,7 +55,51 @@
                 <eu.pretix.libpretixui.android.scanning.ScannerView
                     android:id="@+id/scanner_view"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:visibility="@{data.hardwareScan ? View.GONE : View.VISIBLE}" />
+
+                <LinearLayout
+                    android:id="@+id/vHardwareScan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="32dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="@{data.hardwareScan ? View.VISIBLE : View.GONE}"
+                    tools:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        android:layout_marginBottom="8dp"
+                        android:contentDescription="@null"
+                        android:visibility="@{data.scanType.equals(&quot;exit&quot;) ? View.GONE : View.VISIBLE}"
+                        app:srcCompat="@drawable/ic_entry_gray_24dp" />
+
+                    <ImageView
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        android:layout_marginBottom="8dp"
+                        android:contentDescription="@null"
+                        android:visibility="@{data.scanType.equals(&quot;exit&quot;) ? View.VISIBLE : View.GONE}"
+                        app:srcCompat="@drawable/ic_exit_orange_24dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:text="@{data.scanType.equals(&quot;exit&quot;) ? @string/scantype_exit : @string/scantype_entry}"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/hardware_scanner"
+                        android:textColor="@color/text_color" />
+                </LinearLayout>
 
                 <ScrollView
                     android:layout_width="match_parent"
@@ -248,14 +292,27 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
+                                android:layout_marginTop="12dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{data.resultMessage}"
+                                android:textAppearance="?attr/textAppearanceBody1"
+                                android:textStyle="bold"
+                                android:visibility="@{data.hasMessage ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible"
+                                tools:text="Ticket bereits in ein Medium umgetauscht" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
                                 android:paddingStart="16dp"
                                 android:paddingEnd="16dp"
                                 android:text="@{data.resultReason}"
                                 android:textAppearance="?attr/textAppearanceCaption"
                                 android:visibility="@{data.hasReason ? View.VISIBLE : View.GONE}"
                                 tools:visibility="visible"
-                                tools:text="already redeemed" />
+                                tools:text="Medientausch" />
 
                             <TextView
                                 android:layout_width="match_parent"
