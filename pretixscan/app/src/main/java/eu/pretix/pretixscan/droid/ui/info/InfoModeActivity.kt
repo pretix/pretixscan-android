@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.view.Menu
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
@@ -17,18 +19,25 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider.CheckInType
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityInfoModeBinding
 import eu.pretix.pretixscan.droid.ui.BaseScanActivity
+import eu.pretix.pretixscan.droid.ui.MainActivity
+import eu.pretix.pretixscan.droid.ui.SearchListAdapter
+import eu.pretix.pretixscan.droid.ui.SearchResultClickedInterface
 import eu.pretix.pretixscan.droid.ui.applyDefaultMessage
 import eu.pretix.pretixscan.droid.ui.checkPermission
 import eu.pretix.pretixscan.droid.ui.reasonExplanationText
 import eu.pretix.pretixscan.droid.ui.resultState
+import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,6 +69,9 @@ class InfoModeViewDataHolder {
     val presenceLabel = ObservableField("")
     val hasPresence = ObservableField(false)
     val historyEmpty = ObservableField(true)
+    val isSearching = ObservableField(false)
+    val searchLoading = ObservableField(false)
+    val searchEmpty = ObservableField(false)
 }
 
 class InfoModeActivity : BaseScanActivity() {
@@ -68,6 +80,7 @@ class InfoModeActivity : BaseScanActivity() {
     private val viewData = InfoModeViewDataHolder()
     private val historyAdapter = CheckinHistoryAdapter()
     private var activeCheckinListServerId: Long? = null
+    private var searchFilter = ""
 
     override val simulateChecks = true
 
@@ -114,6 +127,13 @@ class InfoModeActivity : BaseScanActivity() {
 
         binding.historyList.layoutManager = LinearLayoutManager(this)
         binding.historyList.adapter = historyAdapter
+        binding.historyList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        )
+        binding.searchList.layoutManager = LinearLayoutManager(this)
+        binding.searchList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        )
 
         binding.resultCard.setOnClickListener { clearResult() }
         binding.rescanButton.setOnClickListener { clearResult() }
@@ -175,6 +195,7 @@ class InfoModeActivity : BaseScanActivity() {
     }
 
     override fun showLoadingCard() {
+        hideSearch()
         viewData.isScanning.set(true)
         viewData.hasResult.set(false)
     }
@@ -188,32 +209,99 @@ class InfoModeActivity : BaseScanActivity() {
 
     private fun onCheckInClicked() {
         val secret = lastScanCode.takeIf { it.isNotEmpty() } ?: return
-        val sourceType = lastScanSourceType
-        viewData.isScanning.set(true)
-        lifecycleScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                (application as PretixScan).getCheckProvider(conf).check(
-                    conf.eventSelectionToMap(),
-                    secret,
-                    sourceType.serverName!!,
-                    null,
-                    false,
-                    false,
-                    CheckInType.ENTRY,
-                    simulate = false,
-                )
+        startActivity(
+            Intent(this, MainActivity::class.java).apply {
+                putExtra(MainActivity.EXTRA_SCAN_SECRET, secret)
+                putExtra(MainActivity.EXTRA_SCAN_SOURCE_TYPE, lastScanSourceType.name)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
-            viewData.isScanning.set(false)
-            result.applyDefaultMessage(this@InfoModeActivity)
-            val message = result.message
-                ?: result.reasonExplanation
-                ?: if (result.type == TicketCheckProvider.CheckResult.Type.VALID) {
-                    getString(R.string.info_mode_checkin_success)
-                } else {
-                    getString(R.string.info_mode_checkin_failed)
+        )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_info_mode, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        searchItem.isVisible = !conf.searchDisabled
+        val searchView = searchItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.info_mode_search_hint)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                setSearchFilter(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                setSearchFilter(newText)
+                return true
+            }
+        })
+        searchView.setOnCloseListener {
+            hideSearch()
+            false
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun hideSearch() {
+        searchFilter = ""
+        viewData.isSearching.set(false)
+        viewData.searchLoading.set(false)
+        viewData.searchEmpty.set(false)
+    }
+
+    private fun setSearchFilter(query: String) {
+        if (query.isEmpty()) {
+            hideSearch()
+            return
+        }
+        searchFilter = query
+        viewData.isSearching.set(true)
+        viewData.searchLoading.set(true)
+        viewData.searchEmpty.set(false)
+
+        bgScope.launch {
+            try {
+                val results = (application as PretixScan).getCheckProvider(conf)
+                    .search(conf.eventSelectionToMap(), query, 1)
+                if (query != searchFilter) return@launch
+                val adapter = SearchListAdapter(results, object : SearchResultClickedInterface {
+                    override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
+                        val secret = res.secret ?: return
+                        hideSearch()
+                        lastScanTime = System.currentTimeMillis()
+                        lastScanCode = secret
+                        lastScanSourceType = ReusableMediaType.BARCODE
+                        lastScanResult = null
+                        handleScan(secret, lastScanSourceType.serverName!!, null, true)
+                    }
+                })
+                runOnUiThread {
+                    binding.searchList.adapter = adapter
+                    viewData.searchLoading.set(false)
+                    viewData.searchEmpty.set(results.isEmpty())
                 }
-            Toast.makeText(this@InfoModeActivity, message, Toast.LENGTH_SHORT).show()
-            clearResult()
+            } catch (e: CheckException) {
+                runOnUiThread {
+                    hideSearch()
+                    Toast.makeText(
+                        this@InfoModeActivity,
+                        e.message ?: getString(R.string.error_unknown_exception),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Sentry.captureException(e)
+                runOnUiThread {
+                    hideSearch()
+                    Toast.makeText(
+                        this@InfoModeActivity,
+                        R.string.error_unknown_exception,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 

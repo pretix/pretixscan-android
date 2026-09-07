@@ -43,6 +43,7 @@
     <string name="sync_status_now">gerade eben synchronisiert</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
+    <string name="short_datetime_format_seconds">dd.MM. HH:mm:ss</string>
     <plurals name="sync_status_pending">
         <item quantity="one">%d ausstehender Upload</item>
         <item quantity="other">%d ausstehende Uploads</item>
@@ -151,6 +152,7 @@
     <string name="pin_protection_statistics">Statistiken sperren</string>
     <string name="pin_protection_switch_event">Veranstaltungswechsel sperren</string>
     <string name="pin_protection_switch_mode">Moduswechsel sperren</string>
+    <string name="pin_protection_info_mode">Info-Modus sperren</string>
     <string name="pin_protection_enter">PIN eingeben</string>
     <string name="settings_label_verification">Ticketkontrolle</string>
     <string name="settings_label_sync">Synchronisierung</string>
@@ -212,6 +214,8 @@
     <string name="info_mode_no_name">Kein Name hinterlegt</string>
     <string name="info_mode_history_title">Check-in-Historie (alle Listen)</string>
     <string name="info_mode_history_empty">Für dieses Ticket sind noch keine Check-ins erfasst</string>
+    <string name="info_mode_search_hint">Ticket suchen</string>
+    <string name="info_mode_search_empty">Keine Tickets gefunden</string>
     <string name="info_mode_status_ok">Simuliert: Gültig</string>
     <string name="info_mode_status_attention">Simuliert: Achtung nötig</string>
     <string name="info_mode_status_invalid">Simuliert: Ungültig</string>
@@ -222,6 +226,4 @@
     <string name="info_mode_checkin_type_exit">Ausgang</string>
     <string name="info_mode_rescan_button">Neu scannen</string>
     <string name="info_mode_checkin_button">Ticket einchecken</string>
-    <string name="info_mode_checkin_success">Erfolgreich eingecheckt</string>
-    <string name="info_mode_checkin_failed">Check-in fehlgeschlagen</string>
 </resources>

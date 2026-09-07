@@ -125,6 +125,8 @@ class MainActivity : BaseScanActivity() {
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
+        const val EXTRA_SCAN_SECRET = "scan_secret"
+        const val EXTRA_SCAN_SOURCE_TYPE = "scan_source_type"
     }
 
     override fun reload() {
@@ -462,6 +464,31 @@ class MainActivity : BaseScanActivity() {
         setKioskAnimation()
 
         reloadCameraState()
+
+        consumePendingScan()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun consumePendingScan() {
+        val secret = intent?.getStringExtra(EXTRA_SCAN_SECRET) ?: return
+        intent.removeExtra(EXTRA_SCAN_SECRET)
+        val sourceType = intent.getStringExtra(EXTRA_SCAN_SOURCE_TYPE)
+        intent.removeExtra(EXTRA_SCAN_SOURCE_TYPE)
+
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = secret
+        lastScanSourceType = try {
+            ReusableMediaType.valueOf(sourceType ?: ReusableMediaType.BARCODE.name)
+        } catch (e: IllegalArgumentException) {
+            ReusableMediaType.BARCODE
+        }
+        lastScanResult = null
+        lastIgnoreUnpaid = false
+        handleScan(secret, lastScanSourceType.serverName!!, null, !conf.unpaidAsk)
     }
 
     private fun setKioskAnimation() {

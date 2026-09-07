@@ -101,27 +101,44 @@
                         android:textColor="@color/text_color" />
                 </LinearLayout>
 
-                <ScrollView
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/result_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
                     android:background="?attr/colorSurface"
-                    android:fillViewport="true"
                     android:visibility="@{data.isScanning || data.hasResult ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/result_max_guideline"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.6" />
 
-                        <ProgressBar
-                            android:layout_width="wrap_content"
+                    <ScrollView
+                        android:id="@+id/result_scroll"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/result_max_guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHeight_default="wrap"
+                        app:layout_constraintVertical_bias="0">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:visibility="@{data.isScanning ? View.VISIBLE : View.GONE}"
-                            tools:visibility="visible" />
+                            android:orientation="vertical">
+
+                            <ProgressBar
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:visibility="@{data.isScanning ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible" />
 
                         <LinearLayout
                             android:id="@+id/result_card"
@@ -364,37 +381,98 @@
 
                         </LinearLayout>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/info_mode_history_title"
-                            android:textAppearance="?attr/textAppearanceSubtitle2"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingTop="8dp"
-                            android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}" />
+                        </LinearLayout>
+                    </ScrollView>
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/info_mode_history_empty"
-                            android:gravity="center"
-                            android:padding="24dp"
-                            android:textAppearance="?attr/textAppearanceBody2"
-                            android:visibility="@{data.hasResult &amp;&amp; data.historyEmpty ? View.VISIBLE : View.GONE}"
-                            tools:visibility="visible" />
+                    <TextView
+                        android:id="@+id/history_header"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="4dp"
+                        android:text="@string/info_mode_history_title"
+                        android:textAppearance="?attr/textAppearanceSubtitle2"
+                        android:visibility="@{data.hasResult ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toBottomOf="@id/result_scroll"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/history_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="240dp"
-                            android:clipToPadding="false"
-                            android:paddingBottom="8dp"
-                            android:nestedScrollingEnabled="false"
-                            tools:listitem="@layout/item_info_checkin_history" />
+                    <TextView
+                        android:id="@+id/history_empty"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:padding="24dp"
+                        android:text="@string/info_mode_history_empty"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:visibility="@{data.hasResult &amp;&amp; data.historyEmpty ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toBottomOf="@id/history_header"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:visibility="gone" />
 
-                    </LinearLayout>
-                </ScrollView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/history_list"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:clipToPadding="false"
+                        android:paddingBottom="8dp"
+                        android:visibility="@{data.hasResult &amp;&amp; !data.historyEmpty ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toBottomOf="@id/history_header"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:listitem="@layout/item_info_checkin_history"
+                        tools:visibility="visible" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/search_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/colorSurface"
+                    android:visibility="@{data.isSearching ? View.VISIBLE : View.GONE}"
+                    tools:visibility="gone">
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{data.searchLoading ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="24dp"
+                        android:text="@string/info_mode_search_empty"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:visibility="@{!data.searchLoading &amp;&amp; data.searchEmpty ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/search_list"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="@{!data.searchLoading &amp;&amp; !data.searchEmpty ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:listitem="@layout/item_searchresult" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </FrameLayout>
 
         </LinearLayout>

@@ -66,6 +66,7 @@
     </plurals>
     <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="short_datetime_format">MM/dd HH:mm</string>
+    <string name="short_datetime_format_seconds">MM/dd HH:mm:ss</string>
     <string name="first_scanned">First scanned: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
@@ -168,6 +169,7 @@
     <string name="pin_protection_statistics">Protect statistics</string>
     <string name="pin_protection_switch_event">Protect event switch</string>
     <string name="pin_protection_switch_mode">Protect mode switch</string>
+    <string name="pin_protection_info_mode">Lock info mode</string>
     <string name="pin_protection_enter">Enter PIN</string>
     <string name="currently_inside">currently attending</string>
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
@@ -213,6 +215,8 @@
     <string name="info_mode_no_name">No name on file</string>
     <string name="info_mode_history_title">Check-in history (all lists)</string>
     <string name="info_mode_history_empty">No check-ins recorded for this ticket yet</string>
+    <string name="info_mode_search_hint">Search ticket</string>
+    <string name="info_mode_search_empty">No tickets found</string>
     <string name="info_mode_status_ok">Simulated: Valid</string>
     <string name="info_mode_status_attention">Simulated: Needs attention</string>
     <string name="info_mode_status_invalid">Simulated: Invalid</string>
@@ -223,6 +227,4 @@
     <string name="info_mode_checkin_type_exit">Exit</string>
     <string name="info_mode_rescan_button">Scan again</string>
     <string name="info_mode_checkin_button">Check in ticket</string>
-    <string name="info_mode_checkin_success">Checked in successfully</string>
-    <string name="info_mode_checkin_failed">Check-in failed</string>
 </resources>
