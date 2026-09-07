@@ -2,16 +2,18 @@ package eu.pretix.pretixscan.droid.ui.info
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ItemInfoCheckinHistoryBinding
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class CheckinHistoryAdapter : ListAdapter<TicketCheckinHistoryEntry, CheckinHistoryAdapter.ViewHolder>(DIFF) {
 
-    private val timeFormat = DateTimeFormatter.ofPattern("dd.MM. HH:mm")
+    private var timeFormat: DateTimeFormatter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemInfoCheckinHistoryBinding.inflate(
@@ -21,7 +23,10 @@ class CheckinHistoryAdapter : ListAdapter<TicketCheckinHistoryEntry, CheckinHist
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), timeFormat)
+        val format = timeFormat ?: DateTimeFormatter.ofPattern(
+            holder.itemView.context.getString(R.string.short_datetime_format_seconds)
+        ).also { timeFormat = it }
+        holder.bind(getItem(position), format)
     }
 
     class ViewHolder(private val binding: ItemInfoCheckinHistoryBinding) :
@@ -34,11 +39,20 @@ class CheckinHistoryAdapter : ListAdapter<TicketCheckinHistoryEntry, CheckinHist
             binding.icon.setImageResource(
                 if (isExit) R.drawable.ic_exit_orange_24dp else R.drawable.ic_entry_gray_24dp
             )
+            binding.icon.setColorFilter(
+                ContextCompat.getColor(
+                    context,
+                    if (isExit) R.color.pretix_brand_orange else R.color.pretix_brand_green
+                )
+            )
             binding.typeLabel.text = context.getString(
                 if (isExit) R.string.info_mode_checkin_type_exit else R.string.info_mode_checkin_type_entry
             )
             binding.listName.text = entry.listName
-            binding.timestamp.text = entry.dateTime?.format(timeFormat).orEmpty()
+            binding.timestamp.text = entry.dateTime
+                ?.atZoneSameInstant(ZoneId.systemDefault())
+                ?.format(timeFormat)
+                .orEmpty()
         }
     }
 

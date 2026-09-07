@@ -12,8 +12,8 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:contentDescription="@null"
         tools:src="@drawable/ic_entry_gray_24dp" />
 
@@ -26,16 +26,18 @@
 
         <TextView
             android:id="@+id/list_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textColor="@color/text_color"
             tools:text="Vortrag: Einführung in Kotlin" />
 
         <TextView
             android:id="@+id/type_label"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/text_color"
             tools:text="Eingang" />
 
     </LinearLayout>
@@ -44,7 +46,9 @@
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:textAppearance="?attr/textAppearanceCaption"
-        tools:text="13.07. 14:32" />
+        android:textColor="@color/text_color"
+        tools:text="13.07. 14:32:05" />
 
 </LinearLayout>

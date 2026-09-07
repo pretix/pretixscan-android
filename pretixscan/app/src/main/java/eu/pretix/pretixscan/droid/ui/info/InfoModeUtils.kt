@@ -53,7 +53,7 @@ fun loadCheckinHistory(db: SyncDatabase, positionServerId: Long?): List<TicketCh
             type = checkIn.type,
             dateTime = checkIn.dateTime,
         )
-    }.sortedBy { it.dateTime }
+    }.sortedByDescending { it.dateTime }
 }
 
 fun mergeImmediateCheckin(
@@ -75,7 +75,7 @@ fun mergeImmediateCheckin(
         type = "entry",
         dateTime = OffsetDateTime.ofInstant(firstScanned.toInstant(), ZoneId.systemDefault()),
     )
-    return (dbHistory + entry).sortedBy { it.dateTime }
+    return (dbHistory + entry).sortedByDescending { it.dateTime }
 }
 
 // TODO: berücksichtigt noch nicht allow_multiple_entries/allow_entry_after_exit der Check-in-Liste
