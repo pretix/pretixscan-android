@@ -43,6 +43,7 @@
     <string name="sync_status_now">gerade eben synchronisiert</string>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
+    <string name="short_datetime_format_seconds">dd.MM. HH:mm:ss</string>
     <plurals name="sync_status_pending">
         <item quantity="one">%d ausstehender Upload</item>
         <item quantity="other">%d ausstehende Uploads</item>
@@ -130,6 +131,8 @@
     <string name="scan_result_medium_invalid">Wiederverwendbares Medium nicht gültig</string>
     <string name="scan_result_medium_exists">Wiederverwendbares Medium existiert bereits</string>
     <string name="scan_result_medium_exchange_required_offline">Ticket muss in ein Medium umgetauscht werden, dies ist jedoch Offline nicht möglich</string>
+    <string name="scan_result_medium_exchange_required">Ticket muss in ein Medium umgetauscht werden</string>
+    <string name="scan_result_answers_required">Fragen müssen beantwortet werden</string>
     <string name="action_label_scantype_exit">Zum Ausgangs-Modus wechseln</string>
     <string name="action_label_scantype_entry">Zum Eingangs-Modus wechseln</string>
     <string name="scantype_entry">Eingang</string>
@@ -149,6 +152,7 @@
     <string name="pin_protection_statistics">Statistiken sperren</string>
     <string name="pin_protection_switch_event">Veranstaltungswechsel sperren</string>
     <string name="pin_protection_switch_mode">Moduswechsel sperren</string>
+    <string name="pin_protection_info_mode">Info-Modus sperren</string>
     <string name="pin_protection_enter">PIN eingeben</string>
     <string name="settings_label_verification">Ticketkontrolle</string>
     <string name="settings_label_sync">Synchronisierung</string>
@@ -205,4 +209,21 @@
     <string name="kiosk_error_printing_failed_timeout">Drucker Timeout</string>
     <string name="kiosk_error_unknown_scan_result_type">Unbekannter Scanergebnis Typus</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Der gescannte NFC-Chip wird von dieser pretixSCAN-Version nicht unterstützt</string>
+    <string name="info_mode_title">Info-Modus</string>
+    <string name="info_mode_banner">Simulation – es wird kein Check-in durchgeführt</string>
+    <string name="info_mode_no_name">Kein Name hinterlegt</string>
+    <string name="info_mode_history_title">Check-in-Historie (alle Listen)</string>
+    <string name="info_mode_history_empty">Für dieses Ticket sind noch keine Check-ins erfasst</string>
+    <string name="info_mode_search_hint">Ticket suchen</string>
+    <string name="info_mode_search_empty">Keine Tickets gefunden</string>
+    <string name="info_mode_status_ok">Simuliert: Gültig</string>
+    <string name="info_mode_status_attention">Simuliert: Achtung nötig</string>
+    <string name="info_mode_status_invalid">Simuliert: Ungültig</string>
+    <string name="info_mode_presence_present">Aktuell anwesend (diese Liste)</string>
+    <string name="info_mode_presence_not_present">Nicht anwesend (ausgecheckt)</string>
+    <string name="info_mode_presence_not_scanned_yet">Auf dieser Liste noch nicht gescannt</string>
+    <string name="info_mode_checkin_type_entry">Eingang</string>
+    <string name="info_mode_checkin_type_exit">Ausgang</string>
+    <string name="info_mode_rescan_button">Neu scannen</string>
+    <string name="info_mode_checkin_button">Ticket einchecken</string>
 </resources>

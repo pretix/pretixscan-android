@@ -125,6 +125,8 @@ class MainActivity : BaseScanActivity() {
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA = 1337
+        const val EXTRA_SCAN_SECRET = "scan_secret"
+        const val EXTRA_SCAN_SOURCE_TYPE = "scan_source_type"
     }
 
     override fun reload() {
@@ -462,6 +464,31 @@ class MainActivity : BaseScanActivity() {
         setKioskAnimation()
 
         reloadCameraState()
+
+        consumePendingScan()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun consumePendingScan() {
+        val secret = intent?.getStringExtra(EXTRA_SCAN_SECRET) ?: return
+        intent.removeExtra(EXTRA_SCAN_SECRET)
+        val sourceType = intent.getStringExtra(EXTRA_SCAN_SOURCE_TYPE)
+        intent.removeExtra(EXTRA_SCAN_SOURCE_TYPE)
+
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = secret
+        lastScanSourceType = try {
+            ReusableMediaType.valueOf(sourceType ?: ReusableMediaType.BARCODE.name)
+        } catch (e: IllegalArgumentException) {
+            ReusableMediaType.BARCODE
+        }
+        lastScanResult = null
+        lastIgnoreUnpaid = false
+        handleScan(secret, lastScanSourceType.serverName!!, null, !conf.unpaidAsk)
     }
 
     private fun setKioskAnimation() {
@@ -616,38 +643,9 @@ class MainActivity : BaseScanActivity() {
     }
 
     override fun displayScanResult(result: TicketCheckProvider.CheckResult, answers: MutableList<Answer>?, ignore_unpaid: Boolean) {
-        if (conf.sounds)
-            when (result.type) {
-                TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
-                    TicketCheckProvider.CheckInType.ENTRY ->
-                        if (result.isRequireAttention) {
-                            mediaPlayers[R.raw.attention]?.start()
-                        } else {
-                            mediaPlayers[R.raw.enter]?.start()
-                        }
-                    TicketCheckProvider.CheckInType.EXIT -> mediaPlayers[R.raw.exit]?.start()
-                }
-                TicketCheckProvider.CheckResult.Type.INVALID -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.ERROR -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.UNPAID -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.CANCELED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.PRODUCT -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.RULES -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.REVOKED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.UNAPPROVED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.BLOCKED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.INVALID_TIME -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.USED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> mediaPlayers[R.raw.error]?.start()
-                TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
-                TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> mediaPlayers[R.raw.attention]?.start()
-                TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> mediaPlayers[R.raw.attention]?.start()
-                else -> {
-                }
-            }
+        if (conf.sounds) {
+            result.soundRes()?.let { mediaPlayers[it]?.start() }
+        }
 
         stopHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
@@ -697,57 +695,10 @@ class MainActivity : BaseScanActivity() {
             return
         }
         startHidingTimer()
-        if (result.message == null) {
-            result.message = when (result.type!!) {
-                TicketCheckProvider.CheckResult.Type.INVALID -> getString(R.string.scan_result_invalid)
-                TicketCheckProvider.CheckResult.Type.VALID -> when (result.scanType) {
-                    TicketCheckProvider.CheckInType.EXIT -> getString(R.string.scan_result_exit)
-                    TicketCheckProvider.CheckInType.ENTRY -> getString(R.string.scan_result_valid)
-                }
-                TicketCheckProvider.CheckResult.Type.USED -> getString(R.string.scan_result_used)
-                TicketCheckProvider.CheckResult.Type.RULES -> getString(R.string.scan_result_rules)
-                TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> getString(R.string.scan_result_ambiguous)
-                TicketCheckProvider.CheckResult.Type.REVOKED -> getString(R.string.scan_result_revoked)
-                TicketCheckProvider.CheckResult.Type.UNAPPROVED -> getString(R.string.scan_result_unapproved)
-                TicketCheckProvider.CheckResult.Type.INVALID_TIME -> getString(R.string.scan_result_invalid_time)
-                TicketCheckProvider.CheckResult.Type.BLOCKED -> getString(R.string.scan_result_blocked)
-                TicketCheckProvider.CheckResult.Type.UNPAID -> getString(R.string.scan_result_unpaid)
-                TicketCheckProvider.CheckResult.Type.CANCELED -> getString(R.string.scan_result_canceled)
-                TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(R.string.scan_result_product)
-                TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(R.string.scan_result_already_exchanged)
-                TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> getString(R.string.scan_result_medium_invalid)
-                TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> getString(R.string.scan_result_medium_exists)
-                else -> null
-            }
-        }
+        result.applyDefaultMessage(this)
         view_data.resultText.set(result.message)
         view_data.resultOffline.set(result.offline)
-        view_data.resultState.set(when (result.type!!) {
-            TicketCheckProvider.CheckResult.Type.INVALID -> ERROR
-            TicketCheckProvider.CheckResult.Type.VALID -> {
-                when (result.scanType) {
-                    TicketCheckProvider.CheckInType.EXIT -> SUCCESS_EXIT
-                    TicketCheckProvider.CheckInType.ENTRY -> SUCCESS
-                }
-            }
-            TicketCheckProvider.CheckResult.Type.USED -> WARNING
-            TicketCheckProvider.CheckResult.Type.ERROR -> ERROR
-            TicketCheckProvider.CheckResult.Type.RULES -> ERROR
-            TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> ERROR
-            TicketCheckProvider.CheckResult.Type.REVOKED -> ERROR
-            TicketCheckProvider.CheckResult.Type.UNAPPROVED -> ERROR
-            TicketCheckProvider.CheckResult.Type.INVALID_TIME -> ERROR
-            TicketCheckProvider.CheckResult.Type.BLOCKED -> ERROR
-            TicketCheckProvider.CheckResult.Type.UNPAID -> ERROR
-            TicketCheckProvider.CheckResult.Type.CANCELED -> ERROR
-            TicketCheckProvider.CheckResult.Type.PRODUCT -> ERROR
-            TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> ERROR
-            TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> ERROR
-            TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> ERROR
-            TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ERROR
-            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ERROR
-            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> ERROR
-        })
+        view_data.resultState.set(result.resultState())
         view_data.setLed(this, view_data.resultState.get()!!, result.isRequireAttention)
 
         val isExit = (result.scanType == TicketCheckProvider.CheckInType.EXIT)
@@ -760,15 +711,7 @@ class MainActivity : BaseScanActivity() {
         } else {
             view_data.ticketAndVariationName.set(null)
         }
-        if (!result.reasonExplanation.isNullOrBlank()) {
-            if (result.type!! == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE) {
-                view_data.reasonExplanation.set(getString(R.string.scan_result_medium_exchange_required_offline))
-            } else {
-                view_data.reasonExplanation.set(result.reasonExplanation)
-            }
-        } else {
-            view_data.reasonExplanation.set(null)
-        }
+        view_data.reasonExplanation.set(result.reasonExplanationText(this))
         if (result.firstScanned != null) {
             val df = SimpleDateFormat(getString(R.string.short_datetime_format))
             view_data.firstScanned.set(getString(R.string.first_scanned, df.format(result.firstScanned)))
@@ -974,6 +917,12 @@ class MainActivity : BaseScanActivity() {
             }
             R.id.action_sync -> {
                 syncNow()
+            }
+            R.id.action_infomode -> {
+                pinProtect("info_mode") { pin ->
+                    startActivity(eu.pretix.pretixscan.droid.ui.info.InfoModeActivity.newIntent(this@MainActivity, pin))
+                }
+                return true
             }
         }
         return super.onOptionsItemSelected(item)

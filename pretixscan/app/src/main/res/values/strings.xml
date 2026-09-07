@@ -66,6 +66,7 @@
     </plurals>
     <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="short_datetime_format">MM/dd HH:mm</string>
+    <string name="short_datetime_format_seconds">MM/dd HH:mm:ss</string>
     <string name="first_scanned">First scanned: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
@@ -134,6 +135,8 @@
     <string name="scan_result_medium_invalid">Reusable medium invalid</string>
     <string name="scan_result_medium_exists">Reusable medium already exists</string>
     <string name="scan_result_medium_exchange_required_offline">This ticket needs to be exchanged, but this isn\'t possible while offline</string>
+    <string name="scan_result_medium_exchange_required">This ticket needs to be exchanged for a reusable medium</string>
+    <string name="scan_result_answers_required">Questions need to be answered</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>
     <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
@@ -166,6 +169,7 @@
     <string name="pin_protection_statistics">Protect statistics</string>
     <string name="pin_protection_switch_event">Protect event switch</string>
     <string name="pin_protection_switch_mode">Protect mode switch</string>
+    <string name="pin_protection_info_mode">Lock info mode</string>
     <string name="pin_protection_enter">Enter PIN</string>
     <string name="currently_inside">currently attending</string>
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
@@ -206,4 +210,21 @@
     <string name="kiosk_error_unknown_scan_result_type">Unknown Scan Result Type</string>
     <string name="kiosk_text_noentry">No entry detected</string>
     <string name="kiosk_text_noentry_description">Your ticket will be valid again shortly</string>
+    <string name="info_mode_title">Info mode</string>
+    <string name="info_mode_banner">Simulation - no check-in is performed</string>
+    <string name="info_mode_no_name">No name on file</string>
+    <string name="info_mode_history_title">Check-in history (all lists)</string>
+    <string name="info_mode_history_empty">No check-ins recorded for this ticket yet</string>
+    <string name="info_mode_search_hint">Search ticket</string>
+    <string name="info_mode_search_empty">No tickets found</string>
+    <string name="info_mode_status_ok">Simulated: Valid</string>
+    <string name="info_mode_status_attention">Simulated: Needs attention</string>
+    <string name="info_mode_status_invalid">Simulated: Invalid</string>
+    <string name="info_mode_presence_present">Currently present (this list)</string>
+    <string name="info_mode_presence_not_present">Not present (checked out)</string>
+    <string name="info_mode_presence_not_scanned_yet">Not scanned on this list yet</string>
+    <string name="info_mode_checkin_type_entry">Entry</string>
+    <string name="info_mode_checkin_type_exit">Exit</string>
+    <string name="info_mode_rescan_button">Scan again</string>
+    <string name="info_mode_checkin_button">Check in ticket</string>
 </resources>
