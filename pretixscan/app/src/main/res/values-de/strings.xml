@@ -130,6 +130,8 @@
     <string name="scan_result_medium_invalid">Wiederverwendbares Medium nicht gültig</string>
     <string name="scan_result_medium_exists">Wiederverwendbares Medium existiert bereits</string>
     <string name="scan_result_medium_exchange_required_offline">Ticket muss in ein Medium umgetauscht werden, dies ist jedoch Offline nicht möglich</string>
+    <string name="scan_result_medium_exchange_required">Ticket muss in ein Medium umgetauscht werden</string>
+    <string name="scan_result_answers_required">Fragen müssen beantwortet werden</string>
     <string name="action_label_scantype_exit">Zum Ausgangs-Modus wechseln</string>
     <string name="action_label_scantype_entry">Zum Eingangs-Modus wechseln</string>
     <string name="scantype_entry">Eingang</string>
