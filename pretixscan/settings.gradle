@@ -12,6 +12,23 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
+dependencyResolutionManagement {
+    versionCatalogs {
+        nfcLibs {
+            from(files('libpretixnfc-repo/libpretixnfc-android/gradle/libs.versions.toml'))
+        }
+        nfcCoreLibs {
+            from(files('libpretixnfc-repo/libpretixnfc/gradle/libs.versions.toml'))
+        }
+        syncLibs {
+            from(files('libpretixsync-repo/libpretixsync/gradle/libs.versions.toml'))
+        }
+        uiLibs {
+            from(files('libpretixui-repo/libpretixui-android/gradle/libs.versions.toml'))
+        }
+    }
+}
+
 include ':app', ':libpretixsync', ':libpretixui-android', ':libpretixnfc', ':libpretixnfc-android', ':android-libserenegiantcommon', ':android-libusbcameracommon', ':android-libuvccamera'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
 project(':libpretixui-android').projectDir = new File('libpretixui-repo/libpretixui-android')
