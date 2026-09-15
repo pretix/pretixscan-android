@@ -68,6 +68,7 @@ class KioskActivity : BaseScanActivity() {
             NeedAnswers,
             Printing,
             GateOpen,
+            TemporarilyOutOfOrder,
             OutOfOrder,
         }
 
@@ -150,7 +151,7 @@ class KioskActivity : BaseScanActivity() {
     val printTimeout = Runnable {
         if (state == KioskState.Printing) {
             binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed_timeout)
-            state = KioskState.OutOfOrder
+            state = KioskState.TemporarilyOutOfOrder
             updateUi()
         }
     }
@@ -528,7 +529,7 @@ class KioskActivity : BaseScanActivity() {
                         // printing failed
                         runOnUiThread {
                             binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed)
-                            state = KioskState.OutOfOrder
+                            state = KioskState.TemporarilyOutOfOrder
                             updateUi()
                         }
                     }
@@ -694,6 +695,11 @@ class KioskActivity : BaseScanActivity() {
                 }
             }
 
+            KioskState.TemporarilyOutOfOrder -> {
+                binding.llOutOfOrder.visibility = View.VISIBLE
+                led.error(blink = false)
+            }
+
             KioskState.OutOfOrder -> {
                 binding.llOutOfOrder.visibility = View.VISIBLE
                 conf.kioskOutOfOrder = true
@@ -826,7 +832,8 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Checking,
             KioskState.NeedAnswers,
             KioskState.Printing,
-            KioskState.OutOfOrder -> {
+            KioskState.TemporarilyOutOfOrder,
+            KioskState.OutOfOrder, -> {
                 // waiting for user, for printer, gate or administrative action. ignoring scan.
                 lastScanCode = ""  // do not consider scan "used"
                 return
@@ -944,7 +951,7 @@ class KioskActivity : BaseScanActivity() {
                     if (gestureDetected) {
                         Log.d("KioskActivity", "checkmark gesture detected")
                     }
-                    if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
+                    if (gestureDetected && state == KioskState.TemporarilyOutOfOrder && !conf.kioskOutOfOrder) {
                         localizedContext = null
                         state = KioskState.WaitingForScan
                         updateUi()
