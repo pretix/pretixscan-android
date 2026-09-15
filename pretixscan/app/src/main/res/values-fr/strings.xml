@@ -111,7 +111,6 @@
     <string name="label_shop_inactive">Boutique désactivée</string>
     <string name="settings_label_search_disable">Recherche désactivée</string>
     <string name="settings_label_kioskmode">Mode kiosque</string>
-    <string name="pin_protection">Protection PIN</string>
     <string name="pin_protection_pin">Définir PIN</string>
     <string name="pin_protection_enable">Activer la protection PIN</string>
     <string name="pin_protection_settings">Protéger les paramètres de l\'application</string>

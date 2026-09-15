@@ -144,7 +144,6 @@
     <string name="settings_label_search_disable">禁用搜索</string>
     <string name="settings_label_kioskmode">Kiosk模式</string>
     <string name="settings_summary_kioskmode">Kiosk模式隐藏了不应该在自助服务安装中使用的菜单。Kiosk模式不会阻止用户通过系统功能退出应用程序。要访问设置，你需要用你的个人密码扫描二维码。</string>
-    <string name="pin_protection">密码保护</string>
     <string name="pin_protection_pin">设置密码</string>
     <string name="pin_protection_enable">启用密码保护</string>
     <string name="pin_protection_settings">保护App设置</string>

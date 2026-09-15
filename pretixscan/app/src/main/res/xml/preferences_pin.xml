@@ -35,15 +35,31 @@
         android:dependency="pref_pin_enable"
         android:key="pref_search_disable"
         android:title="@string/settings_label_search_disable" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:dependency="pref_pin_enable"
-        android:key="pref_kiosk_mode"
-        android:summary="@string/settings_summary_kioskmode"
-        android:title="@string/settings_label_kioskmode" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:dependency="pref_kiosk_mode"
-        android:key="pref_legacy_kiosk_mode"
-        android:title="@string/settings_label_legacy_kioskmode" />
+    <PreferenceCategory android:title="@string/settings_label_kioskmode">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_pin_enable"
+            android:key="pref_kiosk_mode"
+            android:summary="@string/settings_summary_kioskmode"
+            android:title="@string/settings_label_kioskmode" />
+        <ListPreference
+            android:defaultValue="auto"
+            android:dependency="pref_kiosk_mode"
+            android:entries="@array/settings_valuelabels_kiosk_animation_device"
+            android:entryValues="@array/settings_values_kiosk_animation_device"
+            android:key="pref_kiosk_animation_device"
+            android:summary="%s"
+            android:title="@string/settings_label_kiosk_animation_device" />
+        <EditTextPreference
+            android:defaultValue="200"
+            android:dependency="pref_kiosk_mode"
+            android:key="gate_back_to_start_timeout"
+            android:summary="@string/settings_summary_gate_back_to_start_timeout"
+            android:title="@string/settings_label_gate_back_to_start_timeout" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_kiosk_mode"
+            android:key="pref_legacy_kiosk_mode"
+            android:title="@string/settings_label_legacy_kioskmode" />
+    </PreferenceCategory>
 </PreferenceScreen>

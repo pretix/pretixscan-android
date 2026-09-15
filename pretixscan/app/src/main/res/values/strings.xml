@@ -171,7 +171,7 @@
     <string name="settings_label_legacy_kioskmode">Use legacy kiosk mode (will be removed in the future)</string>
     <string name="settings_label_gate_back_to_start_timeout">Time after gate open</string>
     <string name="settings_summary_gate_back_to_start_timeout">Delay in milliseconds after the gate opened until the ticket scanning screen is shown again</string>
-    <string name="pin_protection">PIN protection</string>
+    <string name="pin_protection_and_kiosk">PIN protection &amp; kiosk mode</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>
     <string name="pin_protection_settings">Protect app settings</string>

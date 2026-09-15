@@ -144,7 +144,7 @@
     <string name="debug_info_list">Liste: %1$s</string>
     <string name="debug_info_gate">Zugang: %1$s</string>
     <string name="debug_info_device">Gerät: %1$s</string>
-    <string name="pin_protection">PIN-Sperre</string>
+    <string name="pin_protection_and_kiosk">PIN-Sperre &amp; Kiosk-Modus</string>
     <string name="pin_protection_pin">PIN setzen</string>
     <string name="pin_protection_enable">PIN-Sperre aktivieren</string>
     <string name="pin_protection_settings">Einstellungen sperren</string>

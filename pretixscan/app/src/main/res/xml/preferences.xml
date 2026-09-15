@@ -32,6 +32,10 @@
             android:title="@string/settings_label_auto_switch" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_ui">
+        <Preference
+            android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
+            android:key="pin_protect"
+            android:title="@string/pin_protection_and_kiosk" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_screen_always_on"
@@ -44,23 +48,11 @@
             android:defaultValue="true"
             android:key="pref_sounds"
             android:title="@string/settings_label_sounds" />
-        <Preference
-            android:fragment="eu.pretix.pretixscan.droid.ui.PinSettingsFragment"
-            android:key="pin_protect"
-            android:title="@string/pin_protection" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_hide_names"
             android:summary="@string/settings_label_hide_names_summary"
             android:title="@string/settings_label_hide_names" />
-        <ListPreference
-            android:defaultValue="auto"
-            android:entries="@array/settings_valuelabels_kiosk_animation_device"
-            android:entryValues="@array/settings_values_kiosk_animation_device"
-            android:key="pref_kiosk_animation_device"
-            android:summary="%s"
-            android:title="@string/settings_label_kiosk_animation_device"
-            app:isPreferenceVisible="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_label_badges">
         <CheckBoxPreference
@@ -123,11 +115,5 @@
         <Preference
             android:key="full_delete"
             android:title="@string/full_delete" />
-        <EditTextPreference
-            android:key="gate_back_to_start_timeout"
-            android:defaultValue="200"
-            android:title="@string/settings_label_gate_back_to_start_timeout"
-            android:summary="@string/settings_summary_gate_back_to_start_timeout"
-            app:isPreferenceVisible="false" />
     </PreferenceCategory>
 </PreferenceScreen>

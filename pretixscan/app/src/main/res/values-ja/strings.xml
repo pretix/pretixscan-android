@@ -139,7 +139,6 @@
     <string name="settings_label_search_disable">検索を無効にする</string>
     <string name="settings_label_kioskmode">キオスクモード</string>
     <string name="settings_summary_kioskmode">キオスクモードは、セルフサービス設置で使用されることのないメニューを非表示にします。キオスクモードは、システム機能を通じてユーザーがアプリを終了することを防ぐものではありません。設定にアクセスするには、PINを含むQRコードをスキャンする必要があります。</string>
-    <string name="pin_protection">PIN保護</string>
     <string name="pin_protection_pin">PINを設定</string>
     <string name="pin_protection_enable">PIN保護を有効にする</string>
     <string name="pin_protection_settings">アプリ設定を保護</string>

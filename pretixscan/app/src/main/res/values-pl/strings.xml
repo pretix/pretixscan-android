@@ -116,7 +116,6 @@
     <string name="full_delete_confirm">Czy naprawdę chcesz zresetować urządzenie? Konieczne będzie ponowne sparowanie go z systemem online.</string>
     <string name="settings_label_search_disable">Wyłącz wyszukiwanie</string>
     <string name="settings_label_kioskmode">Tryb kiosku</string>
-    <string name="pin_protection">Ochrona kodem PIN</string>
     <string name="pin_protection_enable">Włącz ochronę kodem PIN</string>
     <string name="pin_protection_settings">Chroń ustawienia aplikacji</string>
     <string name="progress_registering">Rejestrowanie urządzenia na serwerze…</string>
