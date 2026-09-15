@@ -439,7 +439,7 @@ class MainActivity : BaseScanActivity() {
             window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
             }
-            if (KioskHardware.isTR51() || KioskHardware.isWA1053T()) {
+            if (!conf.legacyKioskMode) {
                 val intent = Intent(this, KioskActivity::class.java)
                 startActivity(intent)
                 finish()

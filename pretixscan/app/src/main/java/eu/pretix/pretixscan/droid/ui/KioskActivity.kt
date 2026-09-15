@@ -266,6 +266,15 @@ class KioskActivity : BaseScanActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // settings switched back to legacy
+        if (conf.legacyKioskMode) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         fullscreen()
         if (conf.kioskOutOfOrder) {
             conf.kioskOutOfOrder = true
