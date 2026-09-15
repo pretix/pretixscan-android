@@ -174,31 +174,6 @@ class KioskActivity : BaseScanActivity() {
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
 
-        val scanDrawable = when {
-            KioskHardware.isTR51() -> {
-                R.drawable.avd_kiosk_portrait_kt0345_scan
-            }
-            KioskHardware.isWA1053T() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isZebra() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isNewland() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isSeuic() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            KioskHardware.isM3() -> {
-                R.drawable.avd_kiosk_widescreen_barcode_bottom
-            }
-            else -> null
-        }
-        if (scanDrawable != null) {
-            binding.ivKioskScanAnimation.setImageDrawable(AppCompatResources.getDrawable(this, scanDrawable))
-        }
-
         if (KioskHardware.isTR51()) {
             deviceHasGate = true
         }
@@ -235,7 +210,6 @@ class KioskActivity : BaseScanActivity() {
         super.onPostCreate(savedInstanceState)
         fullscreen()
         updateUi()
-        resetAnimations()
     }
 
     override fun onStop() {
@@ -283,6 +257,38 @@ class KioskActivity : BaseScanActivity() {
         }
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         updateNetworkType(connectivityManager)
+
+        val scanDrawable = when (conf.kioskAnimationDevice) {
+            "auto" -> when {
+                KioskHardware.isTR51() -> {
+                    R.drawable.avd_kiosk_portrait_kt0345_scan
+                }
+                KioskHardware.isWA1053T() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isZebra() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isNewland() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isSeuic() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isM3() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                else -> null
+            }
+            "tr51" -> R.drawable.avd_kiosk_portrait_kt0345_scan
+            "tablet_scanner_bottom" -> R.drawable.avd_kiosk_widescreen_barcode_bottom
+            "tablet_scanner_separate" -> R.drawable.avd_kiosk_widescreen_barcode_bottom // FIXME
+            else -> null
+        }
+        if (scanDrawable != null) {
+            binding.ivKioskScanAnimation.setImageDrawable(AppCompatResources.getDrawable(this, scanDrawable))
+        }
+        resetAnimations()
         updateUi()
     }
 

@@ -407,6 +407,10 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_LEGACY_KIOSK_MODE, false) && default_prefs.getBoolean("pref_pin_enable", false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_LEGACY_KIOSK_MODE, value).apply()
 
+    var kioskAnimationDevice: String
+        get() = default_prefs.getString(PREFS_KEY_KIOSK_ANIMATION_DEVICE, "auto") ?: "auto"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_ANIMATION_DEVICE, value).apply()
+
     var unpaidAsk: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
@@ -481,6 +485,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
         val PREFS_KEY_LEGACY_KIOSK_MODE = "pref_legacy_kiosk_mode"
+        val PREFS_KEY_KIOSK_ANIMATION_DEVICE = "pref_kiosk_animation_device"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
         val PREFS_KEY_KIOSK_OOO = "pref_kiosk_out_of_order"
         val PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT = "gate_back_to_start_timeout"

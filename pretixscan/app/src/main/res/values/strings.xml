@@ -103,6 +103,13 @@
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Print every badge twice</string>
     <string name="settings_label_details">Details</string>
+    <string name="settings_label_kiosk_animation_device">Device type for kiosk scan animation</string>
+    <string-array name="settings_valuelabels_kiosk_animation_device">
+        <item>Automatically selected based on hardware</item>
+        <item>Portrait: pretix TR51</item>
+        <item>Widescreen: Tablet with scanner at the bottom edge</item>
+        <item>Widescreen: Tablet with separate hardware scanner</item>
+    </string-array>
     <string name="pref_unpaid_ask">Ask before checking in unpaid tickets</string>
     <string name="pref_ignore_questions">Do not ask questions during check-in</string>
     <string name="pref_unpaid_ask_summary">When the check-in list is set to include pending orders, this setting controls whether you will be asked before they are being checked in.</string>

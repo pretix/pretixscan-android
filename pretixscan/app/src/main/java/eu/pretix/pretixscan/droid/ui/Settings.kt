@@ -103,6 +103,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<AutoOfflineListPreference>("pref_auto_offline")?.isEnabled = !conf.proxyMode
         findPreference<CheckBoxPreference>("pref_auto_switch")?.isEnabled = conf.eventSelection.size == 1
         findPreference<CheckBoxPreference>("pref_sync_orders")?.isEnabled = !conf.proxyMode
+        findPreference<ListPreference>("pref_kiosk_animation_device")?.isVisible = conf.kioskMode
         findPreference<Preference>("version")?.summary = BuildConfig.VERSION_NAME
         findPreference<Preference>("device_name")?.summary = conf.deviceKnownName
         findPreference<Preference>("full_resync")?.setOnPreferenceClickListener {
