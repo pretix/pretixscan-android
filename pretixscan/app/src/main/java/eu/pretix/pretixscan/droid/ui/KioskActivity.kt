@@ -241,8 +241,7 @@ class KioskActivity : BaseScanActivity() {
     override fun onResume() {
         super.onResume()
 
-        // settings switched back to legacy
-        if (conf.legacyKioskMode) {
+        if (conf.legacyKioskMode || !conf.kioskMode) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
