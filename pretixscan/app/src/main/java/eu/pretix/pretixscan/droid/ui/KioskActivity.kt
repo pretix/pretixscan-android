@@ -681,9 +681,9 @@ class KioskActivity : BaseScanActivity() {
                 } else {
                     binding.clSuccess.visibility = View.VISIBLE
                     binding.tvSuccessMessage.text = when (conf.scanType) {
-                        "exit" -> localizedString(R.string.scan_result_exit)
-                        "entry" -> localizedString(R.string.scan_result_valid)
-                        else -> localizedString(R.string.scan_result_valid)
+                        "exit" -> localizedString(R.string.scan_result_exit_kiosk)
+                        "entry" -> localizedString(R.string.scan_result_valid_kiosk)
+                        else -> localizedString(R.string.scan_result_valid_kiosk)
                     }
                     // binding.tvSuccessReason.text = ticketAndVariationName // FIXME, but not shown yet
                 }
