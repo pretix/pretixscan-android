@@ -46,6 +46,12 @@ class PinSettingsFragment : PreferenceFragmentCompat() {
         findPreference<EditTextPreference>("pref_pin")?.setOnBindEditTextListener { editText ->
             editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         }
+        if (KioskHardware.isTR51() || KioskHardware.isWA1053T()) {
+            findPreference<CheckBoxPreference>("pref_legacy_kiosk_mode")?.apply {
+                isChecked = false
+                isEnabled = false
+            }
+        }
     }
 }
 
