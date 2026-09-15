@@ -18,6 +18,7 @@ import android.os.LocaleList
 import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
@@ -911,8 +912,7 @@ class KioskActivity : BaseScanActivity() {
 
                 val displaymetrics = DisplayMetrics()
                 windowManager.defaultDisplay.getMetrics(displaymetrics)
-                val height: Int = displaymetrics.heightPixels
-                val width: Int = displaymetrics.widthPixels
+                val mm = displaymetrics.densityDpi / 25.4
 
                 if (pointerUpPositions.size == 2 && pointerDownPositions.size == 2) {
                     val fingerIds = pointerDownPositions.keys.toList()
@@ -925,10 +925,11 @@ class KioskActivity : BaseScanActivity() {
                     val lowerFingerId = pointerDownPositions.keys.first { it != upperFingerId }
 
                     val gestureDetected =
-                        (pointerUpPositions[upperFingerId]!!.x - pointerDownPositions[upperFingerId]!!.x < -0.5 * width) &&
-                                (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 0.5 * width) &&
+                        (pointerUpPositions[upperFingerId]!!.x - pointerDownPositions[upperFingerId]!!.x < -30 * mm) &&
+                                (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 30 * mm) &&
                                 (pointerUpPositions[upperFingerId]!!.y < pointerUpPositions[lowerFingerId]!!.y)
                     if (gestureDetected) {
+                        Log.d("KioskActivity", "menu gesture detected")
                         pinProtect("settings") { pin ->
                             openMenu(pin)
                         }
@@ -936,10 +937,13 @@ class KioskActivity : BaseScanActivity() {
                 } else if (pointerUpPositions.size == 1 && pointerDownPositions.size == 1) {
                     val fingerId = pointerDownPositions.keys.first()
                     val gestureDetected =
-                        (pointerDownPositions[fingerId]!!.x - lowestPoint.x < -0.2 * width) &&
-                                (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 0.2 * width) &&
-                                (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 0.2 * height) &&
-                                (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 0.2 * height)
+                        (pointerDownPositions[fingerId]!!.x - lowestPoint.x < -30 * mm) &&
+                                (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 30 * mm) &&
+                                (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 30 * mm) &&
+                                (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 30 * mm)
+                    if (gestureDetected) {
+                        Log.d("KioskActivity", "checkmark gesture detected")
+                    }
                     if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
                         localizedContext = null
                         state = KioskState.WaitingForScan
