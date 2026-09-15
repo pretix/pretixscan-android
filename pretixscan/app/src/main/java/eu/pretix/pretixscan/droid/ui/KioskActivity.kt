@@ -281,7 +281,7 @@ class KioskActivity : BaseScanActivity() {
             }
             "tr51" -> R.drawable.avd_kiosk_portrait_kt0345_scan
             "tablet_scanner_bottom" -> R.drawable.avd_kiosk_widescreen_barcode_bottom
-            "tablet_scanner_separate" -> R.drawable.avd_kiosk_widescreen_barcode_bottom // FIXME
+            "tablet_scanner_separate" -> R.drawable.avd_kiosk_widescreen_barcode_separate
             else -> null
         }
         if (scanDrawable != null) {
