@@ -207,7 +207,7 @@
     <string name="kiosk_text_scan">Please scan your ticket</string>
     <string name="kiosk_text_reading">Reading barcode…</string>
     <string name="kiosk_text_checking">Checking your ticket…</string>
-    <string name="kiosk_text_print">Please take your badge</string>
+    <string name="kiosk_text_print">Your badge is being printed…</string>  <!-- change to "Please take your badge" once we have badge-taken sensors -->
     <string name="kiosk_text_gate">Please proceed through the gate</string>
     <string name="kiosk_text_questions_reject">Ticket cannot be validated here</string>
     <string name="kiosk_text_questions_reject_sub">Please reach out to our staff</string>
