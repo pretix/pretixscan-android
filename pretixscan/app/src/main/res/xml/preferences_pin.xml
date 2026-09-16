@@ -60,6 +60,7 @@
             android:defaultValue="false"
             android:dependency="pref_kiosk_mode"
             android:key="pref_legacy_kiosk_mode"
-            android:title="@string/settings_label_legacy_kioskmode" />
+            android:title="@string/settings_label_legacy_kioskmode"
+            android:summary="@string/settings_summary_legacy_kioskmode" />
     </PreferenceCategory>
 </PreferenceScreen>
