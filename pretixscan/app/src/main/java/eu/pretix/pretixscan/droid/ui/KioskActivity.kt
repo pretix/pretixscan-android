@@ -140,12 +140,16 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Checking,
             KioskState.ReadingBarcode,
             KioskState.Rejected -> {
-                state = KioskState.WaitingForScan
-                localizedContext = null
-                updateUi()
+                resetStateBackToStart()
             }
             else -> {}
         }
+    }
+
+    fun resetStateBackToStart() {
+        state = KioskState.WaitingForScan
+        localizedContext = null
+        updateUi()
     }
 
     val printTimeout = Runnable {
@@ -749,11 +753,15 @@ class KioskActivity : BaseScanActivity() {
             getString(R.string.action_label_settings),
             getString(R.string.action_sync),
             getString(R.string.operation_select_event),
+            if (state == KioskState.TemporarilyOutOfOrder)
+                getString(R.string.action_label_remove_temporarily_out_of_order)
+            else
+                null,
             if (conf.kioskOutOfOrder)
                 getString(R.string.action_label_remove_out_of_order)
             else
                 getString(R.string.action_label_out_of_order)
-        )
+        ).filterNotNull().toTypedArray()
         val dialog = MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
                 when (optstrings[i]) {
@@ -777,6 +785,9 @@ class KioskActivity : BaseScanActivity() {
                         val intent = Intent(this, EventConfigActivity::class.java)
                         startActivityForResult(intent, REQ_EVENT, null)
                     }
+                    getString(R.string.action_label_remove_temporarily_out_of_order) -> {
+                        resetStateBackToStart()
+                    }
                     getString(R.string.action_label_out_of_order) -> {
                         conf.kioskOutOfOrder = true
                         state = KioskState.OutOfOrder
@@ -785,9 +796,7 @@ class KioskActivity : BaseScanActivity() {
                     }
                     getString(R.string.action_label_remove_out_of_order) -> {
                         conf.kioskOutOfOrder = false
-                        localizedContext = null
-                        state = KioskState.WaitingForScan
-                        updateUi()
+                        resetStateBackToStart()
                     }
                 }
             }
@@ -952,9 +961,7 @@ class KioskActivity : BaseScanActivity() {
                         Log.d("KioskActivity", "checkmark gesture detected")
                     }
                     if (gestureDetected && state == KioskState.TemporarilyOutOfOrder && !conf.kioskOutOfOrder) {
-                        localizedContext = null
-                        state = KioskState.WaitingForScan
-                        updateUi()
+                        resetStateBackToStart()
                     }
                 }
                 return true
