@@ -97,6 +97,7 @@ class KioskActivity : BaseScanActivity() {
         }
     var lastTicketRequireAttention = false
     var lastScanNonce: String? = null
+    var lastPrintJobId: Int = -1
     var localizedContext: Context? = null
     override var useOrderLocale = true
 
@@ -531,6 +532,13 @@ class KioskActivity : BaseScanActivity() {
                         }
                     } else {
                         // printing failed
+                        if (resultData?.containsKey("print_job_id") == true && resultData.getInt("print_job_id", -1) != lastPrintJobId) {
+                            // we got a failed print result for a print job that had already
+                            // been superseded by a newer print job. Let's ignore that.
+                            val printJobId = resultData.getInt("print_job_id", -1)
+                            Log.w("KioskActivity", "ignoring failed print result with job id=${printJobId}")
+                            return
+                        }
                         runOnUiThread {
                             binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed)
                             state = KioskState.TemporarilyOutOfOrder
@@ -547,7 +555,8 @@ class KioskActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    ++lastPrintJobId
                 )
             }
         } else if (state == KioskState.GateOpen) {

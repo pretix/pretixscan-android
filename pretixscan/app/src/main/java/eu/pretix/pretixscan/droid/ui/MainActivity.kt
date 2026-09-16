@@ -867,7 +867,8 @@ class MainActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    -1
                 )
             }
             view_data.showPrint.set(true)
@@ -878,7 +879,8 @@ class MainActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    -1
                 )
             }
         } else {

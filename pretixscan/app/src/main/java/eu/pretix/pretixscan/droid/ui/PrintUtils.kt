@@ -82,7 +82,8 @@ fun printBadge(
     fileStorage: AndroidFileStorage,
     position: JSONObject,
     eventSlug: String,
-    recv: ResultReceiver?
+    recv: ResultReceiver?,
+    printJobId: Int?
 ) {
     val positions = JSONArray()
     positions.put(position)
@@ -178,6 +179,9 @@ fun printBadge(
         )
     } else {
         throw Exception("error_print_no_app");
+    }
+    if (printJobId != null) {
+        intent.putExtra("print_job_id", printJobId)
     }
     if (recv != null) {
         intent.putExtra("resultreceiver", receiverForSending(recv));
