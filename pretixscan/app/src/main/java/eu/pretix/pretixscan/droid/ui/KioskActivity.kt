@@ -984,6 +984,12 @@ class KioskActivity : BaseScanActivity() {
                 }
                 return true
             }
+            KeyEvent.KEYCODE_ESCAPE -> {
+                if (state == KioskState.TemporarilyOutOfOrder && !conf.kioskOutOfOrder) {
+                    resetStateBackToStart()
+                    return true
+                }
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
