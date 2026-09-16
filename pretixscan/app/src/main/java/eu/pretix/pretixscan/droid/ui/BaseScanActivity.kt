@@ -663,7 +663,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         return when (event.keyCode) {
             KeyEvent.KEYCODE_ENTER -> {
                 if (keyboardBuffer.isEmpty()) {
-                    false
+                    return false
                 }
                 lastScanTime = System.currentTimeMillis()
                 lastScanCode = keyboardBuffer
