@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <EditTextPreference
         android:key="pref_pin"
         android:title="@string/pin_protection_pin" />
@@ -55,7 +56,15 @@
             android:dependency="pref_kiosk_mode"
             android:key="gate_back_to_start_timeout"
             android:summary="@string/settings_summary_gate_back_to_start_timeout"
-            android:title="@string/settings_label_gate_back_to_start_timeout" />
+            android:title="@string/settings_label_gate_back_to_start_timeout"
+            app:isPreferenceVisible="false" />
+        <EditTextPreference
+            android:defaultValue="2500"
+            android:dependency="pref_kiosk_mode"
+            android:key="success_back_to_start_timeout"
+            android:summary="@string/settings_summary_success_back_to_start_timeout"
+            android:title="@string/settings_label_success_back_to_start_timeout"
+            app:isPreferenceVisible="false" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="pref_kiosk_mode"

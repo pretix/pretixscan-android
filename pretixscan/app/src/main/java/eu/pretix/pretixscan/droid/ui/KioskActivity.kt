@@ -180,7 +180,7 @@ class KioskActivity : BaseScanActivity() {
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
 
-        if (KioskHardware.isTR51()) {
+        if (KioskHardware.isTR51()) { // NOTE: keep this synced with PinSettingsFragment
             deviceHasGate = true
         }
     }
@@ -559,7 +559,7 @@ class KioskActivity : BaseScanActivity() {
 
     fun openGate() {
         if (!deviceHasGate) {
-            backToStartHandler.postDelayed(backToStart, conf.timeAfterGateOpen.toLong())
+            backToStartHandler.postDelayed(backToStart, conf.timeAfterSuccess.toLong())
             return
         }
         try {

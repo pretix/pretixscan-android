@@ -51,6 +51,13 @@ class PinSettingsFragment : PreferenceFragmentCompat() {
                 isChecked = false
                 isEnabled = false
             }
+            findPreference<EditTextPreference>("gate_back_to_start_timeout")?.apply {
+                isVisible = true
+            }
+        } else {
+            findPreference<EditTextPreference>("success_back_to_start_timeout")?.apply {
+                isVisible = true
+            }
         }
     }
 }

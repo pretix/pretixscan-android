@@ -172,6 +172,8 @@
     <string name="settings_summary_legacy_kioskmode">Will be removed in the future</string>
     <string name="settings_label_gate_back_to_start_timeout">Time after gate open</string>
     <string name="settings_summary_gate_back_to_start_timeout">Delay in milliseconds after the gate opened until the ticket scanning screen is shown again</string>
+    <string name="settings_label_success_back_to_start_timeout">Time after successful check-in</string>
+    <string name="settings_summary_success_back_to_start_timeout">Delay in milliseconds after successful check-in until the ticket scanning screen is shown again</string>
     <string name="pin_protection_and_kiosk">PIN protection &amp; kiosk mode</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>
