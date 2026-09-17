@@ -49,6 +49,10 @@ android {
         coreLibraryDesugaringEnabled = true
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     signingConfigs {
         release {
             storeFile file("../../release.keystore")
