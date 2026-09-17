@@ -88,6 +88,8 @@
     <string name="status_empty">Keine Suchergebnisse gefunden. Bitte geben Sie mindestens vier Zeichen ein.</string>
     <string name="scan_result_valid">Ticket gültig</string>
     <string name="scan_result_exit">Ausgang erfasst</string>
+    <string name="scan_result_valid_kiosk">Herzlich Willkommen!</string>
+    <string name="scan_result_exit_kiosk">Auf Wiedersehen!</string>
     <string name="scan_result_used">Ticket bereits eingelöst</string>
     <string name="scan_result_questions">Infos benötigt</string>
     <string name="scan_result_invalid">Ticket ungültig</string>
@@ -142,7 +144,7 @@
     <string name="debug_info_list">Liste: %1$s</string>
     <string name="debug_info_gate">Zugang: %1$s</string>
     <string name="debug_info_device">Gerät: %1$s</string>
-    <string name="pin_protection">PIN-Sperre</string>
+    <string name="pin_protection_and_kiosk">PIN-Sperre &amp; Kiosk-Modus</string>
     <string name="pin_protection_pin">PIN setzen</string>
     <string name="pin_protection_enable">PIN-Sperre aktivieren</string>
     <string name="pin_protection_settings">Einstellungen sperren</string>
@@ -194,11 +196,12 @@
     <string name="kiosk_text_scan">Bitte scannen Sie Ihr Ticket</string>
     <string name="kiosk_text_reading">Barcode wird gelesen…</string>
     <string name="kiosk_text_checking">Ticket wird geprüft…</string>
-    <string name="kiosk_text_print">Bitte entnehmen Sie Ihr Badge</string>
+    <string name="kiosk_text_print">Ihr Badge wird gedruckt…</string>
     <string name="kiosk_text_gate">Bitte gehen Sie durch das Drehkreuz</string>
     <string name="out_of_order">Außer Betrieb</string>
     <string name="action_label_out_of_order">Außer Betrieb nehmen</string>
     <string name="action_label_remove_out_of_order">Wieder in Betrieb nehmen</string>
+    <string name="action_label_remove_temporarily_out_of_order">Fehlermeldung quittieren</string>
     <string name="kiosk_error_gate_opening_failed">Öffnung der Drehsperre fehlgeschlagen</string>
     <string name="kiosk_error_gate_opening_failed_timeout">Timeout bei Öffnung der Drehsperre</string>
     <string name="kiosk_error_printing_failed">Druck fehlgeschlagen</string>

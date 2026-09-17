@@ -112,7 +112,6 @@
     <string name="label_shop_active">실행중입니다</string>
     <string name="settings_label_search_disable">검색 비활성화</string>
     <string name="settings_label_kioskmode">키오스크 (셀프 서비스 기기, 특정 화면/앱만 사용하게 제한하는) 모드</string>
-    <string name="pin_protection">PIN 보호기능</string>
     <string name="pin_protection_pin">PIN 설정하기</string>
     <string name="pin_protection_enable">PIN 보호기능 활성화</string>
     <string name="event_select_calendar">캘린더 (달력) 보여주기</string>

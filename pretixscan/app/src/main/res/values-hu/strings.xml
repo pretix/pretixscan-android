@@ -149,7 +149,6 @@
     <string name="settings_label_search_disable">Keresés letiltása</string>
     <string name="settings_label_kioskmode">Kioszk mód</string>
     <string name="settings_summary_kioskmode">A kioszk mód elrejti azokat a menüket, amelyeket nem szabad használni önkiszolgáló telepítés esetén. A kioszk mód nem akadályozza meg, hogy a felhasználók a rendszer funkcióin keresztül kilépjenek az alkalmazásból. A beállítások eléréséhez be kell olvasnia egy QR-kódot a PIN-kódjával.</string>
-    <string name="pin_protection">PIN-kódos védelem</string>
     <string name="pin_protection_pin">PIN-kód beállítása</string>
     <string name="pin_protection_enable">PIN-kódos védelem engedélyezése</string>
     <string name="pin_protection_settings">Alkalmazásbeállítások védelme</string>

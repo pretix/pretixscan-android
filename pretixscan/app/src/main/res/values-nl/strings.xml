@@ -82,7 +82,6 @@
     <string name="pin_protection_settings">App-instellingen beveiligen</string>
     <string name="pin_protection_enable">PIN-beveiliging inschakelen</string>
     <string name="pin_protection_pin">PIN instellen</string>
-    <string name="pin_protection">PIN-beveiliging</string>
     <string name="settings_label_kioskmode">Kioskmodus</string>
     <string name="settings_summary_kioskmode">De kioskmodus verbergt menu\'s die niet bedoeld zijn voor gebruik door klanten als u klanten zelf hun tickets laat scannen. Als de kioskmodus is ingeschakeld, kunnen gebruikers nog steeds de pretixSCAN-app verlaten via systeemfuncties (zoals de home-knop). Om de instellingen van pretixSCAN opnieuw aan te passen, zult u een QR-code met uw PIN moeten scannen.</string>
     <string name="settings_label_search_disable">Zoeken uitschakelen</string>

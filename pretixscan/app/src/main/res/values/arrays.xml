@@ -16,4 +16,10 @@
         <item>once</item>
         <item>true</item>
     </string-array>
+    <string-array name="settings_values_kiosk_animation_device">
+        <item>auto</item>
+        <item>tr51</item>
+        <item>tablet_scanner_bottom</item>
+        <item>tablet_scanner_separate</item>
+    </string-array>
 </resources>

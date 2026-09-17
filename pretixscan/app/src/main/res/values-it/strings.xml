@@ -125,7 +125,6 @@
     <string name="label_shop_inactive">Negozio disattivato</string>
     <string name="settings_label_search_disable">Disabilitare ricerca</string>
     <string name="settings_label_kioskmode">Modalità Kiosk</string>
-    <string name="pin_protection">Protezione con PIN</string>
     <string name="pin_protection_pin">Impostare un PIN</string>
     <string name="pin_protection_settings">Proteggere impostazioni app</string>
     <string name="pin_protection_statistics">Proteggere statistiche</string>

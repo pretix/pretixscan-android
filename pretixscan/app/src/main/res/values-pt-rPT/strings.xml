@@ -2,7 +2,6 @@
 <resources>
     <string name="pin_protection_statistics">Proteger estatísticas</string>
     <string name="pin_protection_enable">Ativar proteção por PIN</string>
-    <string name="pin_protection">Proteção por PIN</string>
     <string name="pin_protection_pin">Escolher PIN</string>
     <string name="label_shop_inactive">Bilheteira desativada</string>
     <string name="settings_label_search_disable">Desativar pesquisa</string>

@@ -148,7 +148,6 @@
     <string name="pin_protection_statistics">Proteger las estadísticas</string>
     <string name="pin_protection_switch_event">Interruptor de protección de eventos</string>
     <string name="pin_protection_switch_mode">Interruptor de modo de protección</string>
-    <string name="pin_protection">Protección por PIN</string>
     <string name="pin_protection_pin">Establecer PIN</string>
     <string name="pin_protection_enter">Introducir PIN</string>
     <string name="currently_inside">asiste actualmente</string>

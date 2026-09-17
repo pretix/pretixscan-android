@@ -439,7 +439,7 @@ class MainActivity : BaseScanActivity() {
             window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
             }
-            if (KioskHardware.isTR51() || KioskHardware.isWA1053T()) {
+            if (!conf.legacyKioskMode) {
                 val intent = Intent(this, KioskActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -867,7 +867,8 @@ class MainActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    -1
                 )
             }
             view_data.showPrint.set(true)
@@ -878,7 +879,8 @@ class MainActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    -1
                 )
             }
         } else {

@@ -18,15 +18,23 @@ import android.os.LocaleList
 import android.os.Looper
 import android.os.ResultReceiver
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -36,6 +44,7 @@ import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
 import eu.pretix.pretixscan.droid.R
 import eu.pretix.pretixscan.droid.databinding.ActivityKioskBinding
+import eu.pretix.pretixscan.droid.hardware.KioskHardware
 import eu.pretix.pretixscan.droid.hardware.LED
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
@@ -46,7 +55,7 @@ import java.util.Locale
 class KioskActivity : BaseScanActivity() {
     companion object {
         /**
-         * Some older devices needs a small delay between UI widget updates
+         * Some older devices need a small delay between UI widget updates
          * and a change of the status and navigation bar.
          */
         private const val UI_ANIMATION_DELAY = 300
@@ -59,6 +68,7 @@ class KioskActivity : BaseScanActivity() {
             NeedAnswers,
             Printing,
             GateOpen,
+            TemporarilyOutOfOrder,
             OutOfOrder,
         }
 
@@ -72,6 +82,7 @@ class KioskActivity : BaseScanActivity() {
     }
 
     private lateinit var binding: ActivityKioskBinding
+    private var deviceHasGate: Boolean = false
     private val hideHandler = Handler(Looper.myLooper()!!)
     private val backToStartHandler = Handler(Looper.myLooper()!!)
     private val printTimeoutHandler = Handler(Looper.myLooper()!!)
@@ -86,6 +97,7 @@ class KioskActivity : BaseScanActivity() {
         }
     var lastTicketRequireAttention = false
     var lastScanNonce: String? = null
+    var lastPrintJobId: Int = -1
     var localizedContext: Context? = null
     override var useOrderLocale = true
 
@@ -129,18 +141,22 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Checking,
             KioskState.ReadingBarcode,
             KioskState.Rejected -> {
-                state = KioskState.WaitingForScan
-                localizedContext = null
-                updateUi()
+                resetStateBackToStart()
             }
             else -> {}
         }
     }
 
+    fun resetStateBackToStart() {
+        state = KioskState.WaitingForScan
+        localizedContext = null
+        updateUi()
+    }
+
     val printTimeout = Runnable {
         if (state == KioskState.Printing) {
             binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed_timeout)
-            state = KioskState.OutOfOrder
+            state = KioskState.TemporarilyOutOfOrder
             updateUi()
         }
     }
@@ -164,6 +180,10 @@ class KioskActivity : BaseScanActivity() {
 
         @SuppressLint("SetTextI18n")
         binding.tvDeviceInfo.text = "#${conf.devicePosId}"
+
+        if (KioskHardware.isTR51()) { // NOTE: keep this synced with PinSettingsFragment
+            deviceHasGate = true
+        }
     }
 
     val loopCallback =
@@ -175,17 +195,17 @@ class KioskActivity : BaseScanActivity() {
 
     fun resetAnimations() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            (binding.ivKioskAnimation.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskScanAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation2.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskPrintAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
             }
-            (binding.ivKioskAnimation3.drawable as? AnimatedVectorDrawable)?.apply {
+            (binding.ivKioskGateAnimation.drawable as? AnimatedVectorDrawable)?.apply {
                 unregisterAnimationCallback(loopCallback)
                 registerAnimationCallback(loopCallback)
                 start()
@@ -197,7 +217,6 @@ class KioskActivity : BaseScanActivity() {
         super.onPostCreate(savedInstanceState)
         fullscreen()
         updateUi()
-        resetAnimations()
     }
 
     override fun onStop() {
@@ -228,6 +247,14 @@ class KioskActivity : BaseScanActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        if (conf.legacyKioskMode || !conf.kioskMode) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         fullscreen()
         if (conf.kioskOutOfOrder) {
             conf.kioskOutOfOrder = true
@@ -236,7 +263,45 @@ class KioskActivity : BaseScanActivity() {
         }
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         updateNetworkType(connectivityManager)
+
+        val scanDrawable = when (conf.kioskAnimationDevice) {
+            "auto" -> when {
+                KioskHardware.isTR51() -> {
+                    R.drawable.avd_kiosk_portrait_kt0345_scan
+                }
+                KioskHardware.isWA1053T() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isZebra() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isNewland() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isSeuic() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                KioskHardware.isM3() -> {
+                    R.drawable.avd_kiosk_widescreen_barcode_bottom
+                }
+                else -> null
+            }
+            "tr51" -> R.drawable.avd_kiosk_portrait_kt0345_scan
+            "tablet_scanner_bottom" -> R.drawable.avd_kiosk_widescreen_barcode_bottom
+            "tablet_scanner_separate" -> R.drawable.avd_kiosk_widescreen_barcode_separate
+            else -> null
+        }
+        if (scanDrawable != null) {
+            binding.ivKioskScanAnimation.setImageDrawable(AppCompatResources.getDrawable(this, scanDrawable))
+        }
+        resetAnimations()
         updateUi()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (!hasFocus) {
+            fullscreen()
+        }
     }
 
     private fun updateNetworkType(connectivityManager: ConnectivityManager) {
@@ -467,9 +532,16 @@ class KioskActivity : BaseScanActivity() {
                         }
                     } else {
                         // printing failed
+                        if (resultData?.containsKey("print_job_id") == true && resultData.getInt("print_job_id", -1) != lastPrintJobId) {
+                            // we got a failed print result for a print job that had already
+                            // been superseded by a newer print job. Let's ignore that.
+                            val printJobId = resultData.getInt("print_job_id", -1)
+                            Log.w("KioskActivity", "ignoring failed print result with job id=${printJobId}")
+                            return
+                        }
                         runOnUiThread {
                             binding.tvOutOfOrderMessage.text = resources.getString(R.string.kiosk_error_printing_failed)
-                            state = KioskState.OutOfOrder
+                            state = KioskState.TemporarilyOutOfOrder
                             updateUi()
                         }
                     }
@@ -483,7 +555,8 @@ class KioskActivity : BaseScanActivity() {
                     (application as PretixScan).fileStorage,
                     result.position!!,
                     result.eventSlug!!,
-                    recv
+                    recv,
+                    ++lastPrintJobId
                 )
             }
         } else if (state == KioskState.GateOpen) {
@@ -494,6 +567,10 @@ class KioskActivity : BaseScanActivity() {
     }
 
     fun openGate() {
+        if (!deviceHasGate) {
+            backToStartHandler.postDelayed(backToStart, conf.timeAfterSuccess.toLong())
+            return
+        }
         try {
             openGate(this, object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
@@ -564,6 +641,7 @@ class KioskActivity : BaseScanActivity() {
         binding.clPrinting.visibility = View.GONE
         binding.clRejected.visibility = View.GONE
         binding.clGate.visibility = View.GONE
+        binding.clSuccess.visibility = View.GONE
         binding.clChecking.visibility = View.GONE
         binding.llOutOfOrder.visibility = View.GONE
         val led = LED(this)
@@ -611,13 +689,28 @@ class KioskActivity : BaseScanActivity() {
             }
 
             KioskState.GateOpen -> {
-                binding.clGate.visibility = View.VISIBLE
-                binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                if (deviceHasGate) {
+                    binding.clGate.visibility = View.VISIBLE
+                    binding.tvGate.text = localizedString(R.string.kiosk_text_gate)
+                } else {
+                    binding.clSuccess.visibility = View.VISIBLE
+                    binding.tvSuccessMessage.text = when (conf.scanType) {
+                        "exit" -> localizedString(R.string.scan_result_exit_kiosk)
+                        "entry" -> localizedString(R.string.scan_result_valid_kiosk)
+                        else -> localizedString(R.string.scan_result_valid_kiosk)
+                    }
+                    // binding.tvSuccessReason.text = ticketAndVariationName // FIXME, but not shown yet
+                }
                 if (lastTicketRequireAttention) {
                     led.attention()
                 } else {
                     led.success()
                 }
+            }
+
+            KioskState.TemporarilyOutOfOrder -> {
+                binding.llOutOfOrder.visibility = View.VISIBLE
+                led.error(blink = false)
             }
 
             KioskState.OutOfOrder -> {
@@ -662,18 +755,33 @@ class KioskActivity : BaseScanActivity() {
 
     fun openMenu(pin: String) {
         val optstrings = arrayOf(
+            if (conf.scanType == "exit")
+                getString(R.string.action_label_scantype_entry)
+            else
+                getString(R.string.action_label_scantype_exit),
             getString(R.string.action_label_settings),
             getString(R.string.action_sync),
             getString(R.string.operation_select_event),
-            // TODO: Change direction
+            if (state == KioskState.TemporarilyOutOfOrder)
+                getString(R.string.action_label_remove_temporarily_out_of_order)
+            else
+                null,
             if (conf.kioskOutOfOrder)
                 getString(R.string.action_label_remove_out_of_order)
             else
                 getString(R.string.action_label_out_of_order)
-        )
-        MaterialAlertDialogBuilder(this)
+        ).filterNotNull().toTypedArray()
+        val dialog = MaterialAlertDialogBuilder(this)
             .setItems(optstrings) { _, i ->
                 when (optstrings[i]) {
+                    getString(R.string.action_label_scantype_entry) -> {
+                        conf.scanType = "entry"
+                        updateUi()
+                    }
+                    getString(R.string.action_label_scantype_exit) -> {
+                        conf.scanType = "exit"
+                        updateUi()
+                    }
                     getString(R.string.action_label_settings) -> {
                         val intent = Intent(this, SettingsActivity::class.java)
                         intent.putExtra("pin", pin)
@@ -686,6 +794,9 @@ class KioskActivity : BaseScanActivity() {
                         val intent = Intent(this, EventConfigActivity::class.java)
                         startActivityForResult(intent, REQ_EVENT, null)
                     }
+                    getString(R.string.action_label_remove_temporarily_out_of_order) -> {
+                        resetStateBackToStart()
+                    }
                     getString(R.string.action_label_out_of_order) -> {
                         conf.kioskOutOfOrder = true
                         state = KioskState.OutOfOrder
@@ -694,13 +805,25 @@ class KioskActivity : BaseScanActivity() {
                     }
                     getString(R.string.action_label_remove_out_of_order) -> {
                         conf.kioskOutOfOrder = false
-                        localizedContext = null
-                        state = KioskState.WaitingForScan
-                        updateUi()
+                        resetStateBackToStart()
                     }
                 }
             }
-            .show()
+            .setOnDismissListener {
+                updateUi()
+                fullscreen()
+            }
+            .create()
+        dialog.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        dialog.show()
+        if (dialog.window != null) {
+            val windowInsetsController =
+                WindowCompat.getInsetsController(dialog.window!!, dialog.window!!.decorView)
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        }
+        dialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
 
     override fun handleScan(
@@ -727,7 +850,8 @@ class KioskActivity : BaseScanActivity() {
             KioskState.Checking,
             KioskState.NeedAnswers,
             KioskState.Printing,
-            KioskState.OutOfOrder -> {
+            KioskState.TemporarilyOutOfOrder,
+            KioskState.OutOfOrder, -> {
                 // waiting for user, for printer, gate or administrative action. ignoring scan.
                 lastScanCode = ""  // do not consider scan "used"
                 return
@@ -813,8 +937,7 @@ class KioskActivity : BaseScanActivity() {
 
                 val displaymetrics = DisplayMetrics()
                 windowManager.defaultDisplay.getMetrics(displaymetrics)
-                val height: Int = displaymetrics.heightPixels
-                val width: Int = displaymetrics.widthPixels
+                val mm = displaymetrics.densityDpi / 25.4
 
                 if (pointerUpPositions.size == 2 && pointerDownPositions.size == 2) {
                     val fingerIds = pointerDownPositions.keys.toList()
@@ -827,10 +950,11 @@ class KioskActivity : BaseScanActivity() {
                     val lowerFingerId = pointerDownPositions.keys.first { it != upperFingerId }
 
                     val gestureDetected =
-                        (pointerUpPositions[upperFingerId]!!.x - pointerDownPositions[upperFingerId]!!.x < -0.5 * width) &&
-                                (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 0.5 * width) &&
+                        (pointerUpPositions[upperFingerId]!!.x - pointerDownPositions[upperFingerId]!!.x < -30 * mm) &&
+                                (pointerUpPositions[lowerFingerId]!!.x - pointerDownPositions[lowerFingerId]!!.x > 30 * mm) &&
                                 (pointerUpPositions[upperFingerId]!!.y < pointerUpPositions[lowerFingerId]!!.y)
                     if (gestureDetected) {
+                        Log.d("KioskActivity", "menu gesture detected")
                         pinProtect("settings") { pin ->
                             openMenu(pin)
                         }
@@ -838,14 +962,15 @@ class KioskActivity : BaseScanActivity() {
                 } else if (pointerUpPositions.size == 1 && pointerDownPositions.size == 1) {
                     val fingerId = pointerDownPositions.keys.first()
                     val gestureDetected =
-                        (pointerDownPositions[fingerId]!!.x - lowestPoint.x < -0.2 * width) &&
-                                (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 0.2 * width) &&
-                                (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 0.2 * height) &&
-                                (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 0.2 * height)
-                    if (gestureDetected && state == KioskState.OutOfOrder && !conf.kioskOutOfOrder) {
-                        localizedContext = null
-                        state = KioskState.WaitingForScan
-                        updateUi()
+                        (pointerDownPositions[fingerId]!!.x - lowestPoint.x < -30 * mm) &&
+                                (pointerUpPositions[fingerId]!!.x - lowestPoint.x > 30 * mm) &&
+                                (lowestPoint.y - pointerUpPositions[fingerId]!!.y > 30 * mm) &&
+                                (lowestPoint.y - pointerDownPositions[fingerId]!!.y > 30 * mm)
+                    if (gestureDetected) {
+                        Log.d("KioskActivity", "checkmark gesture detected")
+                    }
+                    if (gestureDetected && state == KioskState.TemporarilyOutOfOrder && !conf.kioskOutOfOrder) {
+                        resetStateBackToStart()
                     }
                 }
                 return true
@@ -853,6 +978,42 @@ class KioskActivity : BaseScanActivity() {
 
             else -> return super.onTouchEvent(event)
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_F5,
+            KeyEvent.KEYCODE_REFRESH -> {
+                syncNow()
+                return true
+            }
+            KeyEvent.KEYCODE_F9 -> {
+                pinProtect("settings") { pin ->
+                    openMenu(pin)
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_ESCAPE -> {
+                if (state == KioskState.TemporarilyOutOfOrder && !conf.kioskOutOfOrder) {
+                    resetStateBackToStart()
+                    return true
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>?, menu: Menu?, deviceId: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val group = KeyboardShortcutGroup(getString(R.string.app_name))
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_F5, 0))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                group.addItem(KeyboardShortcutInfo(getString(R.string.action_sync), KeyEvent.KEYCODE_REFRESH, 0))
+            }
+            group.addItem(KeyboardShortcutInfo(getString(R.string.action_label_settings), KeyEvent.KEYCODE_F9, 0))
+            data?.add(group)
+        }
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
 
 }

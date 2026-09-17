@@ -46,6 +46,19 @@ class PinSettingsFragment : PreferenceFragmentCompat() {
         findPreference<EditTextPreference>("pref_pin")?.setOnBindEditTextListener { editText ->
             editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         }
+        if (KioskHardware.isTR51() || KioskHardware.isWA1053T()) {
+            findPreference<CheckBoxPreference>("pref_legacy_kiosk_mode")?.apply {
+                isChecked = false
+                isEnabled = false
+            }
+            findPreference<EditTextPreference>("gate_back_to_start_timeout")?.apply {
+                isVisible = true
+            }
+        } else {
+            findPreference<EditTextPreference>("success_back_to_start_timeout")?.apply {
+                isVisible = true
+            }
+        }
     }
 }
 
@@ -185,7 +198,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             return@setOnPreferenceChangeListener true
         }
 
-        findPreference<Preference>("gate_back_to_start_timeout")?.isVisible = KioskHardware.isTR51() || KioskHardware.isWA1053T()
     }
 
     private fun asset_dialog(@RawRes htmlRes: Int, @StringRes title: Int) {

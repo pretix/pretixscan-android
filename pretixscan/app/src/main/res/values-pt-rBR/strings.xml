@@ -156,7 +156,6 @@
     <string name="full_delete_confirm">Você quer realmente reiniciar o dispositivo? Você terá que parear com o sistema online novamente.</string>
     <string name="label_shop_active">Ativo</string>
     <string name="label_shop_inactive">Loja desativada</string>
-    <string name="pin_protection">Proteção por PIN</string>
     <string name="settings_label_device_name">Nome do dispositivo</string>
     <string name="headline_please_reinstall">Por favor, reinstale o pretixSCAN</string>
     <string name="reinstall_text">Sua versão anterior do pretixSCAN é muito antiga e os dados locais não podem mais ser utilizados na versão atual.\n\nPor favor, limpe o armazenamento para o pretixSCAN ou exclua e reinstale a aplicação.</string>

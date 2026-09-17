@@ -159,7 +159,6 @@
     <string name="settings_label_troubleshooting">استكشاف الأعطال وإصلاحها</string>
     <string name="pin_protection_enable">تمكين الحماية برقم التعريف الشخصي (PIN)</string>
     <string name="label_shop_active">نشط</string>
-    <string name="pin_protection">حماية رقم التعريف الشخصي (PIN)</string>
     <string name="total_tickets_sold">إجمالي التذاكر المباعة</string>
     <string name="pin_protection_settings">حماية إعدادات التطبيق</string>
     <string name="full_delete">حذف جميع البيانات المحلية وإعادة ضبط الجهاز</string>

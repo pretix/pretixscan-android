@@ -250,10 +250,18 @@ class AppConfig(ctx: Context) : ConfigStore {
     var timeAfterGateOpen: Int
         get() = try {
             Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, "200")!!)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             200
         }
         set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT, value.toString()).apply()
+
+    var timeAfterSuccess: Int
+        get() = try {
+            Integer.parseInt(default_prefs.getString(PREFS_KEY_KIOSK_SUCCESS_B2S_TIMEOUT, "2500")!!)
+        } catch (_: Exception) {
+            2500
+        }
+        set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_SUCCESS_B2S_TIMEOUT, value.toString()).apply()
 
     override fun getDeviceKnownName(): String {
         return prefs.getString(PREFS_KEY_DEVICE_KNOWN_NAME, "")!!
@@ -403,6 +411,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         get() = default_prefs.getBoolean(PREFS_KEY_KIOSK_MODE, false) && default_prefs.getBoolean("pref_pin_enable", false)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_KIOSK_MODE, value).apply()
 
+    var legacyKioskMode: Boolean
+        get() = default_prefs.getBoolean(PREFS_KEY_LEGACY_KIOSK_MODE, false) && default_prefs.getBoolean("pref_pin_enable", false)
+        set(value) = default_prefs.edit().putBoolean(PREFS_KEY_LEGACY_KIOSK_MODE, value).apply()
+
+    var kioskAnimationDevice: String
+        get() = default_prefs.getString(PREFS_KEY_KIOSK_ANIMATION_DEVICE, "auto") ?: "auto"
+        set(value) = default_prefs.edit().putString(PREFS_KEY_KIOSK_ANIMATION_DEVICE, value).apply()
+
     var unpaidAsk: Boolean
         get() = default_prefs.getBoolean(PREFS_KEY_UNPAID_ASK, true)
         set(value) = default_prefs.edit().putBoolean(PREFS_KEY_UNPAID_ASK, value).apply()
@@ -476,9 +492,12 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
         val PREFS_KEY_SEARCH_DISABLE = "pref_search_disable"
         val PREFS_KEY_KIOSK_MODE = "pref_kiosk_mode"
+        val PREFS_KEY_LEGACY_KIOSK_MODE = "pref_legacy_kiosk_mode"
+        val PREFS_KEY_KIOSK_ANIMATION_DEVICE = "pref_kiosk_animation_device"
         val PREFS_KEY_MULTI_EVENT_MODE = "multi_event_mode"
         val PREFS_KEY_KIOSK_OOO = "pref_kiosk_out_of_order"
         val PREFS_KEY_KIOSK_GATE_B2S_TIMEOUT = "gate_back_to_start_timeout"
+        val PREFS_KEY_KIOSK_SUCCESS_B2S_TIMEOUT = "success_back_to_start_timeout"
         val PREFS_KEY_NFC_READER_TYPE = "pref_nfc_type"
         private const val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
         private const val PREFS_KEY_SCREEN_ALWAYS_ON = "pref_screen_always_on"
