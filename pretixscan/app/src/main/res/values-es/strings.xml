@@ -180,7 +180,7 @@
     <string name="kiosk_text_scan">Por favor, escanee su billete</string>
     <string name="kiosk_text_reading">Leyendo el código de barras…</string>
     <string name="kiosk_text_checking">Comprobando el billete…</string>
-    <string name="kiosk_text_print">Por favor, recoja su acreditación</string>
+    <string name="kiosk_text_print">Se está imprimiendo la tarjeta de identificación…</string>
     <string name="kiosk_text_gate">Por favor, adelante hacia el control de entradas</string>
     <string name="kiosk_text_questions_reject">Este billete no se puede validar aquí</string>
     <string name="kiosk_text_questions_reject_sub">Póngase en contacto con nuestro personal</string>
@@ -194,4 +194,15 @@
     <string name="kiosk_error_unknown_scan_result_type">Tipo de resultado de escaneo desconocido</string>
     <string name="kiosk_text_noentry">No se ha detectado ninguna entrada</string>
     <string name="kiosk_text_noentry_description">La entrada volverá a ser válida en breve</string>
+    <string name="settings_label_kiosk_animation_device">Tipo de dispositivo para el escaneo en quiosco</string>
+    <string name="scan_result_valid_kiosk">¡Bienvenidos!</string>
+    <string name="scan_result_exit_kiosk">¡Hasta luego!</string>
+    <string name="settings_label_legacy_kioskmode">Utilizar el modo quiosco clásico</string>
+    <string name="settings_summary_legacy_kioskmode">eliminará en el futuro</string>
+    <string name="settings_label_gate_back_to_start_timeout">Tiempo transcurrido desde la apertura de la puerta</string>
+    <string name="settings_summary_gate_back_to_start_timeout">Retraso en milisegundos desde que se abre la puerta hasta que vuelve a aparecer la pantalla de escaneo del billete</string>
+    <string name="settings_label_success_back_to_start_timeout">Tiempo transcurrido tras realizar el check-in con éxito</string>
+    <string name="settings_summary_success_back_to_start_timeout">Retardo, en milisegundos, desde que se completa con éxito el registro hasta que vuelve a aparecer la pantalla de escaneo del billete</string>
+    <string name="pin_protection_and_kiosk">Protección con PIN y modo quiosco</string>
+    <string name="action_label_remove_temporarily_out_of_order">Confirmar error</string>
 </resources>

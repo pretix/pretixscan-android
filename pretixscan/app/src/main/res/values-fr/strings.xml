@@ -180,7 +180,7 @@
     <string name="kiosk_text_scan">Veuillez scanner votre billet</string>
     <string name="kiosk_text_reading">Lecture du code-barres…</string>
     <string name="kiosk_text_checking">Vérification de votre billet…</string>
-    <string name="kiosk_text_print">Veuillez prendre votre badge</string>
+    <string name="kiosk_text_print">Votre badge est en cours d\'impression…</string>
     <string name="kiosk_text_gate">Veuillez passer le portillon</string>
     <string name="kiosk_text_questions_reject">Ce billet ne peut pas être validé ici</string>
     <string name="kiosk_text_questions_reject_sub">Veuillez contacter notre personnel</string>
@@ -194,4 +194,15 @@
     <string name="kiosk_error_unknown_scan_result_type">Type de résultat de scan inconnu</string>
     <string name="kiosk_text_noentry">Aucune entrée détectée</string>
     <string name="kiosk_text_noentry_description">Votre billet sera de nouveau valide sous peu</string>
+    <string name="settings_label_kiosk_animation_device">Type d\'appareil pour la numérisation sur borne interactive</string>
+    <string name="scan_result_valid_kiosk">Bienvenue !</string>
+    <string name="scan_result_exit_kiosk">Au revoir !</string>
+    <string name="settings_label_legacy_kioskmode">Utiliser le mode kiosque classique</string>
+    <string name="settings_summary_legacy_kioskmode">Sera supprimé prochainement</string>
+    <string name="settings_label_gate_back_to_start_timeout">Temps écoulé depuis l\'ouverture de la barrière</string>
+    <string name="settings_summary_gate_back_to_start_timeout">Délai, en millisecondes, entre l\'ouverture du portillon et la réapparition de l\'écran de lecture du billet</string>
+    <string name="settings_label_success_back_to_start_timeout">Délai après un enregistrement réussi</string>
+    <string name="settings_summary_success_back_to_start_timeout">Délai, en millisecondes, entre la validation de l\'enregistrement et la réapparition de l\'écran de lecture du billet</string>
+    <string name="pin_protection_and_kiosk">Protection par code PIN et mode kiosque</string>
+    <string name="action_label_remove_temporarily_out_of_order">Accuser réception de l\'erreur</string>
 </resources>
