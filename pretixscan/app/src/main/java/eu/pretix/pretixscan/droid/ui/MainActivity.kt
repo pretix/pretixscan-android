@@ -653,7 +653,7 @@ class MainActivity : BaseScanActivity() {
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showQuestionsDialog(result, null, false) { answers ->
-                handleScan(
+                performCheckin(
                     lastScanCode,
                     lastScanSourceType,
                     answers,
@@ -668,7 +668,7 @@ class MainActivity : BaseScanActivity() {
             view_data.resultState.set(DIALOG_EXCHANGE)
             dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
                 hideCard()
-                handleScan(
+                performCheckin(
                     lastScanCode,
                     lastScanSourceType,
                     null,
@@ -685,7 +685,7 @@ class MainActivity : BaseScanActivity() {
             view_data.resultState.set(DIALOG_UNPAID)
             dialog = showUnpaidDialog(this) {
                 stopHidingTimer()
-                handleScan(
+                performCheckin(
                     lastScanCode,
                     lastScanSourceType,
                     answers,
@@ -1016,7 +1016,7 @@ class MainActivity : BaseScanActivity() {
 
                 dialog = showQuestionsDialog(lastScanResult!!, values, true) { answers ->
                     stopHidingTimer()
-                    handleScan(
+                    performCheckin(
                         lastScanCode,
                         lastScanSourceType,
                         answers,
@@ -1029,7 +1029,7 @@ class MainActivity : BaseScanActivity() {
                 view_data.resultState.set(DIALOG_UNPAID)
                 dialog = showUnpaidDialog(this) {
                     hideCard()
-                    handleScan(
+                    performCheckin(
                         lastScanCode,
                         lastScanSourceType,
                         null,
@@ -1042,7 +1042,7 @@ class MainActivity : BaseScanActivity() {
                 reloadNfcHandler() // else nfchandler is null
                 dialog = showExchangeDialog(this, lastScanResult!!, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
                     hideCard()
-                    handleScan(
+                    performCheckin(
                         lastScanCode,
                         lastScanSourceType,
                         null,

@@ -535,6 +535,17 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             mediaPlayers[R.raw.beep]?.start()
         }
 
+        performCheckin(result, source_type, answers, ignore_unpaid, exchange_medium_type, exchange_medium_identifier)
+    }
+
+    fun performCheckin(
+        result: String,
+        source_type: ReusableMediaType,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean,
+        exchange_medium_type: ReusableMediaType? = null,
+        exchange_medium_identifier: String? = null
+    ) {
         bgScope.launch {
             var checkResult: TicketCheckProvider.CheckResult? = null
             val provider = (application as PretixScan).getCheckProvider(conf)
