@@ -117,8 +117,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             }
             handleScan(
                 result,
-                ReusableMediaType.BARCODE,
-                null,
+                ReusableMediaType.BARCODE
             )
         }
     })
@@ -487,11 +486,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
     open fun handleScan(
         raw_result: String,
-        source_type: ReusableMediaType,
-        answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean = !conf.unpaidAsk,
-        exchange_medium_type: ReusableMediaType? = null,
-        exchange_medium_identifier: String? = null,
+        source_type: ReusableMediaType
     ) {
         if (dialog?.isShowing() == true) {
             /*
@@ -524,8 +519,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 raw_result
             }
 
+        val ignore_unpaid = !conf.unpaidAsk
+
         // FIXME: don't play sound for media exchange
-        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
+        if (!ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
 
@@ -535,7 +532,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         lastIgnoreUnpaid = ignore_unpaid
         lastScanResult = null
 
-        performCheckin(result, source_type, answers, ignore_unpaid, exchange_medium_type, exchange_medium_identifier)
+        performCheckin(result, source_type, null, ignore_unpaid)
     }
 
     fun performCheckin(
@@ -655,7 +652,6 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         handleScan(
             s,
             ReusableMediaType.BARCODE,
-            null,
         )
     }
 
@@ -670,8 +666,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 }
                 handleScan(
                     keyboardBuffer,
-                    ReusableMediaType.BARCODE,
-                    null,
+                    ReusableMediaType.BARCODE
                 )
                 keyboardBuffer = ""
                 true
@@ -767,8 +762,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
         handleScan(
             identifier,
-            mediaType,
-            null,
+            mediaType
         )
     }
 

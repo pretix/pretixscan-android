@@ -830,11 +830,7 @@ class KioskActivity : BaseScanActivity() {
 
     override fun handleScan(
         raw_result: String,
-        source_type: ReusableMediaType,
-        answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean,
-        exchange_medium_type: ReusableMediaType?,
-        exchange_medium_identifier: String?
+        source_type: ReusableMediaType
     ) {
         if (conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
             openMenu(raw_result)
@@ -871,11 +867,7 @@ class KioskActivity : BaseScanActivity() {
         updateUi()
         super.handleScan(
             raw_result,
-            source_type,
-            answers,
-            ignore_unpaid,
-            exchange_medium_type,
-            exchange_medium_identifier
+            source_type
         )
     }
 

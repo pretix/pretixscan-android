@@ -206,8 +206,7 @@ class MainActivity : BaseScanActivity() {
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
-                            ReusableMediaType.BARCODE,
-                            null,
+                            ReusableMediaType.BARCODE
                         )
                     }
                 })
@@ -579,10 +578,6 @@ class MainActivity : BaseScanActivity() {
     override fun handleScan(
         raw_result: String,
         source_type: ReusableMediaType,
-        answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean,
-        exchange_medium_type: ReusableMediaType?,
-        exchange_medium_identifier: String?,
     ) {
         if (dialog?.isShowing() == true) {
             /*
@@ -601,11 +596,7 @@ class MainActivity : BaseScanActivity() {
         hideSearchCard()
         super.handleScan(
             raw_result,
-            source_type,
-            answers,
-            ignore_unpaid,
-            exchange_medium_type,
-            exchange_medium_identifier
+            source_type
         )
     }
 
