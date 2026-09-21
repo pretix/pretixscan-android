@@ -792,6 +792,7 @@ class KioskActivity : BaseScanActivity() {
                     }
                     getString(R.string.operation_select_event) -> {
                         val intent = Intent(this, EventConfigActivity::class.java)
+                        intent.putExtra("pin", pin)
                         startActivityForResult(intent, REQ_EVENT, null)
                     }
                     getString(R.string.action_label_remove_temporarily_out_of_order) -> {
