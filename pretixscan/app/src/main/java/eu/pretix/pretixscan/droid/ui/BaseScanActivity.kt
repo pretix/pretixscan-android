@@ -585,12 +585,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     open fun showLoadingCard() {}
 
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult,
-                            secret: String,
-                            sourceType: ReusableMediaType,
-                            ignore_unpaid: Boolean,
                             values: Map<String, String>?,
                             isResumed: Boolean,
-                            retryHandler: ((String, ReusableMediaType, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
+                            retryHandler: ((MutableList<Answer>) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question.toModel() }
         for (q in questions) {
             q.resolveDependency(questions)
@@ -620,7 +617,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             values_,
             null,
             null,
-            { answers -> retryHandler(secret, sourceType, answers, ignore_unpaid) },
+            retryHandler,
             null,
             attendeeName,
             res.orderCodeAndPositionId(),

@@ -652,10 +652,10 @@ class MainActivity : BaseScanActivity() {
         stopHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
             view_data.resultState.set(DIALOG_QUESTIONS)
-            dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
+            dialog = showQuestionsDialog(result, null, false) { answers ->
                 handleScan(
-                    secret,
-                    sourceType.serverName!!,
+                    lastScanCode,
+                    lastScanSourceType.serverName!!,
                     answers,
                     ignore_unpaid
                 )
@@ -683,16 +683,16 @@ class MainActivity : BaseScanActivity() {
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
             view_data.resultState.set(DIALOG_QUESTIONS)
-            dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
+            dialog = showUnpaidDialog(this) {
                 stopHidingTimer()
                 handleScan(
-                    secret,
-                    sourceType.serverName!!,
+                    lastScanCode,
+                    lastScanSourceType.serverName!!,
                     answers,
-                    ignore_unpaid
+                    true
                 )
             }
-            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
@@ -1014,13 +1014,13 @@ class MainActivity : BaseScanActivity() {
                     }
                 }
 
-                dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
+                dialog = showQuestionsDialog(lastScanResult!!, values, true) { answers ->
                     stopHidingTimer()
                     handleScan(
-                        secret,
-                        sourceType.serverName!!,
+                        lastScanCode,
+                        lastScanSourceType.serverName!!,
                         answers,
-                        ignore_unpaid
+                        lastIgnoreUnpaid
                     )
                 }
                 dialog!!.onRestoreInstanceState(answers)
