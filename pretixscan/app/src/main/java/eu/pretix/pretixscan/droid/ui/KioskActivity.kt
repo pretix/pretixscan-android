@@ -39,6 +39,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.pretixscan.droid.AndroidHttpClientFactory
 import eu.pretix.pretixscan.droid.BuildConfig
 import eu.pretix.pretixscan.droid.PretixScan
@@ -829,10 +830,10 @@ class KioskActivity : BaseScanActivity() {
 
     override fun handleScan(
         raw_result: String,
-        source_type: String,
+        source_type: ReusableMediaType,
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean,
-        exchange_medium_type: String?,
+        exchange_medium_type: ReusableMediaType?,
         exchange_medium_identifier: String?
     ) {
         if (conf.requiresPin("settings") && conf.verifyPin(raw_result)) {
@@ -872,7 +873,7 @@ class KioskActivity : BaseScanActivity() {
         updateUi()
         super.handleScan(
             raw_result,
-            lastScanSourceType.serverName!!,
+            source_type,
             answers,
             ignore_unpaid,
             exchange_medium_type,

@@ -211,7 +211,7 @@ class MainActivity : BaseScanActivity() {
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
-                            lastScanSourceType.serverName!!,
+                            ReusableMediaType.BARCODE,
                             null,
                             !conf.unpaidAsk
                         )
@@ -584,10 +584,10 @@ class MainActivity : BaseScanActivity() {
 
     override fun handleScan(
         raw_result: String,
-        source_type: String,
+        source_type: ReusableMediaType,
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean,
-        exchange_medium_type: String?,
+        exchange_medium_type: ReusableMediaType?,
         exchange_medium_identifier: String?,
     ) {
         if (dialog?.isShowing() == true) {
@@ -607,7 +607,7 @@ class MainActivity : BaseScanActivity() {
         hideSearchCard()
         super.handleScan(
             raw_result,
-            lastScanSourceType.serverName!!,
+            lastScanSourceType,
             answers,
             ignore_unpaid,
             exchange_medium_type,
@@ -655,7 +655,7 @@ class MainActivity : BaseScanActivity() {
             dialog = showQuestionsDialog(result, null, false) { answers ->
                 handleScan(
                     lastScanCode,
-                    lastScanSourceType.serverName!!,
+                    lastScanSourceType,
                     answers,
                     ignore_unpaid
                 )
@@ -670,10 +670,10 @@ class MainActivity : BaseScanActivity() {
                 hideCard()
                 handleScan(
                     lastScanCode,
-                    lastScanSourceType.serverName!!,
+                    lastScanSourceType,
                     null,
                     ignore_unpaid,
-                    exchange_medium_type = mediaType.serverName!!,
+                    exchange_medium_type = mediaType,
                     exchange_medium_identifier = mediaIdentifier,
                 )
             }
@@ -687,7 +687,7 @@ class MainActivity : BaseScanActivity() {
                 stopHidingTimer()
                 handleScan(
                     lastScanCode,
-                    lastScanSourceType.serverName!!,
+                    lastScanSourceType,
                     answers,
                     true
                 )
@@ -1018,7 +1018,7 @@ class MainActivity : BaseScanActivity() {
                     stopHidingTimer()
                     handleScan(
                         lastScanCode,
-                        lastScanSourceType.serverName!!,
+                        lastScanSourceType,
                         answers,
                         lastIgnoreUnpaid
                     )
@@ -1031,7 +1031,7 @@ class MainActivity : BaseScanActivity() {
                     hideCard()
                     handleScan(
                         lastScanCode,
-                        lastScanSourceType.serverName!!,
+                        lastScanSourceType,
                         null,
                         true
                     )
@@ -1044,10 +1044,10 @@ class MainActivity : BaseScanActivity() {
                     hideCard()
                     handleScan(
                         lastScanCode,
-                        lastScanSourceType.serverName!!,
+                        lastScanSourceType,
                         null,
                         lastIgnoreUnpaid,
-                        exchange_medium_type = mediaType.serverName!!,
+                        exchange_medium_type = mediaType,
                         exchange_medium_identifier = mediaIdentifier,
                     )
                 }

@@ -122,7 +122,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             lastScanResult = null
             handleScan(
                 result,
-                lastScanSourceType.serverName!!,
+                lastScanSourceType,
                 null,
                 !conf.unpaidAsk
             )
@@ -493,10 +493,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
     open fun handleScan(
         raw_result: String,
-        source_type: String,
+        source_type: ReusableMediaType,
         answers: MutableList<Answer>?,
         ignore_unpaid: Boolean = false,
-        exchange_medium_type: String? = null,
+        exchange_medium_type: ReusableMediaType? = null,
         exchange_medium_identifier: String? = null,
     ) {
         if (dialog?.isShowing() == true) {
@@ -543,7 +543,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 checkResult = provider.check(
                     conf.eventSelectionToMap(),
                     result,
-                    source_type,
+                    source_type.serverName!!,
                     answers,
                     ignore_unpaid,
                     conf.printBadges,
@@ -553,7 +553,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                     },
                     allowQuestions = !conf.ignoreQuestions,
                     useOrderLocale = useOrderLocale,
-                    exchange_medium_type = exchange_medium_type,
+                    exchange_medium_type = exchange_medium_type?.serverName,
                     exchange_medium_identifier = exchange_medium_identifier,
                 )
                 if (provider is OnlineCheckProvider) {
@@ -648,7 +648,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         lastIgnoreUnpaid = false
         handleScan(
             s,
-            lastScanSourceType.serverName!!,
+            lastScanSourceType,
             null,
             !conf.unpaidAsk
         )
@@ -670,7 +670,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 lastIgnoreUnpaid = false
                 handleScan(
                     keyboardBuffer,
-                    lastScanSourceType.serverName!!,
+                    lastScanSourceType,
                     null,
                     !conf.unpaidAsk
                 )
@@ -774,7 +774,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
         handleScan(
             identifier,
-            mediaType.serverName!!,
+            mediaType,
             null,
             !conf.unpaidAsk
         )
