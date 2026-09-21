@@ -94,7 +94,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            EMPTY, DIALOG_QUESTIONS, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
+            EMPTY, DIALOG_QUESTIONS, DIALOG_UNPAID, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
             ERROR -> R.color.pretix_brand_red
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
@@ -106,7 +106,7 @@ class ViewDataHolder(private val ctx: Context) {
         when (state) {
             EMPTY -> led.off()
             LOADING -> led.progress()
-            DIALOG_QUESTIONS, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
+            DIALOG_QUESTIONS, DIALOG_UNPAID, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
             ERROR -> led.error()
             SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
         }
@@ -682,7 +682,7 @@ class MainActivity : BaseScanActivity() {
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.resultState.set(DIALOG_QUESTIONS)
+            view_data.resultState.set(DIALOG_UNPAID)
             dialog = showUnpaidDialog(this) {
                 stopHidingTimer()
                 handleScan(
@@ -1025,6 +1025,18 @@ class MainActivity : BaseScanActivity() {
                 }
                 dialog!!.onRestoreInstanceState(answers)
                 dialog!!.setOnCancelListener { hideCard() }
+            } else if (resultState == "DIALOG_UNPAID") {
+                view_data.resultState.set(DIALOG_UNPAID)
+                dialog = showUnpaidDialog(this) {
+                    hideCard()
+                    handleScan(
+                        lastScanCode,
+                        lastScanSourceType.serverName!!,
+                        null,
+                        true
+                    )
+                }
+                dialog!!.setOnCancelListener { hideCard() }
             } else if (resultState == "DIALOG_EXCHANGE") {
                 view_data.resultState.set(DIALOG_EXCHANGE)
                 reloadNfcHandler() // else nfchandler is null
@@ -1053,7 +1065,7 @@ class MainActivity : BaseScanActivity() {
         // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
         // we try to serialize all state required to re-create the dialog if the user returns.
 
-        if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE) && dialog != null && lastScanResult != null) {
+        if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE, DIALOG_UNPAID) && dialog != null && lastScanResult != null) {
             val module = SimpleModule()
             module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
             module.addSerializer(JSONArray::class.java, JSONArraySerializer())

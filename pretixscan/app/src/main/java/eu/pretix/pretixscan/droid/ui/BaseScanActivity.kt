@@ -74,6 +74,7 @@ enum class ResultState {
     LOADING,
     ERROR,
     DIALOG_QUESTIONS,
+    DIALOG_UNPAID,
     DIALOG_EXCHANGE,
     WARNING,
     SUCCESS,
