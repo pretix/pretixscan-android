@@ -115,16 +115,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             if (result == lastScanCode && System.currentTimeMillis() - lastScanTime < 2500) {
                 return
             }
-            lastScanTime = System.currentTimeMillis()
-            lastScanCode = result
-            lastScanSourceType = ReusableMediaType.BARCODE
-            lastIgnoreUnpaid = false
-            lastScanResult = null
             handleScan(
                 result,
-                lastScanSourceType,
+                ReusableMediaType.BARCODE,
                 null,
-                !conf.unpaidAsk
             )
         }
     })
@@ -495,7 +489,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         raw_result: String,
         source_type: ReusableMediaType,
         answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean = false,
+        ignore_unpaid: Boolean = !conf.unpaidAsk,
         exchange_medium_type: ReusableMediaType? = null,
         exchange_medium_identifier: String? = null,
     ) {
@@ -509,20 +503,20 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         val result =
             if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.uppercase(Locale.getDefault()))) {
                 /*
-             * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supports checking digital COVID vaccination
-             * certificates. When scanning them at the correct time, we have a high level of privacy
-             * since we do not store any personal data contained in the certificate. However, if you
-             * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
-             * error log will cause the verbatim vaccination certificate to be stored on the server.
-             * Not really our fault, but also not really nice to store that sensitive health info.
-             * However, it's still helpful for debugging to see how often an invalid code was scanned.
-             * So if we encounter something that looks like an EU DGC, we'll just transform it into
-             * a hashed version.
-             *
-             * This hack is safe for pretix' default signature schemes, as they would never generate
-             * a QR code starting with ``HC1:``, but it could theoretically be unsafe for third-party
-             * plugins.
-             */
+                 * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supported checking digital COVID vaccination
+                 * certificates. When scanning them at the correct time, we have a high level of privacy
+                 * since we do not store any personal data contained in the certificate. However, if you
+                 * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
+                 * error log will cause the verbatim vaccination certificate to be stored on the server.
+                 * Not really our fault, but also not really nice to store that sensitive health info.
+                 * However, it's still helpful for debugging to see how often an invalid code was scanned.
+                 * So if we encounter something that looks like an EU DGC, we'll just transform it into
+                 * a hashed version.
+                 *
+                 * This hack is safe for pretix' default signature schemes, as they would never generate
+                 * a QR code starting with ``HC1:``, but it could theoretically be unsafe for third-party
+                 * plugins.
+                 */
                 val md = MessageDigest.getInstance("SHA-256")
                 md.update(raw_result.toByteArray(Charset.defaultCharset()))
                 "HC1:hashed:" + Base64.encodeToString(md.digest(), Base64.URL_SAFE)
@@ -534,6 +528,12 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
+
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = result
+        lastScanSourceType = source_type
+        lastIgnoreUnpaid = ignore_unpaid
+        lastScanResult = null
 
         performCheckin(result, source_type, answers, ignore_unpaid, exchange_medium_type, exchange_medium_identifier)
     }
@@ -652,16 +652,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         if (s == lastScanCode && System.currentTimeMillis() - lastScanTime < 5000) {
             return
         }
-        lastScanTime = System.currentTimeMillis()
-        lastScanCode = s
-        lastScanSourceType = ReusableMediaType.BARCODE
-        lastScanResult = null
-        lastIgnoreUnpaid = false
         handleScan(
             s,
-            lastScanSourceType,
+            ReusableMediaType.BARCODE,
             null,
-            !conf.unpaidAsk
         )
     }
 
@@ -674,16 +668,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 if (keyboardBuffer.isEmpty()) {
                     return false
                 }
-                lastScanTime = System.currentTimeMillis()
-                lastScanCode = keyboardBuffer
-                lastScanSourceType = ReusableMediaType.BARCODE
-                lastScanResult = null
-                lastIgnoreUnpaid = false
                 handleScan(
                     keyboardBuffer,
-                    lastScanSourceType,
+                    ReusableMediaType.BARCODE,
                     null,
-                    !conf.unpaidAsk
                 )
                 keyboardBuffer = ""
                 true
@@ -777,17 +765,10 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             return
         }
 
-        lastScanTime = System.currentTimeMillis()
-        lastScanCode = identifier
-        lastScanSourceType = mediaType
-        lastScanResult = null
-        lastIgnoreUnpaid = false
-
         handleScan(
             identifier,
             mediaType,
             null,
-            !conf.unpaidAsk
         )
     }
 

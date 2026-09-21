@@ -203,17 +203,11 @@ class MainActivity : BaseScanActivity() {
                 }
                 searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
-                        lastScanTime = System.currentTimeMillis()
-                        lastScanCode = res.secret!!
-                        lastScanSourceType = ReusableMediaType.BARCODE
-                        lastScanResult = null
-                        lastIgnoreUnpaid = false
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
                             ReusableMediaType.BARCODE,
                             null,
-                            !conf.unpaidAsk
                         )
                     }
                 })
@@ -607,7 +601,7 @@ class MainActivity : BaseScanActivity() {
         hideSearchCard()
         super.handleScan(
             raw_result,
-            lastScanSourceType,
+            source_type,
             answers,
             ignore_unpaid,
             exchange_medium_type,
