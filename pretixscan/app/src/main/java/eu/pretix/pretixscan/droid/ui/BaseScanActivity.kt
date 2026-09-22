@@ -521,8 +521,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
         val ignore_unpaid = !conf.unpaidAsk
 
-        // FIXME: don't play sound for media exchange
-        if (!ignore_unpaid && !conf.offlineMode && conf.sounds) {
+        if (!conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
 
