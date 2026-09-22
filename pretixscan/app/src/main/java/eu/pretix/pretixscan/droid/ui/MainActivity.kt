@@ -5,7 +5,6 @@ import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -645,7 +644,7 @@ class MainActivity : BaseScanActivity() {
             lastScanResult = result
             view_data.resultState.set(DIALOG_EXCHANGE)
             dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
-                hideCard()
+                showLoadingCard()
                 performCheckin(
                     lastScanCode,
                     lastScanSourceType,
@@ -663,7 +662,7 @@ class MainActivity : BaseScanActivity() {
             lastScanResult = result
             view_data.resultState.set(DIALOG_UNPAID)
             dialog = showUnpaidDialog(this) {
-                stopHidingTimer()
+                showLoadingCard()
                 performCheckin(
                     lastScanCode,
                     lastScanSourceType,
@@ -987,7 +986,7 @@ class MainActivity : BaseScanActivity() {
                 }
 
                 dialog = showQuestionsDialog(lastScanResult!!, values, true) { answers ->
-                    stopHidingTimer()
+                    showLoadingCard()
                     performCheckin(
                         lastScanCode,
                         lastScanSourceType,
@@ -1000,7 +999,7 @@ class MainActivity : BaseScanActivity() {
             } else if (resultState == "DIALOG_UNPAID") {
                 view_data.resultState.set(DIALOG_UNPAID)
                 dialog = showUnpaidDialog(this) {
-                    hideCard()
+                    showLoadingCard()
                     performCheckin(
                         lastScanCode,
                         lastScanSourceType,
@@ -1013,7 +1012,7 @@ class MainActivity : BaseScanActivity() {
                 view_data.resultState.set(DIALOG_EXCHANGE)
                 reloadNfcHandler() // else nfchandler is null
                 dialog = showExchangeDialog(this, lastScanResult!!, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
-                    hideCard()
+                    showLoadingCard()
                     performCheckin(
                         lastScanCode,
                         lastScanSourceType,
