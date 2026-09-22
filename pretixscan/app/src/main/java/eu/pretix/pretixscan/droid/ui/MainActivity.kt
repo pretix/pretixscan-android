@@ -38,19 +38,12 @@ import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.db.toModel
-import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
-import eu.pretix.libpretixsync.serialization.JSONArraySerializer
-import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
-import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
@@ -60,8 +53,6 @@ import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
 import splitties.toast.toast
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -971,13 +962,6 @@ class MainActivity : BaseScanActivity() {
 
         val resultState = savedInstanceState.getString("result_state", "")
         if (resultState.startsWith("DIALOG_")) {
-            val module = SimpleModule()
-            module.addDeserializer(JSONObject::class.java, JSONObjectDeserializer())
-            module.addDeserializer(JSONArray::class.java, JSONArrayDeserializer())
-            val om = ObjectMapper()
-            om.registerModule(module)
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
@@ -1051,13 +1035,6 @@ class MainActivity : BaseScanActivity() {
         // we try to serialize all state required to re-create the dialog if the user returns.
 
         if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE, DIALOG_UNPAID) && dialog != null && lastScanResult != null) {
-            val module = SimpleModule()
-            module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
-            module.addSerializer(JSONArray::class.java, JSONArraySerializer())
-            val om = ObjectMapper()
-            om.registerModule(module)
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
             outState.putString("result_state", view_data.resultState.get().toString().uppercase())
             outState.putString("lastScanCode", lastScanCode)
             outState.putString("lastScanType", lastScanSourceType.serverName)

@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -15,8 +16,13 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import eu.pretix.libpretixnfc.android.platform.AndroidKeyStore
 import eu.pretix.libpretixnfc.platform.HardwareBackedKeyStore
+import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
+import eu.pretix.libpretixsync.serialization.JSONArraySerializer
+import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
+import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.pretixscan.utils.KeystoreHelper
 import org.joda.time.DateTime
+import org.json.JSONArray
 import org.json.JSONObject
 
 data class EventSelection(
@@ -38,6 +44,13 @@ val om = ObjectMapper().apply {
             .configure(KotlinFeature.SingletonSupport, true)
             .configure(KotlinFeature.StrictNullChecks, false)
             .build())
+    val jsonModule = SimpleModule().apply {
+        addDeserializer(JSONObject::class.java, JSONObjectDeserializer())
+        addDeserializer(JSONArray::class.java, JSONArrayDeserializer())
+        addSerializer(JSONObject::class.java, JSONObjectSerializer())
+        addSerializer(JSONArray::class.java, JSONArraySerializer())
+    }
+    registerModule(jsonModule)
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
     configure(SerializationFeature.WRITE_DATES_WITH_CONTEXT_TIME_ZONE, false)
