@@ -5,7 +5,6 @@ import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -38,19 +37,12 @@ import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.db.toModel
-import eu.pretix.libpretixsync.serialization.JSONArrayDeserializer
-import eu.pretix.libpretixsync.serialization.JSONArraySerializer
-import eu.pretix.libpretixsync.serialization.JSONObjectDeserializer
-import eu.pretix.libpretixsync.serialization.JSONObjectSerializer
 import eu.pretix.libpretixui.android.scanning.ScannerView
 import eu.pretix.pretixscan.droid.*
 import eu.pretix.pretixscan.droid.databinding.ActivityMainBinding
@@ -60,8 +52,6 @@ import eu.pretix.pretixscan.droid.ui.ResultState.*
 import eu.pretix.pretixscan.droid.ui.info.EventinfoActivity
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
 import splitties.toast.toast
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -94,7 +84,7 @@ class ViewDataHolder(private val ctx: Context) {
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
-            EMPTY, DIALOG_QUESTIONS, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
+            EMPTY, DIALOG_QUESTIONS, DIALOG_UNPAID, DIALOG_EXCHANGE, LOADING -> R.color.pretix_brand_lightgrey
             ERROR -> R.color.pretix_brand_red
             WARNING -> R.color.pretix_brand_orange
             SUCCESS, SUCCESS_EXIT -> R.color.pretix_brand_green
@@ -106,7 +96,7 @@ class ViewDataHolder(private val ctx: Context) {
         when (state) {
             EMPTY -> led.off()
             LOADING -> led.progress()
-            DIALOG_QUESTIONS, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
+            DIALOG_QUESTIONS, DIALOG_UNPAID, DIALOG_EXCHANGE, WARNING -> led.attention(blink = needsAttention)
             ERROR -> led.error()
             SUCCESS, SUCCESS_EXIT -> led.success(blink = needsAttention)
         }
@@ -203,17 +193,10 @@ class MainActivity : BaseScanActivity() {
                 }
                 searchAdapter = SearchListAdapter(sr, object : SearchResultClickedInterface {
                     override fun onSearchResultClicked(res: TicketCheckProvider.SearchResult) {
-                        lastScanTime = System.currentTimeMillis()
-                        lastScanCode = res.secret!!
-                        lastScanSourceType = ReusableMediaType.BARCODE
-                        lastScanResult = null
-                        lastIgnoreUnpaid = false
                         hideSearchCard()
                         handleScan(
                             res.secret!!,
-                            lastScanSourceType.serverName!!,
-                            null,
-                            !conf.unpaidAsk
+                            ReusableMediaType.BARCODE
                         )
                     }
                 })
@@ -584,11 +567,7 @@ class MainActivity : BaseScanActivity() {
 
     override fun handleScan(
         raw_result: String,
-        source_type: String,
-        answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean,
-        exchange_medium_type: String?,
-        exchange_medium_identifier: String?,
+        source_type: ReusableMediaType,
     ) {
         if (dialog?.isShowing() == true) {
             /*
@@ -607,11 +586,7 @@ class MainActivity : BaseScanActivity() {
         hideSearchCard()
         super.handleScan(
             raw_result,
-            lastScanSourceType.serverName!!,
-            answers,
-            ignore_unpaid,
-            exchange_medium_type,
-            exchange_medium_identifier
+            source_type
         )
     }
 
@@ -651,11 +626,12 @@ class MainActivity : BaseScanActivity() {
 
         stopHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+            lastScanResult = result
             view_data.resultState.set(DIALOG_QUESTIONS)
-            dialog = showQuestionsDialog(result, lastScanCode, lastScanSourceType, ignore_unpaid, null, false) { secret, sourceType, answers, ignore_unpaid ->
-                handleScan(
-                    secret,
-                    sourceType.serverName!!,
+            dialog = showQuestionsDialog(result, null, false) { answers ->
+                performCheckin(
+                    lastScanCode,
+                    lastScanSourceType,
                     answers,
                     ignore_unpaid
                 )
@@ -665,15 +641,16 @@ class MainActivity : BaseScanActivity() {
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
+            lastScanResult = result
             view_data.resultState.set(DIALOG_EXCHANGE)
             dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
-                hideCard()
-                handleScan(
+                showLoadingCard()
+                performCheckin(
                     lastScanCode,
-                    lastScanSourceType.serverName!!,
+                    lastScanSourceType,
                     null,
                     ignore_unpaid,
-                    exchange_medium_type = mediaType.serverName!!,
+                    exchange_medium_type = mediaType,
                     exchange_medium_identifier = mediaIdentifier,
                 )
             }
@@ -682,17 +659,18 @@ class MainActivity : BaseScanActivity() {
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
-            view_data.resultState.set(DIALOG_QUESTIONS)
-            dialog = showUnpaidDialog(this, result, lastScanCode, lastScanSourceType, answers) { secret, sourceType, answers, ignore_unpaid ->
-                stopHidingTimer()
-                handleScan(
-                    secret,
-                    sourceType.serverName!!,
+            lastScanResult = result
+            view_data.resultState.set(DIALOG_UNPAID)
+            dialog = showUnpaidDialog(this) {
+                showLoadingCard()
+                performCheckin(
+                    lastScanCode,
+                    lastScanSourceType,
                     answers,
-                    ignore_unpaid
+                    true
                 )
             }
-            dialog!!.setOnCancelListener(DialogInterface.OnCancelListener { hideCard() })
+            dialog!!.setOnCancelListener { hideCard() }
             view_data.setLed(this, view_data.resultState.get()!!, true)
             return
         }
@@ -986,13 +964,6 @@ class MainActivity : BaseScanActivity() {
 
         val resultState = savedInstanceState.getString("result_state", "")
         if (resultState.startsWith("DIALOG_")) {
-            val module = SimpleModule()
-            module.addDeserializer(JSONObject::class.java, JSONObjectDeserializer())
-            module.addDeserializer(JSONArray::class.java, JSONArrayDeserializer())
-            val om = ObjectMapper()
-            om.registerModule(module)
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
             lastScanCode = savedInstanceState.getString("lastScanCode", null)
             lastScanSourceType = ReusableMediaType.entries.firstOrNull { it.serverName == savedInstanceState.getString("lastScanType", ReusableMediaType.BARCODE.serverName) } ?: ReusableMediaType.BARCODE
             lastIgnoreUnpaid = savedInstanceState.getBoolean("ignore_unpaid")
@@ -1014,28 +985,40 @@ class MainActivity : BaseScanActivity() {
                     }
                 }
 
-                dialog = showQuestionsDialog(lastScanResult!!, lastScanCode, lastScanSourceType, lastIgnoreUnpaid, values, true) { secret, sourceType, answers, ignore_unpaid ->
-                    stopHidingTimer()
-                    handleScan(
-                        secret,
-                        sourceType.serverName!!,
+                dialog = showQuestionsDialog(lastScanResult!!, values, true) { answers ->
+                    showLoadingCard()
+                    performCheckin(
+                        lastScanCode,
+                        lastScanSourceType,
                         answers,
-                        ignore_unpaid
+                        lastIgnoreUnpaid
                     )
                 }
                 dialog!!.onRestoreInstanceState(answers)
+                dialog!!.setOnCancelListener { hideCard() }
+            } else if (resultState == "DIALOG_UNPAID") {
+                view_data.resultState.set(DIALOG_UNPAID)
+                dialog = showUnpaidDialog(this) {
+                    showLoadingCard()
+                    performCheckin(
+                        lastScanCode,
+                        lastScanSourceType,
+                        null,
+                        true
+                    )
+                }
                 dialog!!.setOnCancelListener { hideCard() }
             } else if (resultState == "DIALOG_EXCHANGE") {
                 view_data.resultState.set(DIALOG_EXCHANGE)
                 reloadNfcHandler() // else nfchandler is null
                 dialog = showExchangeDialog(this, lastScanResult!!, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
-                    hideCard()
-                    handleScan(
+                    showLoadingCard()
+                    performCheckin(
                         lastScanCode,
-                        lastScanSourceType.serverName!!,
+                        lastScanSourceType,
                         null,
                         lastIgnoreUnpaid,
-                        exchange_medium_type = mediaType.serverName!!,
+                        exchange_medium_type = mediaType,
                         exchange_medium_identifier = mediaIdentifier,
                     )
                 }
@@ -1053,14 +1036,7 @@ class MainActivity : BaseScanActivity() {
         // if the questions dialog starts sub-activities, e.g. for taking photos. In these case,
         // we try to serialize all state required to re-create the dialog if the user returns.
 
-        if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE) && dialog != null && lastScanResult != null) {
-            val module = SimpleModule()
-            module.addSerializer(JSONObject::class.java, JSONObjectSerializer())
-            module.addSerializer(JSONArray::class.java, JSONArraySerializer())
-            val om = ObjectMapper()
-            om.registerModule(module)
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
+        if (view_data.resultState.get() in listOf(DIALOG_QUESTIONS, DIALOG_EXCHANGE, DIALOG_UNPAID) && dialog != null && lastScanResult != null) {
             outState.putString("result_state", view_data.resultState.get().toString().uppercase())
             outState.putString("lastScanCode", lastScanCode)
             outState.putString("lastScanType", lastScanSourceType.serverName)
