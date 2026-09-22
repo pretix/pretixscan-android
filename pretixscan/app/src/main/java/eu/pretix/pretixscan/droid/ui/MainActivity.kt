@@ -627,6 +627,7 @@ class MainActivity : BaseScanActivity() {
 
         stopHidingTimer()
         if (result.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+            lastScanResult = result
             view_data.resultState.set(DIALOG_QUESTIONS)
             dialog = showQuestionsDialog(result, null, false) { answers ->
                 performCheckin(
@@ -641,6 +642,7 @@ class MainActivity : BaseScanActivity() {
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED) {
+            lastScanResult = result
             view_data.resultState.set(DIALOG_EXCHANGE)
             dialog = showExchangeDialog(this, result, nfcHandler?.getState()) { mediaIdentifier, mediaType ->
                 hideCard()
@@ -658,6 +660,7 @@ class MainActivity : BaseScanActivity() {
             return
         }
         if (result.type == TicketCheckProvider.CheckResult.Type.UNPAID && result.isCheckinAllowed) {
+            lastScanResult = result
             view_data.resultState.set(DIALOG_UNPAID)
             dialog = showUnpaidDialog(this) {
                 stopHidingTimer()
