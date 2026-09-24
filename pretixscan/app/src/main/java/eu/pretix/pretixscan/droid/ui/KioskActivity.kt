@@ -721,8 +721,10 @@ class KioskActivity : BaseScanActivity() {
         }
         if (conf.scanType == "exit") {
             binding.ivDirectionIcon.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_exit_white_24dp))
+            binding.tvWaitingForScan.text = getString(R.string.scantype_exit_kiosk)
         } else {
             binding.ivDirectionIcon.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_entry_gray_24dp))
+            binding.tvWaitingForScan.text = getString(R.string.kiosk_text_scan)
         }
 
         binding.ivNetworkIcon.visibility = if (networkType == NetworkType.Unknown) {
