@@ -172,7 +172,7 @@
     <string name="kiosk_text_scan">チケットをスキャンしてください</string>
     <string name="kiosk_text_reading">バーコードを読み取り中…</string>
     <string name="kiosk_text_checking">チケットを確認中…</string>
-    <string name="kiosk_text_print">バッジをお取りください</string>
+    <string name="kiosk_text_print">バッジを印刷中…</string>
     <string name="kiosk_text_gate">入場ゲートへお進みください</string>
     <string name="kiosk_text_questions_reject">ここではチケットを検証できません</string>
     <string name="kiosk_text_questions_reject_sub">スタッフまでお声かけください</string>
@@ -186,4 +186,15 @@
     <string name="kiosk_error_unknown_scan_result_type">不明なスキャン結果タイプ</string>
     <string name="kiosk_text_noentry">エントリーが未検出</string>
     <string name="kiosk_text_noentry_description">あなたのチケットはまもなく再有効化されます</string>
+    <string name="action_label_remove_temporarily_out_of_order">エラーを認識する</string>
+    <string name="settings_label_kiosk_animation_device">キオスク・スキャン・アニメーションのためのデバイスの種類</string>
+    <string name="scan_result_valid_kiosk">いらっしゃいませ！</string>
+    <string name="scan_result_exit_kiosk">さようなら！</string>
+    <string name="settings_label_legacy_kioskmode">旧来のキオスク・モードを使う</string>
+    <string name="settings_summary_legacy_kioskmode">将来削除されます</string>
+    <string name="settings_label_gate_back_to_start_timeout">ゲートが開いた後の時間</string>
+    <string name="settings_summary_gate_back_to_start_timeout">ゲートが開いた後、チケットスキャン画面が再び表示されるまでの遅延（ミリ秒）</string>
+    <string name="settings_label_success_back_to_start_timeout">チェックインに成功した後の時間</string>
+    <string name="settings_summary_success_back_to_start_timeout">チェックインが成功した後、チケットスキャン画面が再び表示されるまでの遅延（ミリ秒単位）</string>
+    <string name="pin_protection_and_kiosk">暗証番号による保護とキオスク・モード</string>
 </resources>
