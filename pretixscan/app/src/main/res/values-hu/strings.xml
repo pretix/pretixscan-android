@@ -188,4 +188,9 @@
     <string name="kiosk_error_printing_failed">A nyomtatás sikertelen</string>
     <string name="kiosk_error_printing_failed_timeout">A nyomtatás időtúllépés miatt sikertelen</string>
     <string name="kiosk_error_unknown_scan_result_type">Ismeretlen beolvasási eredménytípus</string>
+    <string name="scan_result_valid_kiosk">Üdvözöljük!</string>
+    <string name="scan_result_exit_kiosk">Viszlát!</string>
+    <string name="settings_label_legacy_kioskmode">Használja az eredeti kioszk módot</string>
+    <string name="settings_summary_legacy_kioskmode">A jövőben el lesz távolítva</string>
+    <string name="settings_label_gate_back_to_start_timeout">Kapunyitás időpontja</string>
 </resources>
