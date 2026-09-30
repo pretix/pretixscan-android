@@ -208,4 +208,13 @@
     <string name="kiosk_error_printing_failed_timeout">Drucker Timeout</string>
     <string name="kiosk_error_unknown_scan_result_type">Unbekannter Scanergebnis Typus</string>
     <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Der gescannte NFC-Chip wird von dieser pretixSCAN-Version nicht unterstützt</string>
+    <string name="settings_label_kiosk_animation_device">Gerätetyp für Kiosk-Scan-Animation</string>
+    <string name="settings_label_legacy_kioskmode">Alten Kioskmodus nutzen</string>
+    <string name="settings_summary_legacy_kioskmode">Wird in Zukunft entfernt</string>
+    <string name="settings_label_gate_back_to_start_timeout">Zeit nach Toröffnung</string>
+    <string name="settings_summary_gate_back_to_start_timeout">Wartezeit in Millisekunden, nachdem ein Tor geöffnet wurde, bis zum nächsten Scan aufgefordert wird</string>
+    <string name="settings_label_success_back_to_start_timeout">Zeit nach erfolgreichem Check-in</string>
+    <string name="settings_summary_success_back_to_start_timeout">Wartezeit in Millisekunden nach erfolgreichem Check-in bis zum nächsten Scan aufgefordert wird</string>
+    <string name="kiosk_text_noentry">Kein Eingang festgestellt</string>
+    <string name="kiosk_text_noentry_description">Ihr Ticket wird in Kürze wieder gültig sein</string>
 </resources>
