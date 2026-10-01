@@ -124,4 +124,5 @@
     <string name="kiosk_text_print">Ваш бейдж печатается…</string>
     <string name="kiosk_error_printing_failed">Ошибка печати</string>
     <string name="title_activity_main">pretixSCAN</string>
+    <string name="action_label_ok">OK</string>
 </resources>
