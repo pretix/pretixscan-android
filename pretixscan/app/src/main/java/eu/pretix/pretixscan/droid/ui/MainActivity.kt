@@ -13,8 +13,10 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.style.BulletSpan
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -91,7 +93,7 @@ class ViewDataHolder(private val ctx: Context) {
     val isOffline = ObservableField<Boolean>()
     val hideTimerVisible = ObservableField<Boolean>()
     val hideTimerProgress = ObservableField<Int>()
-    val addonTexts = ObservableField<String>()
+    val addonTexts = ObservableField<SpannableString>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -814,11 +816,15 @@ class MainActivity : BaseScanActivity() {
         }
 
         if (!result.addons.isNullOrEmpty()) {
-            view_data.addonTexts.set(
-                result.addons!!.joinToString("\n") { addon ->
-                    "+ " + listOfNotNull(addon.itemName, addon.variationName).joinToString(" – ")
+            val sp = SpannableStringBuilder()
+            result.addons!!.forEachIndexed { index, addon ->
+                sp.append(listOfNotNull(addon.itemName, addon.variationName).joinToString(" – "),
+                    BulletSpan(4), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (index != result.addons!!.lastIndex) {
+                    sp.append("\n")
                 }
-            )
+            }
+            view_data.addonTexts.set(SpannableString.valueOf(sp))
         } else {
             view_data.addonTexts.set(null)
         }
