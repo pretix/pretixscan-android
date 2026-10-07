@@ -74,6 +74,7 @@ enum class ResultState {
     LOADING,
     ERROR,
     DIALOG_QUESTIONS,
+    DIALOG_UNPAID,
     DIALOG_EXCHANGE,
     WARNING,
     SUCCESS,
@@ -114,16 +115,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             if (result == lastScanCode && System.currentTimeMillis() - lastScanTime < 2500) {
                 return
             }
-            lastScanTime = System.currentTimeMillis()
-            lastScanCode = result
-            lastScanSourceType = ReusableMediaType.BARCODE
-            lastIgnoreUnpaid = false
-            lastScanResult = null
             handleScan(
                 result,
-                lastScanSourceType.serverName!!,
-                null,
-                !conf.unpaidAsk
+                ReusableMediaType.BARCODE
             )
         }
     })
@@ -492,11 +486,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
 
     open fun handleScan(
         raw_result: String,
-        source_type: String,
-        answers: MutableList<Answer>?,
-        ignore_unpaid: Boolean = false,
-        exchange_medium_type: String? = null,
-        exchange_medium_identifier: String? = null,
+        source_type: ReusableMediaType
     ) {
         if (dialog?.isShowing() == true) {
             /*
@@ -508,20 +498,20 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         val result =
             if (Regex("^HC1:[0-9A-Z $%*+-./:]+$").matches(raw_result.uppercase(Locale.getDefault()))) {
                 /*
-             * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supports checking digital COVID vaccination
-             * certificates. When scanning them at the correct time, we have a high level of privacy
-             * since we do not store any personal data contained in the certificate. However, if you
-             * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
-             * error log will cause the verbatim vaccination certificate to be stored on the server.
-             * Not really our fault, but also not really nice to store that sensitive health info.
-             * However, it's still helpful for debugging to see how often an invalid code was scanned.
-             * So if we encounter something that looks like an EU DGC, we'll just transform it into
-             * a hashed version.
-             *
-             * This hack is safe for pretix' default signature schemes, as they would never generate
-             * a QR code starting with ``HC1:``, but it could theoretically be unsafe for third-party
-             * plugins.
-             */
+                 * This is a bit of a hack. pretixSCAN 1.11-2.8.2 supported checking digital COVID vaccination
+                 * certificates. When scanning them at the correct time, we have a high level of privacy
+                 * since we do not store any personal data contained in the certificate. However, if you
+                 * accidentally scan the certificate when you are supposed to scan a ticket, our fancy
+                 * error log will cause the verbatim vaccination certificate to be stored on the server.
+                 * Not really our fault, but also not really nice to store that sensitive health info.
+                 * However, it's still helpful for debugging to see how often an invalid code was scanned.
+                 * So if we encounter something that looks like an EU DGC, we'll just transform it into
+                 * a hashed version.
+                 *
+                 * This hack is safe for pretix' default signature schemes, as they would never generate
+                 * a QR code starting with ``HC1:``, but it could theoretically be unsafe for third-party
+                 * plugins.
+                 */
                 val md = MessageDigest.getInstance("SHA-256")
                 md.update(raw_result.toByteArray(Charset.defaultCharset()))
                 "HC1:hashed:" + Base64.encodeToString(md.digest(), Base64.URL_SAFE)
@@ -529,11 +519,29 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 raw_result
             }
 
-        // FIXME: don't play sound for media exchange
-        if (answers == null && !ignore_unpaid && !conf.offlineMode && conf.sounds) {
+        val ignore_unpaid = !conf.unpaidAsk
+
+        if (!conf.offlineMode && conf.sounds) {
             mediaPlayers[R.raw.beep]?.start()
         }
 
+        lastScanTime = System.currentTimeMillis()
+        lastScanCode = result
+        lastScanSourceType = source_type
+        lastIgnoreUnpaid = ignore_unpaid
+        lastScanResult = null
+
+        performCheckin(result, source_type, null, ignore_unpaid)
+    }
+
+    fun performCheckin(
+        result: String,
+        source_type: ReusableMediaType,
+        answers: MutableList<Answer>?,
+        ignore_unpaid: Boolean,
+        exchange_medium_type: ReusableMediaType? = null,
+        exchange_medium_identifier: String? = null
+    ) {
         bgScope.launch {
             var checkResult: TicketCheckProvider.CheckResult? = null
             val provider = (application as PretixScan).getCheckProvider(conf)
@@ -542,7 +550,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 checkResult = provider.check(
                     conf.eventSelectionToMap(),
                     result,
-                    source_type,
+                    source_type.serverName!!,
                     answers,
                     ignore_unpaid,
                     conf.printBadges,
@@ -552,7 +560,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                     },
                     allowQuestions = !conf.ignoreQuestions,
                     useOrderLocale = useOrderLocale,
-                    exchange_medium_type = exchange_medium_type,
+                    exchange_medium_type = exchange_medium_type?.serverName,
                     exchange_medium_identifier = exchange_medium_identifier,
                 )
                 if (provider is OnlineCheckProvider) {
@@ -585,12 +593,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
     open fun showLoadingCard() {}
 
     fun showQuestionsDialog(res: TicketCheckProvider.CheckResult,
-                            secret: String,
-                            sourceType: ReusableMediaType,
-                            ignore_unpaid: Boolean,
                             values: Map<String, String>?,
                             isResumed: Boolean,
-                            retryHandler: ((String, ReusableMediaType, MutableList<Answer>, Boolean) -> Unit)): QuestionsDialogInterface {
+                            retryHandler: ((MutableList<Answer>) -> Unit)): QuestionsDialogInterface {
         val questions = res.requiredAnswers!!.map { it.question.toModel() }
         for (q in questions) {
             q.resolveDependency(questions)
@@ -620,7 +625,7 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             values_,
             null,
             null,
-            { answers -> retryHandler(secret, sourceType, answers, ignore_unpaid) },
+            retryHandler,
             null,
             attendeeName,
             res.orderCodeAndPositionId(),
@@ -643,16 +648,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
         if (s == lastScanCode && System.currentTimeMillis() - lastScanTime < 5000) {
             return
         }
-        lastScanTime = System.currentTimeMillis()
-        lastScanCode = s
-        lastScanSourceType = ReusableMediaType.BARCODE
-        lastScanResult = null
-        lastIgnoreUnpaid = false
         handleScan(
             s,
-            lastScanSourceType.serverName!!,
-            null,
-            !conf.unpaidAsk
+            ReusableMediaType.BARCODE,
         )
     }
 
@@ -665,16 +663,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
                 if (keyboardBuffer.isEmpty()) {
                     return false
                 }
-                lastScanTime = System.currentTimeMillis()
-                lastScanCode = keyboardBuffer
-                lastScanSourceType = ReusableMediaType.BARCODE
-                lastScanResult = null
-                lastIgnoreUnpaid = false
                 handleScan(
                     keyboardBuffer,
-                    lastScanSourceType.serverName!!,
-                    null,
-                    !conf.unpaidAsk
+                    ReusableMediaType.BARCODE
                 )
                 keyboardBuffer = ""
                 true
@@ -768,17 +759,9 @@ abstract class BaseScanActivity : AppCompatActivity(), ReloadableActivity, Scann
             return
         }
 
-        lastScanTime = System.currentTimeMillis()
-        lastScanCode = identifier
-        lastScanSourceType = mediaType
-        lastScanResult = null
-        lastIgnoreUnpaid = false
-
         handleScan(
             identifier,
-            mediaType.serverName!!,
-            null,
-            !conf.unpaidAsk
+            mediaType
         )
     }
 
