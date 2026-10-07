@@ -13,8 +13,10 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.style.BulletSpan
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -91,6 +93,7 @@ class ViewDataHolder(private val ctx: Context) {
     val isOffline = ObservableField<Boolean>()
     val hideTimerVisible = ObservableField<Boolean>()
     val hideTimerProgress = ObservableField<Int>()
+    val addonTexts = ObservableField<SpannableString>()
 
     fun getColor(state: ResultState): Int {
         return ctx.resources.getColor(when (state) {
@@ -525,6 +528,7 @@ class MainActivity : BaseScanActivity() {
         view_data.reasonExplanation.set(null)
         view_data.questionAndAnswers.set(null)
         view_data.checkInTexts.set(null)
+        view_data.addonTexts.set(null)
         view_data.firstScanned.set(null)
         view_data.attention.set(false)
         if (card_state == ResultCardState.HIDDEN) {
@@ -809,6 +813,20 @@ class MainActivity : BaseScanActivity() {
             view_data.checkInTexts.set(result.checkinTexts!!.filterNot { it.isBlank() }.joinToString("\n").trim())
         } else {
             view_data.checkInTexts.set(null)
+        }
+
+        if (!result.addons.isNullOrEmpty()) {
+            val sp = SpannableStringBuilder()
+            result.addons!!.forEachIndexed { index, addon ->
+                sp.append(listOfNotNull(addon.itemName, addon.variationName).joinToString(" – "),
+                    BulletSpan(4), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (index != result.addons!!.lastIndex) {
+                    sp.append("\n")
+                }
+            }
+            view_data.addonTexts.set(SpannableString.valueOf(sp))
+        } else {
+            view_data.addonTexts.set(null)
         }
 
         if (result.eventSlug != null && conf.eventSelection.size > 1) {
