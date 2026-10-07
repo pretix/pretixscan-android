@@ -60,6 +60,7 @@ fun createSyncDatabase(
             tax_rateAdapter = bigDecimalAdapter,
             tax_valueAdapter = bigDecimalAdapter,
             line_price_grossAdapter = bigDecimalAdapter,
+            manual_discount_percentAdapter = bigDecimalAdapter,
         ),
         ReceiptAdapter =
         Receipt.Adapter(
