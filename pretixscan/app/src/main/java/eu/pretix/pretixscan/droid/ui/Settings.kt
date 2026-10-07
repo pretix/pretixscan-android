@@ -128,7 +128,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             conf.lastSync = 0
             conf.lastDownload = 0
-            toast("OK")
+            requireActivity().finish()
             return@setOnPreferenceClickListener true
         }
         findPreference<CheckBoxPreference>("pref_scan_offline")?.setOnPreferenceChangeListener { preference, newValue ->
