@@ -205,4 +205,5 @@
     <string name="settings_summary_success_back_to_start_timeout">Retardo, en milisegundos, desde que se completa con éxito el registro hasta que vuelve a aparecer la pantalla de escaneo del billete</string>
     <string name="pin_protection_and_kiosk">Protección con PIN y modo quiosco</string>
     <string name="action_label_remove_temporarily_out_of_order">Confirmar error</string>
+    <string name="addons_label">Complementos:</string>
 </resources>
