@@ -9,7 +9,7 @@ object KioskHardware {
     }
 
     fun isZebra(): Boolean {
-        return Build.BRAND == "Zebra" && Build.MODEL.startsWith("CC6")
+        return Build.BRAND == "Zebra" && (Build.MODEL.startsWith("CC6") || Build.MODEL.startsWith("KC"))
     }
 
     fun isNewland(): Boolean {
