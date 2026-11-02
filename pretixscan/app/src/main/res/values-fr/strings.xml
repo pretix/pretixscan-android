@@ -205,4 +205,5 @@
     <string name="settings_summary_success_back_to_start_timeout">Délai, en millisecondes, entre la validation de l\'enregistrement et la réapparition de l\'écran de lecture du billet</string>
     <string name="pin_protection_and_kiosk">Protection par code PIN et mode kiosque</string>
     <string name="action_label_remove_temporarily_out_of_order">Accuser réception de l\'erreur</string>
+    <string name="addons_label">Modules complémentaires :</string>
 </resources>
