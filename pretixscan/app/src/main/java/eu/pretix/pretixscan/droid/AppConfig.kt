@@ -311,6 +311,14 @@ class AppConfig(ctx: Context) : ConfigStore {
         return prefs.getLong(PREFS_KEY_KNOWN_PRETIX_VERSION, 0L);
     }
 
+    override fun setQuestionnaireSupportEnabled(value: Boolean) {
+        prefs.edit().putBoolean(PREFS_KEY_QUESTIONNAIRE_SUPPORT_ENABLED, value).apply()
+    }
+
+    override fun getQuestionnaireSupportEnabled(): Boolean {
+        return prefs.getBoolean(PREFS_KEY_QUESTIONNAIRE_SUPPORT_ENABLED, false);
+    }
+
     override fun getAutoSwitchRequested(): Boolean {
         return default_prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false);
     }
@@ -473,6 +481,7 @@ class AppConfig(ctx: Context) : ConfigStore {
         val PREFS_KEY_DEVICE_KNOWN_VERSION = "device_pos_known_version"
         val PREFS_KEY_DEVICE_KNOWN_INFO = "device_pos_known_info"
         val PREFS_KEY_KNOWN_PRETIX_VERSION = "known_pretix_version"
+        val PREFS_KEY_QUESTIONNAIRE_SUPPORT_ENABLED = "questionnaire_support_enabled"
         val PREFS_KEY_SCAN_AUTOFOCUS = "scan_autofocus"
         val PREFS_KEY_SCAN_FLASH = "scan_flash"
         val PREFS_KEY_SYNC_ORDERS = "pref_sync_orders"
